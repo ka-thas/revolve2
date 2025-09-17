@@ -18,24 +18,22 @@ def make_brick(depth, max_depth):
         if random.random() < 0.5:  # 50% chance to place hinge
             brick[side] = {
                 "hinge": {
-                    "brick": make_brick(depth + 1, max_depth),
-                    **random_orientation(),
+                    "brick": make_brick(depth + 1, max_depth)
                 }
             }
         else:
             brick[side] = {}
-    return {"brick": brick}
+    return brick
 
 
-def make_core(max_depth=3):
+def make_core(max_depth=5):
     """Create a Core with random children (front, left, right, back)."""
     core = {}
     for side in ["front", "left", "right", "back"]:
         if random.random() < 0.7:  # 70% chance to place hinge
             core[side] = {
                 "hinge": {
-                    "brick": make_brick(1, max_depth),
-                    **random_orientation(),
+                    "brick": make_brick(1, max_depth)
                 }
             }
         else:
@@ -51,6 +49,6 @@ def save_gene(gene, filename):
 if __name__ == "__main__":
     # Generate 5 random genes and save them
     for i in range(5):
-        gene = make_core(max_depth=4)  # deeper robots if you want
+        gene = make_core(max_depth=3)  # deeper robots if you want
         save_gene(gene, f"gene_{i+1}.json")
         print(f"Saved gene_{i+1}.json")

@@ -1,0 +1,92 @@
+{
+    "core": {
+        "front": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "front": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                },
+                                "left": {},
+                                "right": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                },
+                                "right": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "left": {},
+        "right": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "left": {},
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "back": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "front": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                },
+                                "left": {},
+                                "right": {}
+                            }
+                        }
+                    },
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                },
+                                "right": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
