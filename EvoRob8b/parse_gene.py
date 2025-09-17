@@ -1,6 +1,12 @@
 import json
 
-def parse_gene(node, depth=0):
+from revolve2.modular_robot.body.v1 import ActiveHingeV1, BodyV1, BrickV1
+
+def build_body():
+    body = BodyV1
+    
+
+def print_gene(node, depth=0):
     """Recursively parses the gene structure and prints it."""
     indent = "  " * depth
     if not isinstance(node, dict) or not node:  # leaf node
@@ -18,4 +24,4 @@ if __name__ == "__main__":
     
     print("Gene Structure:")
 
-    parse_gene(gene)
+    print_gene(gene)
