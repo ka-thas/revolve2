@@ -8,7 +8,7 @@
 - Mutation rate 10%
 - Neighborhood – Tournament selection
 - Visuelt
-	- Terrain
+	- Terrain -> krater?
 	- Max parts
 	- v1
 - 10 generations
