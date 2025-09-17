@@ -110,3 +110,5 @@ if __name__ == "__main__":
     xy_displacement = fitness_functions.xy_displacement(
         robot_state_begin, robot_state_end
     )
+
+    print(xy_displacement)
