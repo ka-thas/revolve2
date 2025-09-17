@@ -20,7 +20,7 @@ from revolve2.standards.simulation_parameters import make_standard_batch_paramet
 #taken from readme in revolve 2.
 
 # Create a modular robot.
-body = modular_robots_v1.longleg_v1()
+body = modular_robots_v1.snake_v1()
 rng = make_rng_time_seed()
 brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
 robot = ModularRobot(body, brain)
