@@ -1,0 +1,17 @@
+{
+    "core": {
+        "front": {},
+        "back": {
+            "hinge": {
+                "block": {
+                    "hinge": {
+                        "block": {},
+                        "orientation": {}
+                    }
+                },
+                "orientation": {}
+            }
+        },
+        "side": {}
+    }
+}
