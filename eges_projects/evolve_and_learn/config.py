@@ -3,7 +3,10 @@ DATABASE_FILE = "test.sqlite"
 ENVIRONMENT = 'noisy'
 NUM_REPETITIONS = 1
 NUM_SIMULATORS = 1
-NUM_PARALLEL_PROCESSES = 20
+NUM_PARALLEL_PROCESSES = 20 #ege said we could lower to use less cpg
+
+
+READ_ARGS = False
 
 FREQUENCY = 4
 ENERGY = 100000
