@@ -1,6 +1,6 @@
 """
-Evolutionary Algorithm for JSON gene representation of modular robots.
-This EA handles evolution of robot body structures represented as nested JSON.
+Simple Evolutionary Algorithm for JSON gene representation.
+This version focuses on the EA mechanics without simulation dependencies.
 """
 
 import json
@@ -12,16 +12,7 @@ from dataclasses import dataclass
 import logging
 
 import config
-from parse_gene import build_body, parse_gene
 from gene_generator import make_core, save_gene
-
-from revolve2.modular_robot import ModularRobot
-from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
-from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom
-from revolve2.experimentation.rng import make_rng_time_seed
-from revolve2.simulators.mujoco_simulator import LocalSimulator
-from revolve2.standards.simulation_parameters import make_standard_batch_parameters
-from revolve2.standards import fitness_functions, terrains
 
 
 @dataclass
@@ -36,8 +27,8 @@ class Individual:
             self.id = random.randint(1, 1000000)
 
 
-class JSONGeneEA:
-    """Evolutionary Algorithm for JSON gene representation."""
+class SimpleJSONGeneEA:
+    """Simple Evolutionary Algorithm for JSON gene representation."""
     
     def __init__(self, population_size: int = None, offspring_size: int = None):
         """Initialize the EA with configuration parameters."""
@@ -45,14 +36,11 @@ class JSONGeneEA:
         self.offspring_size = offspring_size or config.OFFSPRING_SIZE
         self.max_modules = config.MAX_NUMBER_OF_MODULES
         self.tournament_size = config.PARENT_TOURNAMENT_SIZE
-        self.function_evaluations = config.FUNCTION_EVALUATIONS
+        self.max_generations = 100  # Simplified termination
         
         self.population: List[Individual] = []
         self.generation = 0
         self.evaluations = 0
-        
-        # Initialize random number generator
-        self.rng = make_rng_time_seed()
         
         # Setup logging
         logging.basicConfig(level=logging.INFO)
@@ -64,7 +52,7 @@ class JSONGeneEA:
         
         for i in range(self.population_size):
             # Generate random gene
-            max_depth = random.randint(2, 5)
+            max_depth = random.randint(2, 4)
             gene_dict = make_core(max_depth)
             gene_dict["id"] = i + 1
             gene_dict["brain"] = {}
@@ -82,56 +70,59 @@ class JSONGeneEA:
             
             count = 0
             for key, value in node.items():
-                if key in ["front", "left", "right", "back"] and "hinge" in str(value):
+                if key in ["front", "left", "right", "back"] and isinstance(value, dict) and "hinge" in value:
                     count += 1  # Count the hinge
-                    if isinstance(value, dict) and "hinge" in value and "brick" in value["hinge"]:
+                    if "brick" in value.get("hinge", {}):
                         count += 1  # Count the brick
                         count += count_recursive(value["hinge"]["brick"])
                 elif isinstance(value, dict):
                     count += count_recursive(value)
             
             return count
-        
-        return count_recursive(gene_dict.get("core", {}))
     
-    def evaluate_individual(self, individual: Individual) -> float:
-        """Evaluate the fitness of an individual."""
+    def calculate_complexity_score(self, gene_dict: Dict[str, Any]) -> float:
+        """Calculate a complexity score based on structure."""
+        def complexity_recursive(node, depth=0):
+            if not isinstance(node, dict) or not node:
+                return 0
+            
+            score = 0
+            for key, value in node.items():
+                if key in ["front", "left", "right", "back"] and isinstance(value, dict) and "hinge" in value:
+                    # Reward for having limbs, but penalize excessive depth
+                    score += max(0, 10 - depth * 2)
+                    if "brick" in value.get("hinge", {}):
+                        score += complexity_recursive(value["hinge"]["brick"], depth + 1)
+                elif isinstance(value, dict):
+                    score += complexity_recursive(value, depth)
+            
+            return score
+        
+        return complexity_recursive(gene_dict.get("core", {}))
+    
+    def evaluate_individual_simple(self, individual: Individual) -> float:
+        """Simple evaluation function based on structure metrics."""
         try:
-            # Build the robot body from the gene
-            body = build_body(individual.gene)
-            
-            # Create brain
-            brain = BrainCpgNetworkNeighborRandom(body=body, rng=self.rng)
-            robot = ModularRobot(body, brain)
-            
-            # Create scene
-            scene = ModularRobotScene(terrain=terrains.flat())
-            scene.add_robot(robot)
-            
-            # Simulate
-            simulator = LocalSimulator(headless=True)
-            scene_states = simulate_scenes(
-                simulator=simulator,
-                batch_parameters=make_standard_batch_parameters(),
-                scenes=scene,
-            )
-            
-            # Calculate fitness (distance traveled)
-            fitness = fitness_functions.xy_displacement(
-                scene_states[0].get_robot_states(robot)[0],
-                scene_states[0].get_robot_states(robot)[-1],
-            )
-            
-            # Penalize for having too many modules
             module_count = self.count_modules(individual.gene)
-            if module_count > self.max_modules:
-                fitness *= 0.5  # Reduce fitness by half for oversized robots
+            complexity = self.calculate_complexity_score(individual.gene)
             
-            return fitness
+            # Balance between having modules and not being too complex
+            if module_count == 0:
+                return 0.0
+            
+            # Fitness based on complexity but penalize excessive modules
+            fitness = complexity
+            if module_count > self.max_modules:
+                fitness *= 0.1  # Heavy penalty for oversized robots
+            
+            # Add some randomness to simulate environmental variation
+            fitness += random.gauss(0, 5)
+            
+            return max(0, fitness)
             
         except Exception as e:
             self.logger.warning(f"Error evaluating individual {individual.id}: {str(e)}")
-            return -1000.0  # Very low fitness for invalid individuals
+            return 0.0
     
     def evaluate_population(self) -> None:
         """Evaluate all individuals in the population."""
@@ -139,7 +130,7 @@ class JSONGeneEA:
         
         for individual in self.population:
             if individual.fitness == -float('inf'):  # Only evaluate if not already evaluated
-                individual.fitness = self.evaluate_individual(individual)
+                individual.fitness = self.evaluate_individual_simple(individual)
                 self.evaluations += 1
         
         # Sort population by fitness (descending)
@@ -165,7 +156,7 @@ class JSONGeneEA:
         mutated = copy.deepcopy(gene_dict)
         
         def mutate_recursive(node, depth=0):
-            if not isinstance(node, dict) or depth > 6:  # Limit depth to prevent infinite growth
+            if not isinstance(node, dict) or depth > 5:  # Limit depth
                 return node
             
             for key, value in list(node.items()):
@@ -173,12 +164,12 @@ class JSONGeneEA:
                     if random.random() < mutation_rate:
                         # Mutation operations
                         mutation_type = random.choice([
-                            "add_hinge", "remove_hinge", "modify_existing", "swap_sides"
+                            "add_hinge", "remove_hinge", "modify_existing"
                         ])
                         
                         if mutation_type == "add_hinge" and (not value or value == {}):
                             # Add a new hinge+brick structure
-                            max_depth = random.randint(1, 3)
+                            max_depth = random.randint(1, 2)
                             from gene_generator import make_brick
                             node[key] = {
                                 "hinge": {
@@ -195,13 +186,6 @@ class JSONGeneEA:
                             # Recursively mutate the brick structure
                             if "brick" in value["hinge"]:
                                 mutate_recursive(value["hinge"]["brick"], depth + 1)
-                        
-                        elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
-                            # Swap with another side
-                            other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
-                            other_key = random.choice(other_sides)
-                            if other_key in node:
-                                node[key], node[other_key] = node[other_key], node[key]
                     
                     elif isinstance(value, dict):
                         mutate_recursive(value, depth + 1)
@@ -215,59 +199,18 @@ class JSONGeneEA:
         return mutated
     
     def crossover_genes(self, parent1: Individual, parent2: Individual) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """Perform crossover between two parent genes."""
-        
-        def get_subtrees(node, path=""):
-            """Get all subtrees with their paths."""
-            subtrees = []
-            if not isinstance(node, dict):
-                return subtrees
-            
-            for key, value in node.items():
-                if key in ["front", "left", "right", "back"] and isinstance(value, dict) and "hinge" in value:
-                    current_path = f"{path}.{key}" if path else key
-                    subtrees.append((current_path, value))
-                    if "brick" in value.get("hinge", {}):
-                        subtrees.extend(get_subtrees(value["hinge"]["brick"], current_path))
-                elif isinstance(value, dict):
-                    subtrees.extend(get_subtrees(value, path))
-            
-            return subtrees
-        
-        # Create offspring as copies of parents
+        """Perform single-point crossover between two parent genes."""
         offspring1 = copy.deepcopy(parent1.gene)
         offspring2 = copy.deepcopy(parent2.gene)
         
-        # Get subtrees from both parents
-        subtrees1 = get_subtrees(parent1.gene.get("core", {}))
-        subtrees2 = get_subtrees(parent2.gene.get("core", {}))
-        
-        if subtrees1 and subtrees2:
-            # Select random subtrees to swap
-            path1, subtree1 = random.choice(subtrees1)
-            path2, subtree2 = random.choice(subtrees2)
+        # Simple crossover: swap random limbs between parents
+        if "core" in offspring1 and "core" in offspring2:
+            limbs = ["front", "left", "right", "back"]
+            swap_limb = random.choice(limbs)
             
-            # Function to set value at path
-            def set_at_path(gene_dict, path, value):
-                keys = path.split('.')
-                current = gene_dict["core"]
-                
-                for key in keys[:-1]:
-                    if key not in current:
-                        return False
-                    if "hinge" in current[key] and "brick" in current[key]["hinge"]:
-                        current = current[key]["hinge"]["brick"]
-                    else:
-                        current = current[key]
-                
-                if keys[-1] in current:
-                    current[keys[-1]] = value
-                    return True
-                return False
-            
-            # Perform crossover by swapping subtrees
-            set_at_path(offspring1, path1, subtree2)
-            set_at_path(offspring2, path2, subtree1)
+            if swap_limb in offspring1["core"] and swap_limb in offspring2["core"]:
+                offspring1["core"][swap_limb], offspring2["core"][swap_limb] = \
+                    offspring2["core"][swap_limb], offspring1["core"][swap_limb]
         
         return offspring1, offspring2
     
@@ -307,13 +250,13 @@ class JSONGeneEA:
     
     def survival_selection(self, offspring: List[Individual]) -> None:
         """Combine population and offspring, then select survivors."""
-        # Combine population and offspring
-        combined = self.population + offspring
-        
         # Evaluate offspring
         for individual in offspring:
-            individual.fitness = self.evaluate_individual(individual)
+            individual.fitness = self.evaluate_individual_simple(individual)
             self.evaluations += 1
+        
+        # Combine population and offspring
+        combined = self.population + offspring
         
         # Sort by fitness (descending) and keep the best
         combined.sort(key=lambda x: x.fitness, reverse=True)
@@ -332,6 +275,22 @@ class JSONGeneEA:
         
         self.logger.info(f"Best individual saved to {filename} (fitness: {best.fitness:.3f})")
     
+    def get_statistics(self) -> Dict[str, float]:
+        """Get population statistics."""
+        if not self.population:
+            return {}
+        
+        fitnesses = [ind.fitness for ind in self.population]
+        modules = [self.count_modules(ind.gene) for ind in self.population]
+        
+        return {
+            "best_fitness": max(fitnesses),
+            "avg_fitness": sum(fitnesses) / len(fitnesses),
+            "worst_fitness": min(fitnesses),
+            "avg_modules": sum(modules) / len(modules),
+            "best_modules": modules[0]  # Since population is sorted by fitness
+        }
+    
     def run(self) -> Individual:
         """Run the evolutionary algorithm."""
         self.logger.info("Starting evolutionary algorithm")
@@ -343,8 +302,8 @@ class JSONGeneEA:
         self.evaluate_population()
         
         # Evolution loop
-        while self.evaluations < self.function_evaluations:
-            self.generation += 1
+        for generation in range(self.max_generations):
+            self.generation = generation + 1
             
             # Create offspring
             offspring = self.create_offspring()
@@ -352,35 +311,51 @@ class JSONGeneEA:
             # Survival selection
             self.survival_selection(offspring)
             
-            # Log progress
+            # Log progress and save best
             if self.generation % 10 == 0:
+                stats = self.get_statistics()
+                self.logger.info(f"Gen {self.generation}: "
+                               f"Best={stats['best_fitness']:.1f}, "
+                               f"Avg={stats['avg_fitness']:.1f}, "
+                               f"Modules={stats['best_modules']:.0f}")
                 self.save_best_individual()
-            
-            # Check termination condition
-            if self.evaluations >= self.function_evaluations:
-                break
         
-        self.logger.info(f"Evolution completed after {self.generation} generations and {self.evaluations} evaluations")
+        self.logger.info(f"Evolution completed after {self.generation} generations")
         
         # Save final best individual
-        self.save_best_individual("final_best_individual.json")
+        self.save_best_individual("final_best_simple.json")
         
         return self.population[0]
 
 
-def main():
-    """Main function to run the evolutionary algorithm."""
-    ea = JSONGeneEA()
+def demo_simple_ea():
+    """Demo function to test the simple EA."""
+    print("Running Simple JSON Gene EA Demo")
+    print("=" * 40)
+    
+    # Create and run EA with smaller parameters for demo
+    ea = SimpleJSONGeneEA(population_size=20, offspring_size=10)
+    ea.max_generations = 50
+    
     best_individual = ea.run()
     
     print(f"\nBest individual found:")
     print(f"Fitness: {best_individual.fitness:.3f}")
     print(f"Modules: {ea.count_modules(best_individual.gene)}")
     
-    # Print gene structure
-    print("\nGene structure:")
-    parse_gene(best_individual.gene)
+    # Print final statistics
+    stats = ea.get_statistics()
+    print(f"\nFinal Statistics:")
+    for key, value in stats.items():
+        print(f"  {key}: {value:.2f}")
+    
+    # Show gene structure (simplified)
+    print(f"\nBest gene structure preview:")
+    core = best_individual.gene.get("core", {})
+    for limb in ["front", "left", "right", "back"]:
+        has_limb = limb in core and core[limb] and "hinge" in str(core[limb])
+        print(f"  {limb}: {'✓' if has_limb else '✗'}")
 
 
 if __name__ == "__main__":
-    main()
+    demo_simple_ea()
