@@ -12,9 +12,12 @@ Files and their contents
 - [parse_gene](./parse_gene.py)
 
 # To do
-- parse gene
-  - bfs generation 
+- Gene generator
+  - bfs generation > 
+    - For å generere lemmene
   - max parts
-  - symmetri
+  - symmetry ✅
   - orientation
+    - revisit symmetry
 - brain representation
+  - Emma ser mer implementasjonen i kveld

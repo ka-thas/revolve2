@@ -76,7 +76,8 @@ def parse_gene(node, depth=0):
 
 if __name__ == "__main__":
     
-    with open("./genes_wardrobe/gene_3.json", "r") as f:
+    nr = input("gene nr.")
+    with open(f"./genes_wardrobe/gene_{nr}.json", "r") as f:
         gene = json.load(f)
     
     print("Gene Structure:")

@@ -13,9 +13,9 @@ class Gene_Generator:
         """Return a random orientation value."""
         return {"orientation": 1}
 
-    def make_brick(self, depth, max_depth):
+    def make_brick(self):
         """Create a Brick with random children (front, left, right)."""
-        if depth >= max_depth:
+        if self.brick_count >= self.max_bricks:
             return {}  # stop recursion
 
         brick = {}
@@ -24,7 +24,7 @@ class Gene_Generator:
                 random.random() < config.CHANCETOPLACEBRICK
             ):  # chance to place hinge from config
                 brick[side] = {
-                    "hinge": {"brick": self.make_brick(depth + 1, max_depth)}
+                    "hinge": {"brick": self.make_brick()}
                 }
             else:
                 brick[side] = {}
@@ -80,14 +80,14 @@ class Gene_Generator:
                 self.spine_symmetri(spinebrick["back"]["hinge"]["brick"])
         return
 
-    def make_core(self, max_depth=5):
+    def make_core(self):
         """Create a Core with random children (front, left, right, back)."""
         core = {}
         for side in ["front", "right", "back"]:
             if (
                 random.random() < config.CHANCETOPLACECORE
             ):  # chance to place hinge from config
-                core[side] = {"hinge": {"brick": self.make_brick(1, max_depth)}}
+                core[side] = {"hinge": {"brick": self.make_brick()}}
             else:
                 core[side] = {}
 
@@ -112,6 +112,6 @@ if __name__ == "__main__":
     # Generate 5 random genes and save them
     for i in range(5):
         print(i)
-        gene = generator.make_core(max_depth=3)  # deeper robots if you want
+        gene = generator.make_core()  # deeper robots if you want
         generator.save_gene(gene, f"./genes_wardrobe/gene_{i}.json")
         print(f"Saved gene_{i}.json")
