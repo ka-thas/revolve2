@@ -1,0 +1,60 @@
+{
+    "core": {
+        "front": {
+            "hinge": {
+                "brick": {
+                    "front": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            }
+                        }
+                    },
+                    "left": {},
+                    "right": {}
+                }
+            }
+        },
+        "right": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "left": {},
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "back": {},
+        "left": {
+            "hinge": {
+                "brick": {
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "left": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

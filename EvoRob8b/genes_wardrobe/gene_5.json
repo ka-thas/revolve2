@@ -1,0 +1,44 @@
+{
+    "core": {
+        "front": {
+            "hinge": {
+                "brick": {
+                    "front": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                },
+                                "right": {
+                                    "hinge": {
+                                        "brick": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "left": {
+                        "hinge": {
+                            "brick": {}
+                        }
+                    },
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "right": {},
+        "back": {},
+        "left": {}
+    }
+}
