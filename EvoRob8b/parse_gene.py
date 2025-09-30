@@ -1,5 +1,5 @@
 """ 
-
+Takes JSON representation of Gene and renders in 3D
 """
 
 import logging
