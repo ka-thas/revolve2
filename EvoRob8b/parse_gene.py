@@ -1,3 +1,7 @@
+""" 
+
+"""
+
 import logging
 import pickle
 from typing import Any
@@ -72,7 +76,7 @@ def parse_gene(node, depth=0):
 
 if __name__ == "__main__":
     
-    with open("./testgene.json", "r") as f:
+    with open("./test_best.json", "r") as f:
         gene = json.load(f)
     
     print("Gene Structure:")
