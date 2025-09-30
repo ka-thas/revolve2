@@ -10,3 +10,11 @@ Files and their contents
 
 - [gene_generator](./gene_generator.py)
 - [parse_gene](./parse_gene.py)
+
+# To do
+- parse gene
+  - bfs generation 
+  - max parts
+  - symmetri
+  - orientation
+- brain representation
