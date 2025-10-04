@@ -62,7 +62,7 @@ class Gene_Generator:
         return
 
     # optional
-    def spine_symmetri(self, spinebrick):
+    def spine_symmetry(self, spinebrick):
         spinebrick["left"] = {}
 
         if spinebrick["right"]:
@@ -72,13 +72,13 @@ class Gene_Generator:
             self.mirror_right(new_left_brick, new_right_brick)
 
         if spinebrick["front"]:
-            self.spine_symmetri(spinebrick["front"]["hinge"]["brick"])
+            self.spine_symmetry(spinebrick["front"]["hinge"]["brick"])
 
         if "back" in spinebrick.keys():
             print("back")
             if spinebrick["back"]:
                 print("hinge")
-                self.spine_symmetri(spinebrick["back"]["hinge"]["brick"])
+                self.spine_symmetry(spinebrick["back"]["hinge"]["brick"])
         return
 
     def make_core(self):
