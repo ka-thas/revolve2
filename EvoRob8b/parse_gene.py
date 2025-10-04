@@ -1,15 +1,21 @@
 """ 
+build_body(gene)
+    Takes JSON gene and renders in 3D
 
+json needs to be saved in ./genes_warderobe/gene_[i].json
 """
 
 import logging
 import pickle
 from typing import Any
 
-import config
 import multineat
 import numpy as np
 import numpy.typing as npt
+import json
+import config
+
+
 
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
@@ -19,9 +25,6 @@ from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom
 from revolve2.experimentation.rng import make_rng_time_seed
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
-
-import json
-
 
 def build_body(gene):
     body = BodyV1()
@@ -63,7 +66,7 @@ def build_body_recursive(body, node):
 
 
 
-def parse_gene(node, depth=0):
+def print_json_gene(node, depth=0):
     """Recursively parses the gene structure and prints it."""
     indent = "  " * depth
     if not isinstance(node, dict) or not node:  # leaf node
@@ -71,18 +74,19 @@ def parse_gene(node, depth=0):
     
     for key, value in node.items():
         print(f"{indent}- {key}")
-        parse_gene(value, depth + 1)
+        print_json_gene(value, depth + 1)
 
 
 if __name__ == "__main__":
     
-    with open("./genes_wardrobe/gene_3.json", "r") as f:
+    nr = input("gene nr.")
+    with open(f"./genes_wardrobe/gene_{nr}.json", "r") as f:
         gene = json.load(f)
     
     print("Gene Structure:")
+    print_json_gene(gene)
 
-    parse_gene(gene)
-    body = build_body(gene)
+    body = build_body(gene) # Most important function here
     
     rng = make_rng_time_seed()
     brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)

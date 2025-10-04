@@ -11,10 +11,16 @@ Files and their contents
 - [gene_generator](./gene_generator.py)
 - [parse_gene](./parse_gene.py)
 
-# To do
-- parse gene
-  - bfs generation 
-  - max parts
-  - symmetri
-  - orientation
-- brain representation
+
+## To do
+ - [ ] Gene generator
+   - [ ] bfs generation > vebjørn
+     - for å generere lemmene
+   - [x] max parts 
+   - [x] symmetry 
+   - [ ] orientation
+     - [ ] revisit symmetry
+
+ - [ ] brain representation
+   - Emma ser mer implementasjonen i kveld
+
