@@ -14,18 +14,19 @@ class Gene_Generator:
         return {"orientation": 1}
 
     def make_brick(self):
-        """Create a Brick with random children (front, left, right)."""
-        if self.brick_count >= self.max_bricks:
-            return {}  # stop recursion
-
+        """Create a Brick with random children (front, left, right)."""      
         brick = {}
         for side in ["front", "left", "right"]:
             if (
                 random.random() < config.CHANCETOPLACEBRICK
             ):  # chance to place hinge from config
-                brick[side] = {
-                    "hinge": {"brick": self.make_brick()}
-                }
+                if self.brick_count >= 20:
+                    brick[side] = {}
+                else:
+                    brick[side] = {
+                        "hinge": {"brick": self.make_brick()}
+                    }
+                self.brick_count += 1
             else:
                 brick[side] = {}
         return brick
@@ -83,21 +84,36 @@ class Gene_Generator:
     def make_core(self):
         """Create a Core with random children (front, left, right, back)."""
         core = {}
-        for side in ["front", "right", "back"]:
-            if (
-                random.random() < config.CHANCETOPLACECORE
-            ):  # chance to place hinge from config
-                core[side] = {"hinge": {"brick": self.make_brick()}}
+        module = self.body.core_v1
+        self.queue = [(module, core, True)]
+        while self.queue:
+            module, current_module, spine = self.queue.pop(0)
+
+            if spine:
+                sides = ["front", "right", "back"]
             else:
-                core[side] = {}
+                sides = ["front", "left", "right"]
+            for side in sides:
+                grid_position = self.body.grid_position()
+                if grid_position in self.grid or len(self.grid) > config.MAX_BRICKS:
+                    core[side] = {}
+                    continue
 
-        # mirror right
-        left = {}
-        core["left"] = left
+                #can have up to 38 bricks with a limit of 20. because it doesnt count the doubling when its copied from right to left. other than the first time
+                # Might make the body wider than longer
+                if spine and side == "right":
+                    self.brick_count += 2
+                else:
+                    self.brick_count +=1
+                self.grid.append(grid_position)
 
-        self.spine_symmetri(core)
-
-        return {"core": core}
+                new_module = {}
+                current_module[side] = {"hinge": {"brick": new_module}}
+                
+                if side == "front" or side == "back" and spine == True:
+                    self.queue.append((new_module, True))
+                else:
+                    self.queue.append((new_module, False))
 
     def save_gene(self, gene, filename):
         with open(filename, "w") as f:
