@@ -40,25 +40,30 @@ def build_body_recursive(body, node):
     for key, value in node.items():
         if key == "front":
             if "hinge" in value.keys():
-                body.front = ActiveHingeV1(0.0)
+                print(value)
+                rotation = value["hinge"]["rotation"]
+                body.front = ActiveHingeV1(rotation)
                 body.front.attachment = BrickV1(0.0)
                 build_body_recursive(body.front.attachment, node["front"]["hinge"]["brick"])
 
         if key == "left":
             if "hinge" in value.keys():
-                body.left = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.left = ActiveHingeV1(rotation)
                 body.left.attachment = BrickV1(0.0)
                 build_body_recursive(body.left.attachment, node["left"]["hinge"]["brick"])
         
         if key == "right":
             if "hinge" in value.keys():
-                body.right = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.right = ActiveHingeV1(rotation)
                 body.right.attachment = BrickV1(0.0)
                 build_body_recursive(body.right.attachment, node["right"]["hinge"]["brick"])
 
         if key == "back":
             if "hinge" in value.keys():
-                body.back = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.back = ActiveHingeV1(rotation)
                 body.back.attachment = BrickV1(0.0)
                 build_body_recursive(body.back.attachment, node["back"]["hinge"]["brick"])
     return body
@@ -74,7 +79,8 @@ def print_json_gene(node, depth=0):
     
     for key, value in node.items():
         print(f"{indent}- {key}")
-        print_json_gene(value, depth + 1)
+        if key != "rotation":
+            print_json_gene(value, depth + 1)
 
 
 if __name__ == "__main__":

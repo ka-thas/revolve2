@@ -1,8 +1,9 @@
 import json
 import random
 import uuid
-import config
+import numpy as np
 
+import config
 
 from revolve2.modular_robot.body.v1 import BodyV1, BrickV1, ActiveHingeV1
 from pyrr import Vector3
@@ -50,21 +51,24 @@ class Gene_Generator:
             if key == "front":
                 if "hinge" in value.keys():
                     new_left_brick = {}
-                    left_brick["front"] = {"hinge": {"brick": new_left_brick}}
+                    rotation = right_brick["front"]["hinge"]["rotation"] 
+                    left_brick["front"] = {"hinge": {"brick": new_left_brick, "rotation": rotation + np.pi}}
                     new_right_brick = right_brick["front"]["hinge"]["brick"]
                     self.mirror_right(new_left_brick, new_right_brick)
 
             if key == "left":
                 if "hinge" in value.keys():
+                    rotation = right_brick["left"]["hinge"]["rotation"]
                     new_left_brick = {}
-                    left_brick["right"] = {"hinge": {"brick": new_left_brick}}
+                    left_brick["right"] = {"hinge": {"brick": new_left_brick, "rotation": rotation + np.pi}}
                     new_right_brick = right_brick["left"]["hinge"]["brick"]
                     self.mirror_right(new_left_brick, new_right_brick)
 
             if key == "right":
                 if "hinge" in value.keys():
+                    rotation = right_brick["right"]["hinge"]["rotation"]
                     new_left_brick = {}
-                    left_brick["left"] = {"hinge": {"brick": new_left_brick}}
+                    left_brick["left"] = {"hinge": {"brick": new_left_brick, "rotation": rotation + np.pi}}
                     new_right_brick = right_brick["right"]["hinge"]["brick"]
                     self.mirror_right(new_left_brick, new_right_brick)
 
@@ -76,7 +80,8 @@ class Gene_Generator:
 
         if spinebrick["right"]:
             new_left_brick = {}
-            spinebrick["left"] = {"hinge": {"brick": new_left_brick}}
+            rotation = spinebrick["right"]["hinge"]["rotation"] 
+            spinebrick["left"] = {"hinge": {"brick": new_left_brick, "rotation": rotation + np.pi}}
             new_right_brick = spinebrick["right"]["hinge"]["brick"]
             self.mirror_right(new_left_brick, new_right_brick)
 
@@ -84,7 +89,7 @@ class Gene_Generator:
             self.spine_symmetry(spinebrick["front"]["hinge"]["brick"])
 
         if "back" in spinebrick.keys():
-            if spinebrick["back"]:
+            if spinebrick["back"]: # not empty
                 self.spine_symmetry(spinebrick["back"]["hinge"]["brick"])
         return
 
@@ -109,7 +114,12 @@ class Gene_Generator:
 
                 if random.random() < config.CHANCETOPLACEBRICK and self.brick_count <= config.MAX_BRICKS:
                     new_module = {}
-                    current_module[side] = {"hinge": {"brick": new_module}}
+                    rotation = 0.0
+                    if random.random() < config.CHANCE_TO_ROTATE:
+                        rotation = random.randint(1,3) * np.pi/2
+                    current_module[side] = {"hinge": {"brick": new_module, "rotation": rotation}
+                                            
+                    }
                 else:
                     current_module[side] = {}
                     continue

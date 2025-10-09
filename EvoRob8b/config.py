@@ -14,7 +14,7 @@ PARENT_SELECT_STRATEGY = 'tournament'
 
 #gene generator
 CHANCETOPLACECORE = 0.6 # Chance to place a block for each possible location.
-CHANCETOPLACEBRICK = 0.3
-CHANCE_TO_ROTATE = 0.5
-MAX_BRICKS = 20
+CHANCETOPLACEBRICK = 0.5
+CHANCE_TO_ROTATE = 0.25
+MAX_BRICKS = 10
 
