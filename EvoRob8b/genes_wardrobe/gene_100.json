@@ -1,4 +1,4 @@
-{ "id": 1,
+{ "id": 90,
 "brain": {},
     "core": {
         "front": {
@@ -7,10 +7,10 @@
                     "front": {
                         "hinge": {
                             "brick": {},
-                            "orientation": {}
+                            "orientation": 90
                     }
                 },
-                "orientation": {}
+                "orientation": 0
                 }
             }
         },
@@ -20,10 +20,10 @@
                     "front": {
                         "hinge": {
                             "brick": {},
-                            "orientation": {}
+                            "orientation": 0
                     }
                 },
-                "orientation": {}
+                "orientation": 0
                 }
             }
         },
@@ -33,10 +33,10 @@
                     "front": {
                         "hinge": {
                             "brick": {},
-                            "orientation": {}
+                            "orientation": 90
                     }
                 },
-                "orientation": {}
+                "orientation": 90
                 }
             }
         },
@@ -49,14 +49,14 @@
                     "right": {
                         "hinge": {
                             "brick": {},
-                            "orientation": {}
+                            "orientation": 90
                     }
                 },
-                "orientation": {}},
-                            "orientation": {}
+                "orientation": 0},
+                            "orientation": 0
                     }
                 },
-                "orientation": {}
+                "orientation": 0
                 }
             }
         }
