@@ -4,15 +4,24 @@ import uuid
 import config
 
 
+from revolve2.modular_robot.body.v1 import BodyV1, BrickV1, ActiveHingeV1
+from pyrr import Vector3
+
 class Gene_Generator:
+    queue: list
+    grid: list
+    body: BodyV1
     def __init__(self):
-        self.max_bricks = config.MAX_BRICKS
+        self.grid = [Vector3([0, 0, 0])]
+        self.body = BodyV1()
         self.brick_count = 0
+        self.queue = []
 
     def random_orientation(self):
         """Return a random orientation value."""
         return {"orientation": 1}
 
+    #for depth first
     def make_brick(self):
         """Create a Brick with random children (front, left, right)."""      
         brick = {}
@@ -61,7 +70,7 @@ class Gene_Generator:
 
         return
 
-    # optional
+    # no longer optional
     def spine_symmetry(self, spinebrick):
         spinebrick["left"] = {}
 
@@ -75,45 +84,45 @@ class Gene_Generator:
             self.spine_symmetry(spinebrick["front"]["hinge"]["brick"])
 
         if "back" in spinebrick.keys():
-            print("back")
             if spinebrick["back"]:
-                print("hinge")
                 self.spine_symmetry(spinebrick["back"]["hinge"]["brick"])
         return
 
     def make_core(self):
         """Create a Core with random children (front, left, right, back)."""
         core = {}
-        module = self.body.core_v1
-        self.queue = [(module, core, True)]
+        self.queue = [(core, True)]
         while self.queue:
-            module, current_module, spine = self.queue.pop(0)
+            current_module, spine = self.queue.pop(0)
 
             if spine:
                 sides = ["front", "right", "back"]
             else:
                 sides = ["front", "left", "right"]
             for side in sides:
-                grid_position = self.body.grid_position()
-                if grid_position in self.grid or len(self.grid) > config.MAX_BRICKS:
-                    core[side] = {}
-                    continue
-
                 #can have up to 38 bricks with a limit of 20. because it doesnt count the doubling when its copied from right to left. other than the first time
                 # Might make the body wider than longer
                 if spine and side == "right":
                     self.brick_count += 2
                 else:
                     self.brick_count +=1
-                self.grid.append(grid_position)
 
-                new_module = {}
-                current_module[side] = {"hinge": {"brick": new_module}}
-                
+                if random.random() < config.CHANCETOPLACEBRICK and self.brick_count <= config.MAX_BRICKS:
+                    new_module = {}
+                    current_module[side] = {"hinge": {"brick": new_module}}
+                else:
+                    current_module[side] = {}
+                    continue
                 if side == "front" or side == "back" and spine == True:
                     self.queue.append((new_module, True))
                 else:
                     self.queue.append((new_module, False))
+        
+        
+
+        self.spine_symmetry(core)
+        self.brick_count = 0
+        return {"core" : core}
 
     def save_gene(self, gene, filename):
         with open(filename, "w") as f:
@@ -121,12 +130,12 @@ class Gene_Generator:
 
 
 if __name__ == "__main__":
-    random.seed(743)
+    random.seed(7449)
 
     generator = Gene_Generator()
 
     # Generate 5 random genes and save them
-    for i in range(5):
+    for i in range(6):
         print(i)
         gene = generator.make_core()  # deeper robots if you want
         generator.save_gene(gene, f"./genes_wardrobe/gene_{i}.json")
