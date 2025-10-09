@@ -1,6 +1,7 @@
 
 import logging
 import pickle
+import math
 from typing import Any
 
 import config
@@ -16,6 +17,12 @@ from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom, acti
 from revolve2.experimentation.rng import make_rng_time_seed
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
+from revolve2.modular_robot.brain.cpg import (
+    BrainCpgNetworkStatic,
+    active_hinges_to_cpg_network_structure_neighbor,
+)
+
+
 
 
 from revolve2.modular_robot.body.base import ActiveHinge, Body
@@ -35,6 +42,46 @@ class Brain_cpg():
         self.brain_dict = {}
 
 # From Ege
+
+    def initialize_brain(self, body):
+
+        active_hinges = body.find_modules_of_type(ActiveHingeV1)
+        (
+            cpg_network_structure,
+            output_mapping,
+        ) = active_hinges_to_cpg_network_structure_neighbor(active_hinges)
+
+        params = []
+
+        # First, append the per-hinge base parameter (index 0 from each key)
+        for active_hinge in active_hinges:
+            grid_position = body.grid_position(active_hinge)
+            brain_key = str(int(grid_position[0])) + "x" + str(int(grid_position[1]))
+            params.append(self.brain[brain_key][0])
+
+        # Then append parameters for every connection in the network
+        for pair in cpg_network_structure.connections:
+            low_active_hinge = active_hinges[pair.cpg_index_lowest.index]
+            high_active_hinge = active_hinges[pair.cpg_index_highest.index]
+
+            low_grid_position = body.grid_position(low_active_hinge)
+            high_grid_position = body.grid_position(high_active_hinge)
+
+            # Determine which index of the source hinge's parameter array
+            # encodes the coupling parameter between these two positions
+            low_brain_key = str(int(low_grid_position[0])) + "x" + str(int(low_grid_position[1]))
+            array_index = self.grid_positions_to_array_number(low_grid_position, high_grid_position)
+            params.append(self.brain[low_brain_key][array_index])
+
+        brain = BrainCpgNetworkStatic.uniform_from_params(
+            params=params,
+            cpg_network_structure=cpg_network_structure,
+            initial_state_uniform=0.5 * math.sqrt(2),
+            output_mapping=output_mapping,
+        )
+        return brain
+
+
 
     def update_brain_parameters(self, body, rng):
 
