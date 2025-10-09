@@ -3,38 +3,93 @@
         "front": {
             "hinge": {
                 "brick": {
-                    "front": {},
-                    "left": {},
-                    "right": {}
+                    "front": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "back": {},
+                                "left": {}
+                            }
+                        }
+                    },
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            }
+                        }
+                    },
+                    "back": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "back": {},
+                                "left": {}
+                            }
+                        }
+                    },
+                    "left": {
+                        "hinge": {
+                            "brick": {}
+                        }
+                    }
                 }
             }
         },
-        "right": {},
-        "back": {
+        "right": {
             "hinge": {
                 "brick": {
                     "front": {
                         "hinge": {
                             "brick": {
                                 "front": {},
-                                "left": {
-                                    "hinge": {
-                                        "brick": {}
-                                    }
-                                },
-                                "right": {
-                                    "hinge": {
-                                        "brick": {}
-                                    }
-                                }
+                                "right": {},
+                                "back": {}
                             }
                         }
                     },
-                    "left": {},
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            }
+                        }
+                    },
                     "right": {}
                 }
             }
         },
-        "left": {}
+        "back": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "right": {},
+                    "back": {},
+                    "left": {}
+                }
+            }
+        },
+        "left": {
+            "hinge": {
+                "brick": {
+                    "front": {
+                        "hinge": {
+                            "brick": {}
+                        }
+                    },
+                    "right": {
+                        "hinge": {
+                            "brick": {}
+                        }
+                    }
+                }
+            }
+        }
     }
 }
