@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import logging
 
 import config
-from parse_gene import build_body, parse_gene
+from parse_gene import build_body, print_json_gene
 from gene_generator import Gene_Generator
 
 from revolve2.modular_robot import ModularRobot
@@ -43,13 +43,15 @@ class JSONGeneEA:
         """Initialize the EA with configuration parameters."""
         self.population_size = population_size or config.POPULATION_SIZE
         self.offspring_size = offspring_size or config.OFFSPRING_SIZE
-        self.max_modules = config.MAX_NUMBER_OF_MODULES
+        self.max_modules = config.MAX_BRICKS
         self.tournament_size = config.PARENT_TOURNAMENT_SIZE
         self.function_evaluations = config.FUNCTION_EVALUATIONS
-        
+        self.mutation_rate = config.MUTATION_RATE
         self.population: List[Individual] = []
         self.generation = 0
         self.evaluations = 0
+
+        self.generator = Gene_Generator()
         
         # Initialize random number generator
         self.rng = make_rng_time_seed()
@@ -65,8 +67,7 @@ class JSONGeneEA:
         for i in range(self.population_size):
             # Generate random gene
             # gene_generator was refactored into a class - use it here
-            generator = Gene_Generator()
-            gene_dict = generator.make_core()
+            gene_dict = self.generator.make_core()
             gene_dict["id"] = i + 1
             gene_dict["brain"] = {}
             
@@ -117,16 +118,23 @@ class JSONGeneEA:
                 scenes=scene,
             )
             
-            # Calculate fitness (distance traveled)
+            # Get the state at the beginning and end of the simulation.
+            scene_state_begin = scene_states[0]
+            scene_state_end = scene_states[-1]
+
+            # Retrieve the states of the modular robot.
+            robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(robot)
+            robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
+
+            # Calculate the xy displacement (fitness) of the robot.
             fitness = fitness_functions.xy_displacement(
-                scene_states[0].get_robot_states(robot)[0],
-                scene_states[0].get_robot_states(robot)[-1],
+                robot_state_begin, robot_state_end
             )
             
             # Penalize for having too many modules
             module_count = self.count_modules(individual.gene)
             if module_count > self.max_modules:
-                fitness *= 0.5  # Reduce fitness by half for oversized robots
+                fitness *= 1+((self.max_modules-module_count)*0.02)
             
             return fitness
             
@@ -147,7 +155,7 @@ class JSONGeneEA:
         self.population.sort(key=lambda x: x.fitness, reverse=True)
         
         best_fitness = self.population[0].fitness
-        avg_fitness = sum(ind.fitness for ind in self.population) / len(self.population)
+        avg_fitness = sum(individual.fitness for individual in self.population) / len(self.population)
         
         self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Avg={avg_fitness:.3f}")
     
@@ -161,7 +169,7 @@ class JSONGeneEA:
         # Return the best individual from the tournament
         return max(tournament, key=lambda x: x.fitness)
     
-    def mutate_gene(self, gene_dict: Dict[str, Any], mutation_rate: float = 0.3) -> Dict[str, Any]:
+    def mutate_gene(self, gene_dict: Dict[str, Any]) -> Dict[str, Any]:
         """Mutate a gene with various mutation operators."""
         mutated = copy.deepcopy(gene_dict)
         
@@ -170,21 +178,22 @@ class JSONGeneEA:
                 return node
             
             for key, value in list(node.items()):
-                if key in ["front", "left", "right", "back"]:
-                    if random.random() < mutation_rate:
+                if key in ["front", "right", "back"]:
+                    if random.random() < self.mutation_rate:
+                        pmutate = 0.1+0.03*depth
+                        pskip = 0.7-0.09*depth
                         # Mutation operations
-                        mutation_type = random.choice([
+                        mutation_type = np.random.choice([
                             "add_hinge", "remove_hinge", "modify_existing", "swap_sides"
-                        ])
-                        
+                        ], p=[pmutate, pmutate, pskip, pmutate])
+                        # TODO add orientation fix
                         if mutation_type == "add_hinge" and (not value or value == {}):
                             # Add a new hinge+brick structure
                             max_depth = random.randint(1, 3)
                             # Use the Gene_Generator class to create a brick subtree
-                            generator = Gene_Generator()
                             node[key] = {
                                 "hinge": {
-                                    "brick": generator.make_brick(),
+                                    "brick": self.generator.make_brick(),
                                     "orientation": {}
                                 }
                             }
@@ -210,10 +219,11 @@ class JSONGeneEA:
             
             return node
         
-        # Mutate the core
+        # Mutate the core and ensure symmetry
         if "core" in mutated:
             mutate_recursive(mutated["core"])
-        
+            self.generator.spine_symmetry(mutated["core"])
+
         return mutated
     
     def crossover_genes(self, parent1: Individual, parent2: Individual) -> Tuple[Dict[str, Any], Dict[str, Any]]:
@@ -283,7 +293,7 @@ class JSONGeneEA:
             parent2 = self.tournament_selection()
             
             # Crossover
-            if random.random() < 0.8:  # 80% crossover rate
+            if random.random() < config.CROSSOVER_RATE:
                 child1_gene, child2_gene = self.crossover_genes(parent1, parent2)
             else:
                 child1_gene = copy.deepcopy(parent1.gene)
@@ -327,7 +337,7 @@ class JSONGeneEA:
             return
         
         best = self.population[0]
-        filename = filename or f"best_individual_gen_{self.generation}.json"
+        filename = filename or config.LOG_FOLDER+f"best_individual_gen_{self.generation}.json"
         
         with open(filename, 'w') as f:
             json.dump(best.gene, f, indent=2)
@@ -337,33 +347,33 @@ class JSONGeneEA:
     def run(self) -> Individual:
         """Run the evolutionary algorithm."""
         self.logger.info("Starting evolutionary algorithm")
-        
+        print(1)
         # Initialize population
         self.initialize_population()
-        
+        print(2)
         # Evaluate initial population
         self.evaluate_population()
-        
+        print(3)
         # Evolution loop
         while self.evaluations < self.function_evaluations:
             self.generation += 1
-            
+            print(4)
             # Create offspring
             offspring = self.create_offspring()
-            
+            print(5)
             # Survival selection
             self.survival_selection(offspring)
-            
+            print(6)
             # Log progress
             if self.generation % 10 == 0:
                 self.save_best_individual()
-            
+            print(7)
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
-        
+            print(8)
         self.logger.info(f"Evolution completed after {self.generation} generations and {self.evaluations} evaluations")
-        
+        print(9)
         # Save final best individual
         self.save_best_individual("final_best_individual.json")
         
@@ -381,7 +391,7 @@ def main():
     
     # Print gene structure
     print("\nGene structure:")
-    parse_gene(best_individual.gene)
+    print_json_gene(best_individual.gene)
 
 
 if __name__ == "__main__":

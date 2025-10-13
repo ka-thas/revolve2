@@ -40,7 +40,6 @@ def build_body_recursive(body, node):
     for key, value in node.items():
         if key == "front":
             if "hinge" in value.keys():
-                print(value)
                 rotation = value["hinge"]["rotation"]
                 body.front = ActiveHingeV1(rotation)
                 body.front.attachment = BrickV1(0.0)
