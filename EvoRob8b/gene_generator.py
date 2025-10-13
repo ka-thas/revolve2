@@ -4,7 +4,6 @@ import uuid
 import numpy as np
 import config
 
-
 class Gene_Generator:
     queue: list
     def __init__(self):
@@ -12,7 +11,9 @@ class Gene_Generator:
         self.queue = []
 
     def make_brick(self):
-        """Create a Brick with random children (front, left, right)."""      
+        """Create a Brick with random children (front, left, right).
+        DFS generation
+        """      
         brick = {}
         for side in ["front", "left", "right"]:
             if (
@@ -65,6 +66,11 @@ class Gene_Generator:
     # recursively goes through spine mirroring the right side !!based on perspective.
     # meaning from core it mirrors rightside on the front and left side on the back
     def spine_symmetry(self, spinebrick):
+        """
+        spinebrick: inserted with core. and recursively called using spinebrick
+        
+        output: none but changes the input dict
+        """
         spinebrick["left"] = {}
 
         if spinebrick["right"]:
