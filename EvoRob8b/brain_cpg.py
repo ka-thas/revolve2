@@ -33,9 +33,6 @@ from revolve2.modular_robot.brain.cpg._brain_cpg_network_neighbor import BrainCp
 
 class Brain_cpg():
 
-
-
-
     def __init__(self, body):
         self.body = body
         self.brain: dict

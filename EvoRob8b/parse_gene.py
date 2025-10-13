@@ -14,6 +14,7 @@ import numpy as np
 import numpy.typing as npt
 import json
 import config
+from brain_cpg import Brain_cpg
 
 
 
@@ -89,7 +90,8 @@ if __name__ == "__main__":
     body = build_body(gene) # Most important function here
     
     rng = make_rng_time_seed()
-    brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
+    brain = Brain_cpg(body)
+    brain.initialize_brain(body)
     robot = ModularRobot(body, brain)
 
     # Create a scene.
