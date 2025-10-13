@@ -99,7 +99,7 @@ if __name__ == "__main__":
     robot = ModularRobot(body, brain)
 
     # Create a scene.
-    scene = ModularRobotScene(terrain=terrains.crater([4,4], 0.04, 3))
+    scene = ModularRobotScene(terrain=terrains.flat())
     scene.add_robot(robot)
 
     # Create a simulator.

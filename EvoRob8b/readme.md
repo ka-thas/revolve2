@@ -13,14 +13,18 @@ Files and their contents
 
 
 ## To do
- - [ ] Gene generator
-   - [ ] bfs generation > vebjørn
+ - [x] Gene generator
+   - [x] bfs generation > vebjørn
      - for å generere lemmene
    - [x] max parts 
    - [x] symmetry 
-   - [ ] orientation
-     - [ ] revisit symmetry
+   - [x] orientation
+     - [x] revisit symmetry
 
  - [ ] brain representation
    - Emma ser mer implementasjonen i kveld
+  
+ - [ ] EA
+   - [ ] 
+
 

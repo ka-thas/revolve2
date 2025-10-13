@@ -2,27 +2,15 @@ import json
 import random
 import uuid
 import numpy as np
-
 import config
 
-from revolve2.modular_robot.body.v1 import BodyV1, BrickV1, ActiveHingeV1
-from pyrr import Vector3
 
 class Gene_Generator:
     queue: list
-    grid: list
-    body: BodyV1
     def __init__(self):
-        self.grid = [Vector3([0, 0, 0])]
-        self.body = BodyV1()
         self.brick_count = 0
         self.queue = []
 
-    def random_orientation(self):
-        """Return a random orientation value."""
-        return {"orientation": 1}
-
-    #for depth first
     def make_brick(self):
         """Create a Brick with random children (front, left, right)."""      
         brick = {}
@@ -52,7 +40,7 @@ class Gene_Generator:
                 if "hinge" in value.keys():
                     new_left_brick = {}
                     rotation = right_brick["front"]["hinge"]["rotation"] 
-                    left_brick["front"] = {"hinge": {"brick": new_left_brick, "rotation": rotation + np.pi}}
+                    left_brick["front"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation}}
                     new_right_brick = right_brick["front"]["hinge"]["brick"]
                     self.mirror_right(new_left_brick, new_right_brick)
 
@@ -60,7 +48,7 @@ class Gene_Generator:
                 if "hinge" in value.keys():
                     rotation = right_brick["left"]["hinge"]["rotation"]
                     new_left_brick = {}
-                    left_brick["right"] = {"hinge": {"brick": new_left_brick, "rotation": rotation + np.pi}}
+                    left_brick["right"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation }}
                     new_right_brick = right_brick["left"]["hinge"]["brick"]
                     self.mirror_right(new_left_brick, new_right_brick)
 
@@ -68,20 +56,21 @@ class Gene_Generator:
                 if "hinge" in value.keys():
                     rotation = right_brick["right"]["hinge"]["rotation"]
                     new_left_brick = {}
-                    left_brick["left"] = {"hinge": {"brick": new_left_brick, "rotation": rotation + np.pi}}
+                    left_brick["left"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation }}
                     new_right_brick = right_brick["right"]["hinge"]["brick"]
                     self.mirror_right(new_left_brick, new_right_brick)
 
         return
 
-    # no longer optional
+    # recursively goes through spine mirroring the right side !!based on perspective.
+    # meaning from core it mirrors rightside on the front and left side on the back
     def spine_symmetry(self, spinebrick):
         spinebrick["left"] = {}
 
         if spinebrick["right"]:
             new_left_brick = {}
             rotation = spinebrick["right"]["hinge"]["rotation"] 
-            spinebrick["left"] = {"hinge": {"brick": new_left_brick, "rotation": rotation + np.pi}}
+            spinebrick["left"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation}}
             new_right_brick = spinebrick["right"]["hinge"]["brick"]
             self.mirror_right(new_left_brick, new_right_brick)
 
@@ -93,13 +82,15 @@ class Gene_Generator:
                 self.spine_symmetry(spinebrick["back"]["hinge"]["brick"])
         return
 
+    #Main Function to make the core
     def make_core(self):
         """Create a Core with random children (front, left, right, back)."""
         core = {}
         self.queue = [(core, True)]
         while self.queue:
             current_module, spine = self.queue.pop(0)
-
+            
+            #Only uses back on the spine. and doesnt make a left on the side
             if spine:
                 sides = ["front", "right", "back"]
             else:
@@ -134,6 +125,7 @@ class Gene_Generator:
         self.brick_count = 0
         return {"core" : core}
 
+    #json dump to save gene
     def save_gene(self, gene, filename):
         with open(filename, "w") as f:
             json.dump(gene, f, indent=4)

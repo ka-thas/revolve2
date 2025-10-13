@@ -16,5 +16,5 @@ PARENT_SELECT_STRATEGY = 'tournament'
 CHANCETOPLACECORE = 0.6 # Chance to place a block for each possible location.
 CHANCETOPLACEBRICK = 0.5
 CHANCE_TO_ROTATE = 0.25
-MAX_BRICKS = 10
+MAX_BRICKS = 40
 
