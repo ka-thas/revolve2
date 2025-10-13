@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import logging
 
 import config
-from gene_generator import make_core, save_gene
+from gene_generator import Gene_Generator
 
 
 @dataclass
@@ -51,9 +51,9 @@ class SimpleJSONGeneEA:
         self.logger.info(f"Initializing population of size {self.population_size}")
         
         for i in range(self.population_size):
-            # Generate random gene
-            max_depth = random.randint(2, 4)
-            gene_dict = make_core(max_depth)
+            # Generate random gene using the Gene_Generator class
+            generator = Gene_Generator()
+            gene_dict = generator.make_core()
             gene_dict["id"] = i + 1
             gene_dict["brain"] = {}
             

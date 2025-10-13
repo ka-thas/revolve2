@@ -10,7 +10,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from EA_simple import SimpleJSONGeneEA, Individual
-from gene_generator import make_core
+from gene_generator import Gene_Generator
 import config
 
 
@@ -19,7 +19,8 @@ def test_individual_creation():
     print("Testing individual creation...")
 
     # Create a simple gene
-    gene = make_core(max_depth=3)
+    generator = Gene_Generator()
+    gene = generator.make_core()
     gene["id"] = 1
     gene["brain"] = {}
 
@@ -46,7 +47,8 @@ def test_module_counting():
 
     except FileNotFoundError:
         print("testgene.json not found, creating simple test gene")
-        test_gene = make_core(max_depth=2)
+        generator = Gene_Generator()
+        test_gene = generator.make_core()
         count = ea.count_modules(test_gene)
         print(f"Modules in generated gene: {count}")
 
@@ -60,7 +62,8 @@ def test_mutation():
     ea = SimpleJSONGeneEA()
 
     # Create a base gene
-    original_gene = make_core(max_depth=2)
+    generator = Gene_Generator()
+    original_gene = generator.make_core()
     original_gene["id"] = 999
     original_gene["brain"] = {}
 
@@ -89,12 +92,14 @@ def test_crossover():
     ea = SimpleJSONGeneEA()
 
     # Create two parent genes
-    parent1_gene = make_core(max_depth=2)
+    generator = Gene_Generator()
+    parent1_gene = generator.make_core()
     parent1_gene["id"] = 1
     parent1_gene["brain"] = {}
     parent1 = Individual(gene=parent1_gene)
 
-    parent2_gene = make_core(max_depth=2)
+    generator = Gene_Generator()
+    parent2_gene = generator.make_core()
     parent2_gene["id"] = 2
     parent2_gene["brain"] = {}
     parent2 = Individual(gene=parent2_gene)

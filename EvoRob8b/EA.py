@@ -13,7 +13,7 @@ import logging
 
 import config
 from parse_gene import build_body, parse_gene
-from gene_generator import make_core, save_gene
+from gene_generator import Gene_Generator
 
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
@@ -64,8 +64,9 @@ class JSONGeneEA:
         
         for i in range(self.population_size):
             # Generate random gene
-            max_depth = random.randint(2, 5)
-            gene_dict = make_core(max_depth)
+            # gene_generator was refactored into a class - use it here
+            generator = Gene_Generator()
+            gene_dict = generator.make_core()
             gene_dict["id"] = i + 1
             gene_dict["brain"] = {}
             
@@ -179,10 +180,11 @@ class JSONGeneEA:
                         if mutation_type == "add_hinge" and (not value or value == {}):
                             # Add a new hinge+brick structure
                             max_depth = random.randint(1, 3)
-                            from gene_generator import make_brick
+                            # Use the Gene_Generator class to create a brick subtree
+                            generator = Gene_Generator()
                             node[key] = {
                                 "hinge": {
-                                    "brick": make_brick(0, max_depth),
+                                    "brick": generator.make_brick(),
                                     "orientation": {}
                                 }
                             }
