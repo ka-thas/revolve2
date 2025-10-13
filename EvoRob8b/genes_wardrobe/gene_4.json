@@ -10,73 +10,19 @@
                                 "right": {},
                                 "back": {},
                                 "left": {}
-                            }
+                            },
+                            "rotation": 0.0
                         }
                     },
-                    "right": {
-                        "hinge": {
-                            "brick": {
-                                "front": {},
-                                "left": {},
-                                "right": {}
-                            }
-                        }
-                    },
-                    "back": {
-                        "hinge": {
-                            "brick": {
-                                "front": {},
-                                "right": {},
-                                "back": {},
-                                "left": {}
-                            }
-                        }
-                    },
-                    "left": {
-                        "hinge": {
-                            "brick": {}
-                        }
-                    }
-                }
-            }
-        },
-        "right": {
-            "hinge": {
-                "brick": {
-                    "front": {},
-                    "left": {
-                        "hinge": {
-                            "brick": {
-                                "front": {},
-                                "left": {},
-                                "right": {}
-                            }
-                        }
-                    },
-                    "right": {}
-                }
-            }
-        },
-        "back": {
-            "hinge": {
-                "brick": {
-                    "front": {},
                     "right": {},
                     "back": {},
                     "left": {}
-                }
+                },
+                "rotation": 0.0
             }
         },
-        "left": {
-            "hinge": {
-                "brick": {
-                    "right": {
-                        "hinge": {
-                            "brick": {}
-                        }
-                    }
-                }
-            }
-        }
+        "right": {},
+        "back": {},
+        "left": {}
     }
 }
