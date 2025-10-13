@@ -14,7 +14,7 @@ import numpy as np
 import numpy.typing as npt
 import json
 import config
-
+from brain_cpg import Brain_cpg
 
 
 from revolve2.modular_robot import ModularRobot
@@ -25,6 +25,8 @@ from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom
 from revolve2.experimentation.rng import make_rng_time_seed
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
+
+
 
 def build_body(gene):
     body = BodyV1()
@@ -89,7 +91,8 @@ if __name__ == "__main__":
     body = build_body(gene) # Most important function here
     
     rng = make_rng_time_seed()
-    brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
+    brain = Brain_cpg(body)
+    brain = brain.initialize_brain(body)
     robot = ModularRobot(body, brain)
 
     # Create a scene.

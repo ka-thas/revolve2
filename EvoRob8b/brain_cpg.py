@@ -34,12 +34,11 @@ from revolve2.modular_robot.brain.cpg._brain_cpg_network_neighbor import BrainCp
 class Brain_cpg():
 
 
-    def __init__(self, body, brain, rng):
-        self.body = body
-        self.brain = brain
-        self.rng = rng
 
-        self.brain_dict = {}
+
+    def __init__(self, body):
+        self.body = body
+        self.brain: dict
 
 # From Ege
 
@@ -79,6 +78,7 @@ class Brain_cpg():
             initial_state_uniform=0.5 * math.sqrt(2),
             output_mapping=output_mapping,
         )
+        self.brain = brain
         return brain
 
 
