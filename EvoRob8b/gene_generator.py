@@ -10,25 +10,6 @@ class Gene_Generator:
         self.brick_count = 0
         self.queue = []
 
-    def make_brick(self):
-        """Create a Brick with random children (front, left, right).
-        DFS generation
-        """      
-        brick = {}
-        for side in ["front", "left", "right"]:
-            if (
-                random.random() < config.CHANCETOPLACEBRICK
-            ):  # chance to place hinge from config
-                if self.brick_count >= 20:
-                    brick[side] = {}
-                else:
-                    brick[side] = {
-                        "hinge": {"brick": self.make_brick()}
-                    }
-                self.brick_count += 1
-            else:
-                brick[side] = {}
-        return brick
 
     def mirror_right(self, left_brick, right_brick):
         """
@@ -71,8 +52,8 @@ class Gene_Generator:
         
         output: none but changes the input dict
         """
-        spinebrick["left"] = {}
 
+        spinebrick["left"] = {}
         if spinebrick["right"]:
             new_left_brick = {}
             rotation = spinebrick["right"]["hinge"]["rotation"] 

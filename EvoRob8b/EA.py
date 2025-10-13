@@ -174,11 +174,12 @@ class JSONGeneEA:
         mutated = copy.deepcopy(gene_dict)
         
         def mutate_recursive(node, depth=0):
+            print(node.keys())
             if not isinstance(node, dict) or depth > 6:  # Limit depth to prevent infinite growth
                 return node
             
             for key, value in list(node.items()):
-                if key in ["front", "right", "back"]:
+                if key in ["front", "right", "left"]:
                     if random.random() < self.mutation_rate:
                         pmutate = 0.1+0.03*depth
                         pskip = 0.7-0.09*depth
@@ -186,41 +187,42 @@ class JSONGeneEA:
                         mutation_type = np.random.choice([
                             "add_hinge", "remove_hinge", "modify_existing", "swap_sides"
                         ], p=[pmutate, pmutate, pskip, pmutate])
-                        # TODO add orientation fix
+                        
+                        
                         if mutation_type == "add_hinge" and (not value or value == {}):
-                            # Add a new hinge+brick structure
-                            max_depth = random.randint(1, 3)
-                            # Use the Gene_Generator class to create a brick subtree
-                            node[key] = {
-                                "hinge": {
-                                    "brick": self.generator.make_brick(),
-                                    "orientation": {}
+                            print(node.keys(), "add")
+                            new_brick = {}
+                            rotation = 0.0
+                            if random.random() < config.CHANCE_TO_ROTATE:
+                                rotation = random.randint(1,3) * np.pi/2
+                            node[key] = {"hinge": {"brick": new_brick, "rotation": rotation}               
                                 }
-                            }
                         
                         elif mutation_type == "remove_hinge" and isinstance(value, dict) and "hinge" in value:
                             # Remove hinge structure
+                            print(node.keys(), "remove")
                             node[key] = {}
                         
                         elif mutation_type == "modify_existing" and isinstance(value, dict) and "hinge" in value:
                             # Recursively mutate the brick structure
                             if "brick" in value["hinge"]:
+                                print(node.keys(), "modify")
                                 mutate_recursive(value["hinge"]["brick"], depth + 1)
-                        
+                            
+                        """
                         elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
                             # Swap with another side
                             other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
                             other_key = random.choice(other_sides)
                             if other_key in node:
                                 node[key], node[other_key] = node[other_key], node[key]
-                    
-                    elif isinstance(value, dict):
-                        mutate_recursive(value, depth + 1)
+                        """
             
             return node
         
         # Mutate the core and ensure symmetry
         if "core" in mutated:
+            print("oof")
             mutate_recursive(mutated["core"])
             self.generator.spine_symmetry(mutated["core"])
 
@@ -382,6 +384,7 @@ class JSONGeneEA:
 
 def main():
     """Main function to run the evolutionary algorithm."""
+    random.seed(50)
     ea = JSONGeneEA()
     best_individual = ea.run()
     
