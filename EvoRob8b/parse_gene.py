@@ -14,7 +14,7 @@ import numpy as np
 import numpy.typing as npt
 import json
 import config
-from brain_cpg import Brain_cpg
+from brain_cpg import BrainGenotype
 
 
 
@@ -90,8 +90,8 @@ if __name__ == "__main__":
     body = build_body(gene) # Most important function here
     
     rng = make_rng_time_seed()
-    brain = Brain_cpg(body)
-    brain.initialize_brain(body)
+    brain = BrainGenotype()
+    brain.develop_brain(body=body, rng=rng)
     robot = ModularRobot(body, brain)
 
     # Create a scene.
