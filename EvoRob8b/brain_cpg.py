@@ -44,6 +44,14 @@ from revolve2.modular_robot.brain.cpg import (
 
 class BrainGenotype():
 
+    """
+    def get_weights(self):
+
+    def get_outputmap(self):
+    
+    def get_initial_state(self):
+    """
+
     # The `brain` attribute stores per-hinge parameter arrays keyed by grid
     # coordinates encoded as strings, e.g. "3x-1" -> np.ndarray
     def __init__(self, brain=None):
@@ -52,15 +60,9 @@ class BrainGenotype():
             Args:
                 brain: Optional; a dictionary mapping grid positions to parameter arrays
             """
-            # Initialize the brain with an empty dictionary
-            if (brain == None):
-                self.brain =  {}
-            else:
-                self.brain = brain
 
-            self._initial_state = 0
-            self._weight_matrix = 0
-            self._output_mapping = 0
+
+
 
 
     def update_brain_parameters(self, developed_body: BodyV1, rng):
@@ -121,8 +123,15 @@ class BrainGenotype():
 
         brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
         brain._make_weights(active_hinges, output_mapping, rng)
-
         self.brain = brain
+        print("weights: ")
+        print(brain.get_weights())
+        print("\n\n outputmap: ")
+        
+        print(brain.get_outputmap())
+        print("\n\n initial state:")
+        print(brain.get_initial_state())
+        #print(f"weights: " + brain.get_weights() + "\n\n outputmap: " + brain.get_outputmap()+ "\n\n initial state: " + brain.get_initial_state())
 
         
 

@@ -72,7 +72,16 @@ class BrainCpgNetworkNeighbor(Brain):
             weight_matrix=self._weight_matrix,
             output_mapping=self._output_mapping,
         )
+    
+    def get_weights(self):
+        return self._weight_matrix
 
+    def get_outputmap(self):
+        return self._output_mapping
+    
+    def get_initial_state(self):
+        return self._initial_state
+    
     @abstractmethod
     def _make_weights(
         self,
