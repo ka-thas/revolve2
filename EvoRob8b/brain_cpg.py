@@ -76,19 +76,7 @@ class BrainGenotype():
             rng: a numpy-compatible RNG-like object exposing `random()`
                  and `random(n)` (used here to initialise parameters)
         """
-        active_hinges = developed_body.find_modules_of_type(ActiveHingeV1)
 
-        # Collect keys corresponding to each hinge's integer grid position
-        brain_keys = []
-        for active_hinge in active_hinges:
-            grid_position = developed_body.grid_position(active_hinge)
-            # encode as "{x}x{y}" where x,y are integer coordinates
-            brain_keys.append(str(int(grid_position[0])) + "x" + str(int(grid_position[1])))
-
-        # Initialise missing keys with random parameters in [-1, 1]
-        for brain_key in brain_keys:
-            if brain_key not in self.brain.keys():
-                self.brain[brain_key] = np.array(rng.random(14)) * 2 - 1
 
     def mutate_brain(self, rng: np.random.Generator):
         """Return a mutated copy of this genotype.
@@ -102,19 +90,7 @@ class BrainGenotype():
         Returns:
             BrainGenotype: new genotype with mutated parameter arrays
         """
-        new_brain = {}
-        for key, values in self.brain.items():
-            # Build a new array by perturbing entries probabilistically
-            new_values = np.array([])
-            for value in values:
-                new_value = value
-                # with high probability mutate the parameter
-                if rng.random() < 0.8:
-                    # additive Gaussian noise; consider clipping if needed
-                    new_value = value + rng.normal(loc=0, scale=0.5)
-                new_values = np.append(new_values, new_value)
-            new_brain[key] = new_values
-        return BrainGenotype(brain=new_brain)
+        
 
 
     @classmethod
@@ -135,19 +111,6 @@ class BrainGenotype():
         2. Query the helper `active_hinges_to_cpg_network_structure_neighbor`
            to obtain the CPG network topology (`cpg_network_structure`) and
            the `output_mapping` used by `BrainCpgNetworkStatic`.
-        3. Assemble a flat parameter list `params` in the same order the
-           static constructor expects:
-            - first, one parameter per active hinge taken from brain[key][0]
-            - then, for each connection between hinges, a parameter selected
-              from the source hinge's parameter array using
-              `grid_positions_to_array_number`
-        4. Build and return a `BrainCpgNetworkStatic` from the params.
-
-        Args:
-            body: BodyV1 instance describing the robot morphology
-
-        Returns:
-            BrainCpgNetworkStatic: constructed brain ready for simulation
         """
         active_hinges = body.find_modules_of_type(ActiveHingeV1)
         (
@@ -163,56 +126,6 @@ class BrainGenotype():
 
         
 
-
-
-
-    @staticmethod
-    def grid_positions_to_array_number(low_grid_position, high_grid_position):
-        """Map relative grid offsets to a parameter-array index.
-
-        The mapping encodes a small neighbourhood around each hinge. Given the
-        integer grid coordinates of two hinges (`low_grid_position` and
-        `high_grid_position`) this function returns an integer index in the
-        parameter array corresponding to their relative displacement.
-
-        The mapping is hand-crafted to cover offsets in a 5x5-ish neighbourhood
-        (indices 0..13). If no condition matches, the function may return
-        None (implicit), so callers must ensure positions are neighbours.
-        """
-        # horizontal displacement = low.x - high.x
-        dx = low_grid_position[0] - high_grid_position[0]
-        dy = low_grid_position[1] - high_grid_position[1]
-
-        if dx == -2:
-            return 0
-        if dx == -1:
-            if dy == -1:
-                return 1
-            if dy == 0:
-                return 2
-            if dy == 1:
-                return 3
-        if dx == 0:
-            if dy == -2:
-                return 4
-            if dy == -1:
-                return 5
-            if dy == 0:
-                return 6
-            if dy == 1:
-                return 7
-            if dy == 2:
-                return 8
-        if dx == 1:
-            if dy == -1:
-                return 9
-            if dy == 0:
-                return 10
-            if dy == 1:
-                return 11
-        if dx == 2:
-            return 13
-        
 
     def make_instance(self) -> BrainCpgInstance:
         """
