@@ -41,7 +41,8 @@ def build_body_recursive(body, node):
     for key, value in node.items():
         if key == "front":
             if "hinge" in value.keys():
-                body.front = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.front = ActiveHingeV1(rotation)
                 body.front.attachment = BrickV1(0.0)
                 build_body_recursive(body.front.attachment, node["front"]["hinge"]["brick"])
 
@@ -95,7 +96,7 @@ if __name__ == "__main__":
     robot = ModularRobot(body, brain)
 
     # Create a scene.
-    scene = ModularRobotScene(terrain=terrains.crater([4,4], 0.04, 3))
+    scene = ModularRobotScene(terrain=terrains.flat())
     scene.add_robot(robot)
 
     # Create a simulator.
