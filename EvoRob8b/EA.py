@@ -377,7 +377,7 @@ class JSONGeneEA:
         self.logger.info(f"Evolution completed after {self.generation} generations and {self.evaluations} evaluations")
         print(9)
         # Save final best individual
-        self.save_best_individual("final_best_individual.json")
+        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual.json")
         
         return self.population[0]
 

@@ -62,9 +62,9 @@ Contact & contribution:
    - [x] revisit symmetry
 
 - [ ] [Gene validator](./gene_validator.py)
-  - [ ] Implement a robust `gene_validator.py` implementing the core checklist (schema, hinge/brick rules, spine straightness, left/right symmetry, module count).
+  - [ ] schema, hinge/brick rules, spine straightness, left/right symmetry, module count).
   - [ ] Write unit tests (pytest) covering: happy path (generator output), hinge-leaf, asymmetry, spine-branch and module-count violations.
-  - [ ] Add a small CLI (`bin/gene-validate`) that validates files/dirs, prints human-readable errors with node paths, and returns non-zero on failure.
+  - [ ] That validates files/dirs, prints human-readable errors with node paths, and returns non-zero on failure.
   - [ ] Integrate tests into CI (run validator unit tests on PRs) and wire into the repository test suite.
   - [ ] Add example fixtures (`examples/genes/valid` and `.../invalid`) and short README docs showing CLI usage and common error messages.
 

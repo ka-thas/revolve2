@@ -69,7 +69,8 @@ class Gene_Generator:
                 self.spine_symmetry(spinebrick["back"]["hinge"]["brick"])
         return
 
-    #Main Function to make the core
+    # Main Function to make the core
+    # BFS to shorten limbs and not exhaust all bricks on one branch
     def make_core(self):
         """Create a Core with random children (front, left, right, back)."""
         core = {}
@@ -90,7 +91,7 @@ class Gene_Generator:
                 else:
                     self.brick_count +=1
 
-                if random.random() < config.CHANCETOPLACEBRICK and self.brick_count <= config.MAX_BRICKS:
+                if random.random() < config.CHANCE_TO_PLACE_BRICK and self.brick_count <= config.MAX_BRICKS:
                     new_module = {}
                     rotation = 0.0
                     if random.random() < config.CHANCE_TO_ROTATE:
