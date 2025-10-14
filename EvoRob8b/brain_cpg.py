@@ -27,10 +27,12 @@ copy/mutate operators here.
 """
 
 import math
-from copy import copy
+import copy
 
 import numpy as np
 from sqlalchemy import orm
+import random
+import config
 
 from revolve2.modular_robot.body.v1 import BodyV1, ActiveHingeV1
 from revolve2.modular_robot.brain.cpg import (
@@ -40,6 +42,29 @@ from revolve2.modular_robot.brain.cpg import (
     BrainCpgNetworkNeighbor,
     BrainCpgInstance
 )
+
+
+
+import logging
+import pickle
+from typing import Any
+
+import config
+import multineat
+import numpy as np
+import numpy.typing as npt
+
+from revolve2.modular_robot import ModularRobot
+from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
+from revolve2.modular_robot.body.v1 import ActiveHingeV1, BodyV1, BrickV1
+from revolve2.standards import modular_robots_v1, fitness_functions, terrains
+from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom
+from revolve2.experimentation.rng import make_rng_time_seed
+from revolve2.simulators.mujoco_simulator import LocalSimulator
+from revolve2.standards.simulation_parameters import make_standard_batch_parameters
+
+
+from copy import deepcopy
 
 
 class BrainGenotype():
@@ -61,6 +86,8 @@ class BrainGenotype():
                 brain: Optional; a dictionary mapping grid positions to parameter arrays
             """
 
+            self.weights = []
+            self.brain = None
 
 
 
@@ -80,7 +107,7 @@ class BrainGenotype():
         """
 
 
-    def mutate_brain(self, rng: np.random.Generator):
+    def mutate_brain(self):
         """Return a mutated copy of this genotype.
 
         Mutation is applied element-wise to each parameter with 80% chance;
@@ -92,18 +119,21 @@ class BrainGenotype():
         Returns:
             BrainGenotype: new genotype with mutated parameter arrays
         """
-        
+
+        new_brain = copy.deepcopy(self.brain)
+        new_weights = new_brain.get_weights()
+        # print("\n Old weights")
+        # print(new_weights)        
+        for y in range(len(new_weights)):
+             for x in range(len(new_weights[y])):
+                if (random.random() > config.BRAIN_MUTATION_RATE):
+                    new_weights[y][x] = random.random()*2-1
+        # print("\n new weights")
+        # print(new_brain.get_weights())        
+
+        return new_brain
 
 
-    @classmethod
-    def crossover_brain(cls, parent1, parent2, rng):
-        """Crossover operator for brains.
-
-        Current implementation is a simple copy of parent1. This is a
-        placeholder — replace with true recombination (e.g. per-key mixing or
-        uniform crossover) when desired.
-        """
-        return BrainGenotype(brain=copy(parent1.brain))
 
     def develop_brain(self, body, rng):
         """Convert the genotype into a runnable CPG brain instance.
@@ -127,6 +157,7 @@ class BrainGenotype():
         print("weights: ")
         print(brain.get_weights())
         print("\n\n outputmap: ")
+        self.weights = brain.get_weights()
         
         print(brain.get_outputmap())
         print("\n\n initial state:")
@@ -144,3 +175,54 @@ class BrainGenotype():
         """
 
         return self.brain.make_instance()
+
+
+    def improve(self, body, iterations, rng):
+        best_fitness = 0
+        best_brain = None
+
+    
+
+        while (iterations > 0):
+
+            print("\n Best fitness: ")
+            print(best_fitness)
+
+            new_brain = self.mutate_brain()
+
+            robot = ModularRobot(body, new_brain)
+            # Create a scene.
+            scene = ModularRobotScene(terrain=terrains.flat())
+            scene.add_robot(robot)
+
+            # Create a simulator.
+            simulator = LocalSimulator(headless=True)
+
+            # Simulate the scene and obtain states sampled during the simulation.
+            scene_states = simulate_scenes(
+                simulator=simulator,
+                batch_parameters=make_standard_batch_parameters(),
+                scenes=scene,
+            )
+
+            # Get the state at the beginning and end of the simulation.
+            scene_state_begin = scene_states[0]
+            scene_state_end = scene_states[-1]
+
+            # Retrieve the states of the modular robot.
+            robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(robot)
+            robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
+
+            # Calculate the xy displacement of the robot.
+            xy_displacement = fitness_functions.xy_displacement(
+                robot_state_begin, robot_state_end
+            )
+
+            if (xy_displacement > best_fitness):
+                best_brain = new_brain
+                best_fitness = xy_displacement
+
+            iterations -= 1
+        return best_brain
+
+

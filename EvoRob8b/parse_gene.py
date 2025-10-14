@@ -93,7 +93,10 @@ if __name__ == "__main__":
     rng = make_rng_time_seed()
     brain = BrainGenotype()
     brain.develop_brain(body=body, rng=rng)
-    robot = ModularRobot(body, brain)
+    new_brain = brain.improve(body, 5, rng)
+    robot = ModularRobot(body, new_brain)
+
+
 
     # Create a scene.
     scene = ModularRobotScene(terrain=terrains.flat())
