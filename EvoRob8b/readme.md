@@ -60,6 +60,8 @@ Contact & contribution:
  - [x] symmetry 
  - [x] orientation
    - [x] revisit symmetry
+- [x] higher prob of placing bricks on front than on right and left
+
 
 - [ ] [Gene validator](./gene_validator.py)
   - [ ] brick has front, right, left faces
@@ -71,16 +73,14 @@ Contact & contribution:
 - [ ] brain representation
 
 - [ ] EA
- - [ ] Crossover
- - [ ] Mutation
+ - [ ] Crossover !!!
+ - [x] Mutation
  - [ ] Inner learning loop for brain optimization @brains
-   - EA?
-   - [ ] Crossover
-   - [ ] Mutation
-   - [ ] Eval
-   - [ ] Selection
- - [ ] Evaluation
- - [ ] Selection
+   - [x] Mutation
+   - [x] Eval
+   - [x] Selection
+ - [x] Evaluation
+ - [x] Tournament selection
 
 ## Morphology rules
 
