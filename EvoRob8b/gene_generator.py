@@ -92,8 +92,12 @@ class Gene_Generator:
                     self.brick_count += 2
                 else:
                     self.brick_count +=1
+                if side == "front" or side == "back":
+                    chance = config.CHANCE_TO_PLACE_BRICK_FRONT
+                else:
+                    chance = config.CHANCE_TO_PLACE_BRICK_SIDES
 
-                if random.random() < config.CHANCE_TO_PLACE_BRICK and self.brick_count <= config.MAX_BRICKS:
+                if random.random() < chance and self.brick_count <= config.MAX_BRICKS:
                     new_module = {
                         "front": {},
                         "right": {},

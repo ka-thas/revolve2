@@ -15,9 +15,10 @@ PARENT_SELECT_STRATEGY = 'tournament'
 
 #gene generator
 CHANCE_TO_PLACE_CORE = 0.6 # Chance to place a block for each possible location.
-CHANCE_TO_PLACE_BRICK = 0.6
+CHANCE_TO_PLACE_BRICK_FRONT = 0.8
+CHANCE_TO_PLACE_BRICK_SIDES = 0.3
 CHANCE_TO_ROTATE = 0.25
-MAX_BRICKS = 15
+MAX_BRICKS = 30
 
 
 # Brain
