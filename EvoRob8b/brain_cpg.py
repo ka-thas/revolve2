@@ -107,7 +107,7 @@ class BrainGenotype():
         """
 
 
-    def mutate_brain(self):
+    def mutate_brain(self, weights):
         """Return a mutated copy of this genotype.
 
         Mutation is applied element-wise to each parameter with 80% chance;
@@ -120,18 +120,17 @@ class BrainGenotype():
             BrainGenotype: new genotype with mutated parameter arrays
         """
 
-        new_brain = copy.deepcopy(self.brain)
-        new_weights = new_brain.get_weights()
+        new_weights = copy.deepcopy(weights)
         # print("\n Old weights")
         # print(new_weights)        
         for y in range(len(new_weights)):
              for x in range(len(new_weights[y])):
-                if (random.random() > config.BRAIN_MUTATION_RATE):
+                if (random.random() > 1-config.BRAIN_MUTATION_RATE):
                     new_weights[y][x] = random.random()*2-1
         # print("\n new weights")
         # print(new_brain.get_weights())        
 
-        return new_brain
+        return new_weights
 
 
 
@@ -188,7 +187,12 @@ class BrainGenotype():
             print("\n Best fitness: ")
             print(best_fitness)
 
-            new_brain = self.mutate_brain()
+
+            new_weights = self.mutate_brain(self.weights)
+
+            new_brain = copy.copy(self.brain)
+            new_brain.make_instance()
+            new_brain.update_weights(new_weights)
 
             robot = ModularRobot(body, new_brain)
             # Create a scene.
@@ -218,11 +222,15 @@ class BrainGenotype():
                 robot_state_begin, robot_state_end
             )
 
+            print(xy_displacement)
+
             if (xy_displacement > best_fitness):
                 best_brain = new_brain
                 best_fitness = xy_displacement
 
             iterations -= 1
-        return best_brain
+        self.brain = best_brain
+        self.brain.make_instance()
+    
 
 
