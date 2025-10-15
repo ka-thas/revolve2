@@ -235,22 +235,26 @@ class JSONGeneEA:
         offspring2 = copy.deepcopy(parent2.gene)
 
         def recursive(node):
-            if not node.keys():
-                return
-                
+            """
+            input: brick
+            ouput: hinge
+            """
+
             face = random.choice(list(node.keys()))
             if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:
-                if node[face]:
-                    recursive(node[face]["hinge"]["brick"])
+                if node[face]: 
+                    child = recursive(node[face]["hinge"]["brick"])
+                    if child:
+                        return child
             
             return node[face]
         
         subtree1 = recursive(offspring1["core"])
         subtree2 = recursive(offspring2["core"])
 
-        subtree1, subtree2 = subtree2, subtree1
+        subtree1["hinge"], subtree2["hinge"] = subtree2["hinge"], subtree1["hinge"]
 
-        return offspring1, offspring2
+        return Individual(offspring1), Individual(offspring2)
     
     def create_offspring(self) -> List[Individual]:
         """Create offspring using selection, crossover, and mutation."""

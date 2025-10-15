@@ -1,5 +1,5 @@
 #Configurations for each experiments.
-LOG_FOLDER = "/experiments/"
+LOG_FOLDER = "./experiments/"
 
 
 #EA
