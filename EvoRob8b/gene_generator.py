@@ -92,7 +92,11 @@ class Gene_Generator:
                     self.brick_count +=1
 
                 if random.random() < config.CHANCE_TO_PLACE_BRICK and self.brick_count <= config.MAX_BRICKS:
-                    new_module = {}
+                    new_module = {
+                        "front": {},
+                        "right": {},
+                        "left": {}
+                    }
                     rotation = 0.0
                     if random.random() < config.CHANCE_TO_ROTATE:
                         rotation = random.randint(1,3) * np.pi/2
