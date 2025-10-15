@@ -14,10 +14,7 @@
     - [Spine and symmetry (plain language)](#spine-and-symmetry-plain-language)
     - [Constraints the generator enforces](#constraints-the-generator-enforces)
     - [Constraints imposed during EA](#constraints-imposed-during-ea)
-    - [Validator checklist (actionable)](#validator-checklist-actionable)
-    - [Suggested validator tests (practical)](#suggested-validator-tests-practical)
-    - [Implementation hints](#implementation-hints)
-    - [Summary](#summary)
+  - [Crossover](#crossover)
 
 
 ## Group & Project
@@ -147,42 +144,10 @@ Which faces are valid where:
 
 - Brick follows all hinges
 - Symmetry
-- 
 
-### Validator checklist (actionable)
+## Crossover
 
-1. Gene is a JSON object with `id`, `brain`, `core` keys.
-2. `core` contains exactly `front`, `right`, `left`, `back` faces; each face
-   is `{}` or a `hinge` object.
-3. Every `hinge` contains a `brick` object.
-4. No hinge is a leaf (its `brick` must be non-empty).
-5. Brick objects only contain `front`, `right`, `left` faces.
-6. The spine (follow `front`/`back` from `core`) is a straight chain — no
-   branching along that path.
-7. Left/right subtree topology is mirrored (structure-wise) between right and
-   left.
-8. Total module count ≤ configured maximum.
-
-### Suggested validator tests (practical)
-
-- Happy path: `Gene_Generator().make_core()` should pass all checks.
-- Hinge leaf test: create a hinge without a brick → must fail.
-- Asymmetry test: remove a branch from right subtree → validator reports
-  asymmetry.
-- Spine-branch test: add an off-spine branch along the spine → validator
-  reports spine branching.
-
-### Implementation hints
-
-- Use a deterministic traversal (path strings or canonical coordinates) to
-  compare mirrored subtrees.
-- Report errors with a short path (e.g. `core.front.hinge.brick.front`) to
-  speed debugging.
-- Keep checks recursive and local — the gene is a tree, validation is O(n).
-
-### Summary
-
-- Genes are tree-shaped JSON objects with precise face/hinge/brick rules.
-- The spine is the central front/back chain and must be straight (no
-  branching); the body must be left/right symmetric around that spine.
-- Followed the validator checklist when implementing `gene_validator.py`.
+- Subtree crossover
+- Swap limbs from two parents
+- Preferably closer to core
+- Take hinge, not face
