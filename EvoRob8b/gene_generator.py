@@ -74,13 +74,15 @@ class Gene_Generator:
     def make_core(self):
         """Create a Core with random children (front, left, right, back)."""
         core = {}
-        self.queue = [(core, True)]
+        self.queue = [(core, True, True)]
         while self.queue:
-            current_module, spine = self.queue.pop(0)
+            current_module, spine, is_core = self.queue.pop(0)
             
             #Only uses back on the spine. and doesnt make a left on the side
-            if spine:
+            if is_core:
                 sides = ["front", "right", "back"]
+            elif spine:
+                sides = ["front", "right"]
             else:
                 sides = ["front", "left", "right"]
             for side in sides:
@@ -107,9 +109,9 @@ class Gene_Generator:
                     current_module[side] = {}
                     continue
                 if side == "front" or side == "back" and spine == True:
-                    self.queue.append((new_module, True))
+                    self.queue.append((new_module, True, False))
                 else:
-                    self.queue.append((new_module, False))
+                    self.queue.append((new_module, False, False))
         
         
 

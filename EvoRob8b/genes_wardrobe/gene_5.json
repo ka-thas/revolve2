@@ -2,7 +2,48 @@
     "core": {
         "front": {},
         "right": {},
-        "back": {},
+        "back": {
+            "hinge": {
+                "brick": {
+                    "front": {
+                        "hinge": {
+                            "brick": {
+                                "front": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {},
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }
+                                },
+                                "right": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {},
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 1.5707963267948966
+                                    }
+                                },
+                                "left": {
+                                    "hinge": {
+                                        "brick": {},
+                                        "rotation": -1.5707963267948966
+                                    }
+                                }
+                            },
+                            "rotation": 3.141592653589793
+                        }
+                    },
+                    "right": {},
+                    "left": {}
+                },
+                "rotation": 1.5707963267948966
+            }
+        },
         "left": {}
     }
 }
