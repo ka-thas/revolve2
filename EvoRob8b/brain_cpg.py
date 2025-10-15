@@ -77,8 +77,7 @@ class BrainGenotype():
     def get_initial_state(self):
     """
 
-    # The `brain` attribute stores per-hinge parameter arrays keyed by grid
-    # coordinates encoded as strings, e.g. "3x-1" -> np.ndarray
+
     def __init__(self, brain=None):
             """Initialize the BrainGenotype with the given brain dictionary.
 
@@ -92,20 +91,23 @@ class BrainGenotype():
 
 
 
-    def update_brain_parameters(self, developed_body: BodyV1, rng):
-        """Ensure genotype contains parameters for every active hinge.
-
-        This inspects `developed_body` to find all ActiveHingeV1 modules and
-        creates a brain key for each hinge based on its grid position. If the
-        key does not yet exist in `self.brain`, a new parameter vector of
-        length 14 is sampled uniformly in [-1, 1] using the provided RNG.
-
-        Args:
-            developed_body: a BodyV1 instance already 'developed'
-            rng: a numpy-compatible RNG-like object exposing `random()`
-                 and `random(n)` (used here to initialise parameters)
+    def update_brain_parameters(self, body, rng):
         """
+        Same rng, we can update to account for morphologigal differences
+        """
+        active_hinges = body.find_modules_of_type(ActiveHingeV1)
+        (
+            cpg_network_structure,
+            output_mapping,
+        ) = active_hinges_to_cpg_network_structure_neighbor(active_hinges)
 
+
+        brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
+        brain._make_weights(active_hinges, output_mapping, rng)
+        self.brain = brain
+        self.brain.make_instance()
+        self.weights = self.brain.get_weights()
+        
 
     def mutate_brain(self, weights):
         """Return a mutated copy of this genotype.
@@ -125,7 +127,7 @@ class BrainGenotype():
         # print(new_weights)        
         for y in range(len(new_weights)):
              for x in range(len(new_weights[y])):
-                if (random.random() > 1-config.BRAIN_MUTATION_RATE):
+                if (1 > 1-config.BRAIN_MUTATION_RATE):
                     new_weights[y][x] = random.random()*2-1
         # print("\n new weights")
         # print(new_brain.get_weights())        
@@ -180,6 +182,8 @@ class BrainGenotype():
         best_fitness = 0
         best_brain = None
 
+        self.weights = self.brain.get_weights()
+
     
 
         while (iterations > 0):
@@ -193,6 +197,7 @@ class BrainGenotype():
             new_brain = copy.copy(self.brain)
             new_brain.make_instance()
             new_brain.update_weights(new_weights)
+
 
             robot = ModularRobot(body, new_brain)
             # Create a scene.
