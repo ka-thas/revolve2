@@ -75,6 +75,9 @@ class BrainCpgNetworkNeighbor(Brain):
     
     def get_weights(self):
         return self._weight_matrix
+    
+    def update_weights(self, new_weights):
+        self._weight_matrix = new_weights
 
     def get_outputmap(self):
         return self._output_mapping

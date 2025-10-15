@@ -94,8 +94,12 @@ if __name__ == "__main__":
     print(rng)
     brain = BrainGenotype()
     brain.develop_brain(body=body, rng=rng)
-    new_brain = brain.improve(body, config.INNER_LOOP_ITERATIONS, rng)
-    robot = ModularRobot(body, new_brain)
+
+    brain.improve(body, config.INNER_LOOP_ITERATIONS, rng)
+    config.BRAIN_MUTATION_RATE = 0
+
+
+    robot = ModularRobot(body, brain)
 
 
 
