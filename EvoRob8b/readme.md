@@ -151,5 +151,6 @@ Which faces are valid where:
 
 - Subtree crossover
 - Swap limbs from two parents
+  - From spine not allowed to pick left. Will be removed
 - Preferably closer to core
 - Take hinge, not face
