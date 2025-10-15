@@ -209,14 +209,14 @@ class JSONGeneEA:
                                 print(node.keys(), "modify")
                                 mutate_recursive(value["hinge"]["brick"], depth + 1)
                             
-                        """
+                        
                         elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
                             # Swap with another side
                             other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
                             other_key = random.choice(other_sides)
                             if other_key in node:
                                 node[key], node[other_key] = node[other_key], node[key]
-                        """
+                        
             
             return node
         
@@ -230,59 +230,15 @@ class JSONGeneEA:
     
     def crossover_genes(self, parent1: Individual, parent2: Individual) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """Perform crossover between two parent genes."""
-        
-        def get_subtrees(node, path=""):
-            """Get all subtrees with their paths."""
-            subtrees = []
-            if not isinstance(node, dict):
-                return subtrees
-            
-            for key, value in node.items():
-                if key in ["front", "left", "right", "back"] and isinstance(value, dict) and "hinge" in value:
-                    current_path = f"{path}.{key}" if path else key
-                    subtrees.append((current_path, value))
-                    if "brick" in value.get("hinge", {}):
-                        subtrees.extend(get_subtrees(value["hinge"]["brick"], current_path))
-                elif isinstance(value, dict):
-                    subtrees.extend(get_subtrees(value, path))
-            
-            return subtrees
-        
         # Create offspring as copies of parents
         offspring1 = copy.deepcopy(parent1.gene)
         offspring2 = copy.deepcopy(parent2.gene)
+
+        subtree1 = offspring1["core"]
+        subtree2 = offspring2["core"]
+       
         
-        # Get subtrees from both parents
-        subtrees1 = get_subtrees(parent1.gene.get("core", {}))
-        subtrees2 = get_subtrees(parent2.gene.get("core", {}))
-        
-        if subtrees1 and subtrees2:
-            # Select random subtrees to swap
-            path1, subtree1 = random.choice(subtrees1)
-            path2, subtree2 = random.choice(subtrees2)
-            
-            # Function to set value at path
-            def set_at_path(gene_dict, path, value):
-                keys = path.split('.')
-                current = gene_dict["core"]
-                
-                for key in keys[:-1]:
-                    if key not in current:
-                        return False
-                    if "hinge" in current[key] and "brick" in current[key]["hinge"]:
-                        current = current[key]["hinge"]["brick"]
-                    else:
-                        current = current[key]
-                
-                if keys[-1] in current:
-                    current[keys[-1]] = value
-                    return True
-                return False
-            
-            # Perform crossover by swapping subtrees
-            set_at_path(offspring1, path1, subtree2)
-            set_at_path(offspring2, path2, subtree1)
-        
+
         return offspring1, offspring2
     
     def create_offspring(self) -> List[Individual]:

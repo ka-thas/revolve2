@@ -1,8 +1,174 @@
 {
     "core": {
-        "front": {},
-        "right": {},
-        "back": {},
-        "left": {}
+        "front": {
+            "hinge": {
+                "brick": {
+                    "front": {
+                        "hinge": {
+                            "brick": {
+                                "front": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {},
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": 0.0
+                                                }
+                                            },
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }
+                                },
+                                "right": {},
+                                "left": {}
+                            },
+                            "rotation": 0.0
+                        }
+                    },
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {},
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": 3.141592653589793
+                                                }
+                                            },
+                                            "right": {},
+                                            "left": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {},
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": 0.0
+                                                }
+                                            }
+                                        },
+                                        "rotation": 0.0
+                                    }
+                                },
+                                "left": {}
+                            },
+                            "rotation": 0.0
+                        }
+                    },
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "left": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {
+                                                "hinge": {
+                                                    "brick": {},
+                                                    "rotation": -3.141592653589793
+                                                }
+                                            },
+                                            "right": {
+                                                "hinge": {
+                                                    "brick": {},
+                                                    "rotation": -0.0
+                                                }
+                                            }
+                                        },
+                                        "rotation": -0.0
+                                    }
+                                }
+                            },
+                            "rotation": -0.0
+                        }
+                    }
+                },
+                "rotation": 0.0
+            }
+        },
+        "right": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "right": {},
+                    "left": {}
+                },
+                "rotation": 0.0
+            }
+        },
+        "back": {
+            "hinge": {
+                "brick": {
+                    "front": {
+                        "hinge": {
+                            "brick": {
+                                "front": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {},
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }
+                                },
+                                "right": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {},
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }
+                                },
+                                "left": {
+                                    "hinge": {
+                                        "brick": {},
+                                        "rotation": -0.0
+                                    }
+                                }
+                            },
+                            "rotation": 0.0
+                        }
+                    },
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "left": {}
+                            },
+                            "rotation": 0.0
+                        }
+                    },
+                    "left": {
+                        "hinge": {
+                            "brick": {},
+                            "rotation": -0.0
+                        }
+                    }
+                },
+                "rotation": 0.0
+            }
+        },
+        "left": {
+            "hinge": {
+                "brick": {},
+                "rotation": -0.0
+            }
+        }
     }
 }

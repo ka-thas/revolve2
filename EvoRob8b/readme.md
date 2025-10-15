@@ -67,7 +67,9 @@ Contact & contribution:
   - [ ] spine symmetry
   - [ ] module count
 
-- [ ] brain representation
+- [x] brain representation
+- [] Track rng
+- [] Save and load to file brain
 
 - [ ] EA
  - [ ] Crossover !!!

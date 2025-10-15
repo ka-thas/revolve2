@@ -91,9 +91,10 @@ if __name__ == "__main__":
     body = build_body(gene) # Most important function here
     
     rng = make_rng_time_seed()
+    print(rng)
     brain = BrainGenotype()
     brain.develop_brain(body=body, rng=rng)
-    new_brain = brain.improve(body, 5, rng)
+    new_brain = brain.improve(body, config.INNER_LOOP_ITERATIONS, rng)
     robot = ModularRobot(body, new_brain)
 
 
