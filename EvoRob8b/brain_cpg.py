@@ -126,7 +126,7 @@ class BrainGenotype():
         for y in range(len(new_weights)):
              for x in range(len(new_weights[y])):
                 if (random.random() > 1-config.BRAIN_MUTATION_RATE):
-                    new_weights[y][x] = random.random()*2-1
+                    new_weights[y][x] += random.random()* 0.1 - 0.05
         # print("\n new weights")
         # print(new_brain.get_weights())        
 

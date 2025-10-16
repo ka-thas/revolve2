@@ -68,8 +68,8 @@ Contact & contribution:
   - [ ] module count
 
 - [x] brain representation
-- [] Track rng
-- [] Save and load to file brain
+- [ ] Track rng
+- [ ] Save and load to file brain
 
 - [ ] EA
  - [ ] Crossover !!!
