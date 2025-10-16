@@ -81,6 +81,10 @@ Contact & contribution:
  - [x] Evaluation
  - [x] Tournament selection
 
+- [ ] Ploting
+  - [ ] Matplotlib
+  - [ ] Fitness over generations
+
 ## Morphology rules
 
 morphology rules applied to genes produced by the generator.
