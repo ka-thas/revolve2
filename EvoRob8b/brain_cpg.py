@@ -66,6 +66,29 @@ from revolve2.standards.simulation_parameters import make_standard_batch_paramet
 
 from copy import deepcopy
 
+def mutate_brain(weights):
+    """Return a mutated copy of this genotype.
+
+    Mutation is applied element-wise to each parameter with 80% chance;
+    changed parameters are perturbed by a Gaussian with sigma=0.5.
+
+    Args:
+        rng: numpy random Generator used for sampling mutations
+
+    Returns:
+        BrainGenotype: new genotype with mutated parameter arrays
+    """
+    # print("\n Old weights")
+    # print(weights)     
+    epsilon = config.MUTATION_EPSILON   
+    for y in range(len(weights)):
+            for x in range(len(weights[y])):
+                if (weights[y][x] != 0 and random.random() > 1-config.BRAIN_MUTATION_RATE ):
+                    weights[y][x] += random.random()* epsilon*2 - epsilon
+    # print("\n new weights")
+    # print(weights)        
+
+    return weights
 
 class BrainGenotype():
 
@@ -77,8 +100,7 @@ class BrainGenotype():
     def get_initial_state(self):
     """
 
-    # The `brain` attribute stores per-hinge parameter arrays keyed by grid
-    # coordinates encoded as strings, e.g. "3x-1" -> np.ndarray
+
     def __init__(self, brain=None):
             """Initialize the BrainGenotype with the given brain dictionary.
 
@@ -92,45 +114,24 @@ class BrainGenotype():
 
 
 
-    def update_brain_parameters(self, developed_body: BodyV1, rng):
-        """Ensure genotype contains parameters for every active hinge.
-
-        This inspects `developed_body` to find all ActiveHingeV1 modules and
-        creates a brain key for each hinge based on its grid position. If the
-        key does not yet exist in `self.brain`, a new parameter vector of
-        length 14 is sampled uniformly in [-1, 1] using the provided RNG.
-
-        Args:
-            developed_body: a BodyV1 instance already 'developed'
-            rng: a numpy-compatible RNG-like object exposing `random()`
-                 and `random(n)` (used here to initialise parameters)
+    def update_brain_parameters(self, body, rng):
         """
-
-
-    def mutate_brain(self, weights):
-        """Return a mutated copy of this genotype.
-
-        Mutation is applied element-wise to each parameter with 80% chance;
-        changed parameters are perturbed by a Gaussian with sigma=0.5.
-
-        Args:
-            rng: numpy random Generator used for sampling mutations
-
-        Returns:
-            BrainGenotype: new genotype with mutated parameter arrays
+        Same rng, we can update to account for morphologigal differences
         """
+        active_hinges = body.find_modules_of_type(ActiveHingeV1)
+        (
+            cpg_network_structure,
+            output_mapping,
+        ) = active_hinges_to_cpg_network_structure_neighbor(active_hinges)
 
-        new_weights = copy.deepcopy(weights)
-        # print("\n Old weights")
-        # print(new_weights)        
-        for y in range(len(new_weights)):
-             for x in range(len(new_weights[y])):
-                if (random.random() > 1-config.BRAIN_MUTATION_RATE):
-                    new_weights[y][x] = random.random()*2-1
-        # print("\n new weights")
-        # print(new_brain.get_weights())        
 
-        return new_weights
+        brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
+        brain._make_weights(active_hinges, output_mapping, rng)
+        self.brain = brain
+        self.brain.make_instance()
+        self.weights = self.brain.get_weights()
+        
+
 
 
 
@@ -149,11 +150,15 @@ class BrainGenotype():
             output_mapping,
         ) = active_hinges_to_cpg_network_structure_neighbor(active_hinges)
 
+        # cpgnetwork structure has connectionsnew_weights
+        # Grid brain match grid body, active hinges get pos
+        # need 3 weights for each grid pos, or 2
+        # one for inetrnal , one for the neighboring tree distance
+        print(cpg_network_structure.connections)
+
 
         brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
-        brain._make_weights(active_hinges, output_mapping, rng)
-
-        print(f"brain {brain}")
+        brain._make_weights(active_hinges, cpg_network_structure.connections, rng)
         self.brain = brain
         print("weights: ")
         print(brain.get_weights())
@@ -180,21 +185,40 @@ class BrainGenotype():
 
     def improve(self, body, iterations, rng):
         best_fitness = 0
-        best_brain = None
+        best_brain = copy.deepcopy(self.brain)
+        best_brain.make_instance()
+        iterations_since_update = 0
+        self.weights = best_brain.get_weights()
 
     
 
         while (iterations > 0):
-
+            print(f" \n iteration: ", {config.INNER_LOOP_ITERATIONS -iterations})
             print("\n Best fitness: ")
             print(best_fitness)
 
+            if (iterations_since_update > 20): # random for now
+                config.BRAIN_MUTATION_RATE = 0.5
+                config.MUTATION_EPSILON = 0.5
 
-            new_weights = self.mutate_brain(self.weights)
+            elif (best_fitness > 1): # testing to check if improvement
+                 config.BRAIN_MUTATION_RATE = 0.3
+                 config.MUTATION_EPSILON = 0.3
+                 
+            elif (best_fitness > config.EXPLORATION_RATE):
+                 config.BRAIN_MUTATION_RATE = 0.2
+                 config.MUTATION_EPSILON = 0.1
 
-            new_brain = copy.copy(self.brain)
-            new_brain.make_instance()
-            new_brain.update_weights(new_weights)
+
+
+
+            new_brain = copy.deepcopy(best_brain)
+
+            new_weights = new_brain.get_weights()
+
+            mutated_weights = mutate_brain(new_weights)
+
+            new_brain.update_weights(mutated_weights)
 
             robot = ModularRobot(body, new_brain)
             # Create a scene.
@@ -226,11 +250,16 @@ class BrainGenotype():
 
             print(xy_displacement)
 
+            iterations_since_update += 1
+
             if (xy_displacement > best_fitness):
-                best_brain = new_brain
+                best_brain = copy.copy(new_brain)
+
                 best_fitness = xy_displacement
+                iterations_since_update = 0
 
             iterations -= 1
+            
         self.brain = best_brain
         self.brain.make_instance()
     

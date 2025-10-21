@@ -68,8 +68,8 @@ Contact & contribution:
   - [ ] module count
 
 - [x] brain representation
-- [] Track rng
-- [] Save and load to file brain
+- [ ] Track rng
+- [ ] Save and load to file brain
 
 - [ ] EA
  - [ ] Crossover !!!
@@ -80,6 +80,10 @@ Contact & contribution:
    - [x] Selection
  - [x] Evaluation
  - [x] Tournament selection
+
+- [ ] Ploting
+  - [ ] Matplotlib
+  - [ ] Fitness over generations
 
 ## Morphology rules
 
@@ -151,5 +155,6 @@ Which faces are valid where:
 
 - Subtree crossover
 - Swap limbs from two parents
+  - From spine not allowed to pick left. Will be removed
 - Preferably closer to core
 - Take hinge, not face

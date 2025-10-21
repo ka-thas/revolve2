@@ -40,6 +40,8 @@ def build_body_recursive(body, node):
     if not isinstance(node, dict) or not node:  # leaf node
         return
 
+    # TODO Detect collisions
+    
     for key, value in node.items():
         if key == "front":
             if "hinge" in value.keys():
@@ -103,8 +105,7 @@ if __name__ == "__main__":
 
     robot = ModularRobot(body, brain)
 
-
-    #LAST SIMULATION
+    input("ready")
 
     # Create a scene.
     scene = ModularRobotScene(terrain=terrains.flat())
