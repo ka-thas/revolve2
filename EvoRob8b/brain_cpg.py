@@ -151,9 +151,15 @@ class BrainGenotype():
             output_mapping,
         ) = active_hinges_to_cpg_network_structure_neighbor(active_hinges)
 
+        # cpgnetwork structure has connections
+        # Grid brain match grid body, active hinges get pos
+        # need 3 weights for each grid pos, or 2
+        # one for inetrnal , one for the neighboring tree distance
+        print(cpg_network_structure.connections)
+
 
         brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
-        brain._make_weights(active_hinges, output_mapping, rng)
+        brain._make_weights(active_hinges, cpg_network_structure.connections, rng)
         self.brain = brain
         print("weights: ")
         print(brain.get_weights())
