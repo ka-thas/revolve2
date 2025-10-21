@@ -152,6 +152,8 @@ class BrainGenotype():
 
         brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
         brain._make_weights(active_hinges, output_mapping, rng)
+
+        print(f"brain {brain}")
         self.brain = brain
         print("weights: ")
         print(brain.get_weights())
