@@ -6,17 +6,17 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from EA import JSONGeneEA, Individual
 import json
 
-nr = 1
+nr = 4
 nr2 = 2
 
 ea = JSONGeneEA()
 
-with open(f"./genes_wardrobe/gene_{nr}.json", "r") as f:
+with open(f"../genes_wardrobe/gene_{nr}.json", "r") as f:
     gene1 = json.load(f)
 
 individual1 = Individual(gene1)
 
-with open(f"./genes_wardrobe/gene_{nr2}.json", "r") as f:
+with open(f"../genes_wardrobe/gene_{nr2}.json", "r") as f:
     gene2 = json.load(f)
 
 individual2 = Individual(gene2)
