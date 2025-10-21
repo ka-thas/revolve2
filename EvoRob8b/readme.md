@@ -60,7 +60,7 @@ Contact & contribution:
 - [x] higher prob of placing bricks on front than on right and left
 
 
-- [ ] [Gene validator](./gene_validator.py)
+- [ ] [Gene validator](./gene_validator.py) 
   - [ ] brick has front, right, left faces
     - [ ] especially spine
   - [ ] hinge has brick
@@ -68,11 +68,11 @@ Contact & contribution:
   - [ ] module count
 
 - [x] brain representation
-- [ ] Track rng
-- [ ] Save and load to file brain
+- [ ] Track rng if time
+- [ ] Save and load to file brain -- Emma
 
-- [ ] EA
- - [ ] Crossover !!!
+- [ ] EA -- Sofie
+ - [ ] Crossover !!! -- Sofie
  - [x] Mutation
  - [ ] Inner learning loop for brain optimization @brains
    - [x] Mutation
@@ -81,7 +81,7 @@ Contact & contribution:
  - [x] Evaluation
  - [x] Tournament selection
 
-- [ ] Ploting
+- [ ] Ploting - Ka
   - [ ] Matplotlib
   - [ ] Fitness over generations
 
