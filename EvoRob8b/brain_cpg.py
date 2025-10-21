@@ -197,17 +197,13 @@ class BrainGenotype():
             print("\n Best fitness: ")
             print(best_fitness)
 
-            if (iterations_since_update > 20): # random for now
-                config.BRAIN_MUTATION_RATE = 0.5
-                config.MUTATION_EPSILON = 0.5
+            if (iterations_since_update > 40): # random for now
+                config.BRAIN_MUTATION_RATE = 0.3
+                config.MUTATION_EPSILON = 0.3
 
-            elif (best_fitness > 1): # testing to check if improvement
-                 config.BRAIN_MUTATION_RATE = 0.3
-                 config.MUTATION_EPSILON = 0.3
-                 
             elif (best_fitness > config.EXPLORATION_RATE):
-                 config.BRAIN_MUTATION_RATE = 0.2
-                 config.MUTATION_EPSILON = 0.1
+                 config.BRAIN_MUTATION_RATE = 0.1
+                 config.MUTATION_EPSILON = 0.05
 
 
 

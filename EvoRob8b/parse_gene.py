@@ -52,19 +52,22 @@ def build_body_recursive(body, node):
 
         if key == "left":
             if "hinge" in value.keys():
-                body.left = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.left = ActiveHingeV1(rotation)
                 body.left.attachment = BrickV1(0.0)
                 build_body_recursive(body.left.attachment, node["left"]["hinge"]["brick"])
         
         if key == "right":
             if "hinge" in value.keys():
-                body.right = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.right = ActiveHingeV1(rotation)
                 body.right.attachment = BrickV1(0.0)
                 build_body_recursive(body.right.attachment, node["right"]["hinge"]["brick"])
 
         if key == "back":
             if "hinge" in value.keys():
-                body.back = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.back = ActiveHingeV1(rotation)
                 body.back.attachment = BrickV1(0.0)
                 build_body_recursive(body.back.attachment, node["back"]["hinge"]["brick"])
     return body
@@ -81,6 +84,12 @@ def print_json_gene(node, depth=0):
     for key, value in node.items():
         print(f"{indent}- {key}")
         print_json_gene(value, depth + 1)
+
+def load_brain():
+    pass
+
+def dump_brain(brain_weights):
+    json.dump(brain_weights)
 
 
 if __name__ == "__main__":
@@ -136,37 +145,3 @@ if __name__ == "__main__":
 
     print(xy_displacement)
 
-
-
-    # Test the brain for other bodies
-    print(f"Testing new brain for body spider")
-
-    #tester med ny kropp
-    spide_body = modular_robots_v1.gecko_v1()
-    new_robot = ModularRobot(spide_body, brain)
-
-
-    new_simulator = LocalSimulator(headless=False, num_simulators=1)
-    new_scene = ModularRobotScene(terrain=terrains.flat())
-
-    new_scene.add_robot(new_robot)
-
-    new_scene_states = simulate_scenes(
-        simulator = new_simulator,
-        batch_parameters = make_standard_batch_parameters(),
-        scenes = new_scene,
-    )
-
-
-    scene_state_begin = new_scene_states[0]
-    scene_state_end = new_scene_states[-1]
-
-    # Retrieve the states of the modular robot.
-    robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(robot)
-    robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
-
-    xy_displacement = fitness_functions.xy_displacement(
-        robot_state_begin, robot_state_end
-    )
-
-    print(xy_displacement)
