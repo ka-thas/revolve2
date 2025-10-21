@@ -154,21 +154,24 @@ class BrainGenotype():
         # Grid brain match grid body, active hinges get pos
         # need 3 weights for each grid pos, or 2
         # one for inetrnal , one for the neighboring tree distance
-        print(cpg_network_structure.connections)
+        if config.DEBUG_BRAIN: print(cpg_network_structure.connections)
 
 
         brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
         brain._make_weights(active_hinges, cpg_network_structure.connections, rng)
         self.brain = brain
-        print("weights: ")
-        print(brain.get_weights())
-        print("\n\n outputmap: ")
+
+        if config.DEBUG_BRAIN:
+            print("weights: ")
+            print(brain.get_weights())
+            print("\n\n outputmap: ")
         self.weights = brain.get_weights()
-        
-        print(brain.get_outputmap())
-        print("\n\n initial state:")
-        print(brain.get_initial_state())
-        #print(f"weights: " + brain.get_weights() + "\n\n outputmap: " + brain.get_outputmap()+ "\n\n initial state: " + brain.get_initial_state())
+
+        if config.DEBUG_BRAIN:
+            print(brain.get_outputmap())
+            print("\n\n initial state:")
+            print(brain.get_initial_state())
+            #print(f"weights: " + brain.get_weights() + "\n\n outputmap: " + brain.get_outputmap()+ "\n\n initial state: " + brain.get_initial_state())
 
         
 
@@ -193,9 +196,10 @@ class BrainGenotype():
     
 
         while (iterations > 0):
-            print(f" \n iteration: ", {config.INNER_LOOP_ITERATIONS -iterations})
-            print("\n Best fitness: ")
-            print(best_fitness)
+            if config.DEBUG_BRAIN:
+                print(f" \n iteration: ", {config.INNER_LOOP_ITERATIONS -iterations})
+                print("\n Best fitness: ")
+                print(best_fitness)
 
             if (iterations_since_update > 40): # random for now
                 config.BRAIN_MUTATION_RATE = 0.3
@@ -204,8 +208,6 @@ class BrainGenotype():
             elif (best_fitness > config.EXPLORATION_RATE):
                  config.BRAIN_MUTATION_RATE = 0.1
                  config.MUTATION_EPSILON = 0.05
-
-
 
 
             new_brain = copy.deepcopy(best_brain)
@@ -244,7 +246,7 @@ class BrainGenotype():
                 robot_state_begin, robot_state_end
             )
 
-            print(xy_displacement)
+            if config.DEBUG_BRAIN: print(xy_displacement)
 
             iterations_since_update += 1
 
@@ -259,5 +261,3 @@ class BrainGenotype():
         self.brain = best_brain
         self.brain.make_instance()
     
-
-
