@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     robot = ModularRobot(body, brain)
 
-
+    input("ready")
 
     # Create a scene.
     scene = ModularRobotScene(terrain=terrains.flat())
