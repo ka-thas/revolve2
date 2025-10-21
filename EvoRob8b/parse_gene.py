@@ -85,6 +85,12 @@ def print_json_gene(node, depth=0):
         print(f"{indent}- {key}")
         print_json_gene(value, depth + 1)
 
+def load_brain():
+    pass
+
+def dump_brain(brain_weights):
+    json.dump(brain_weights)
+
 
 if __name__ == "__main__":
     
