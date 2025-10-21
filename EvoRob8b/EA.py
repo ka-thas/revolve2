@@ -6,6 +6,9 @@ This EA handles evolution of robot body structures represented as nested JSON.
 import json
 import random
 import copy
+import csv
+import os
+from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
 import numpy as np
 from dataclasses import dataclass
@@ -39,8 +42,14 @@ class Individual:
 class JSONGeneEA:
     """Evolutionary Algorithm for JSON gene representation."""
     
-    def __init__(self, population_size: int = None, offspring_size: int = None):
-        """Initialize the EA with configuration parameters."""
+    def __init__(self, population_size: int = None, offspring_size: int = None, experiment_name: str = "default"):
+        """Initialize the EA with configuration parameters.
+        
+        Args:
+            population_size: Number of individuals in population
+            offspring_size: Number of offspring per generation
+            experiment_name: Name for this experimental run (creates folder experiment_<name>)
+        """
         self.population_size = population_size or config.POPULATION_SIZE
         self.offspring_size = offspring_size or config.OFFSPRING_SIZE
         self.max_modules = config.MAX_BRICKS
@@ -56,9 +65,18 @@ class JSONGeneEA:
         # Initialize random number generator
         self.rng = make_rng_time_seed()
         
+        # Setup experiment directory and tracking
+        self.experiment_name = experiment_name
+        self.experiment_dir = Path(f"experiment_{experiment_name}")
+        self.experiment_dir.mkdir(exist_ok=True)
+        
+        # Track fitness statistics across generations
+        self.fitness_history: List[Dict[str, float]] = []
+        
         # Setup logging
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
+        self.logger.info(f"Experiment directory: {self.experiment_dir}")
         
     def initialize_population(self) -> None:
         """Initialize the population with random individuals."""
@@ -154,8 +172,16 @@ class JSONGeneEA:
         # Sort population by fitness (descending)
         self.population.sort(key=lambda x: x.fitness, reverse=True)
         
-        best_fitness = self.population[0].fitness
-        avg_fitness = sum(individual.fitness for individual in self.population) / len(self.population)
+        # Calculate and track statistics
+        fitnesses = [ind.fitness for ind in self.population]
+        stats = {
+            'generation': self.generation,
+            'max': max(fitnesses),
+            'min': min(fitnesses),
+            'mean': np.mean(fitnesses),
+            'median': np.median(fitnesses)
+        }
+        self.fitness_history.append(stats)
         
         self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Avg={avg_fitness:.3f}")
     
@@ -305,17 +331,33 @@ class JSONGeneEA:
         self.population = combined[:self.population_size]
     
     def save_best_individual(self, filename: str = None) -> None:
-        """Save the best individual to a file."""
+        """Save the best individual to a file in the experiment directory."""
         if not self.population:
             return
         
         best = self.population[0]
-        filename = filename or config.LOG_FOLDER+f"best_individual_gen_{self.generation}.json"
+        if filename is None:
+            filename = self.experiment_dir / f"best_individual_gen_{self.generation}.json" # handled by pathlib
+        else:
+            filename = self.experiment_dir / filename
         
         with open(filename, 'w') as f:
             json.dump(best.gene, f, indent=2)
         
         self.logger.info(f"Best individual saved to {filename} (fitness: {best.fitness:.3f})")
+    
+    def save_fitness_history(self) -> None:
+        """Save fitness statistics across generations to a CSV file."""
+        csv_path = self.experiment_dir / "fitness_history.csv"
+        
+        with open(csv_path, 'w', newline='') as f:
+            if self.fitness_history:
+                fieldnames = ['generation', 'max', 'min', 'mean', 'median']
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(self.fitness_history)
+        
+        self.logger.info(f"Fitness history saved to {csv_path}")
     
     def run(self) -> Individual:
         """Run the evolutionary algorithm."""
@@ -340,15 +382,17 @@ class JSONGeneEA:
             # Log progress
             if self.generation % 10 == 0:
                 self.save_best_individual()
-            print(7)
+                self.save_fitness_history()
+            
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
-            print(8)
+        
         self.logger.info(f"Evolution completed after {self.generation} generations and {self.evaluations} evaluations")
-        print(9)
-        # Save final best individual
-        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual.json")
+        
+        # Save final best individual and complete fitness history
+        self.save_best_individual("final_best_individual.json")
+        self.save_fitness_history()
         
         return self.population[0]
 
@@ -356,7 +400,9 @@ class JSONGeneEA:
 def main():
     """Main function to run the evolutionary algorithm."""
     random.seed(50)
-    ea = JSONGeneEA()
+    # Create EA with custom experiment name
+    experiment_name = input("experiment_name: ")
+    ea = JSONGeneEA(experiment_name)
     best_individual = ea.run()
     
     print(f"\nBest individual found:")
