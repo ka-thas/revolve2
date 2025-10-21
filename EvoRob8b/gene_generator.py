@@ -50,7 +50,11 @@ class Gene_Generator:
         """
         spinebrick: inserted with core. and recursively called using spinebrick
         
-        output: none but changes the input dict
+        output: modifies the input dict
+        
+        left side of the spine is mirrored from the right side
+        per brick: left becomes right, right becomes left
+        hinge rotation is inverted
         """
 
         spinebrick["left"] = {}

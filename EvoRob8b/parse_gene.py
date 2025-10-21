@@ -27,6 +27,8 @@ from revolve2.experimentation.rng import make_rng_time_seed
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 
+from revolve2.standards import fitness_functions, modular_robots_v1, terrains
+
 def build_body(gene):
     body = BodyV1()
     
@@ -38,6 +40,8 @@ def build_body_recursive(body, node):
     if not isinstance(node, dict) or not node:  # leaf node
         return
 
+    # TODO Detect collisions
+    
     for key, value in node.items():
         if key == "front":
             if "hinge" in value.keys():
@@ -101,7 +105,7 @@ if __name__ == "__main__":
 
     robot = ModularRobot(body, brain)
 
-
+    input("ready")
 
     # Create a scene.
     scene = ModularRobotScene(terrain=terrains.flat())
@@ -126,6 +130,41 @@ if __name__ == "__main__":
     robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
 
     # Calculate the xy displacement of the robot.
+    xy_displacement = fitness_functions.xy_displacement(
+        robot_state_begin, robot_state_end
+    )
+
+    print(xy_displacement)
+
+
+
+    # Test the brain for other bodies
+    print(f"Testing new brain for body spider")
+
+    #tester med ny kropp
+    spide_body = modular_robots_v1.gecko_v1()
+    new_robot = ModularRobot(spide_body, brain)
+
+
+    new_simulator = LocalSimulator(headless=False, num_simulators=1)
+    new_scene = ModularRobotScene(terrain=terrains.flat())
+
+    new_scene.add_robot(new_robot)
+
+    new_scene_states = simulate_scenes(
+        simulator = new_simulator,
+        batch_parameters = make_standard_batch_parameters(),
+        scenes = new_scene,
+    )
+
+
+    scene_state_begin = new_scene_states[0]
+    scene_state_end = new_scene_states[-1]
+
+    # Retrieve the states of the modular robot.
+    robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(robot)
+    robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
+
     xy_displacement = fitness_functions.xy_displacement(
         robot_state_begin, robot_state_end
     )
