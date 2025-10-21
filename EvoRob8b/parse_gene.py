@@ -27,6 +27,8 @@ from revolve2.experimentation.rng import make_rng_time_seed
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 
+from revolve2.standards import fitness_functions, modular_robots_v1, terrains
+
 def build_body(gene):
     body = BodyV1()
     
@@ -50,19 +52,22 @@ def build_body_recursive(body, node):
 
         if key == "left":
             if "hinge" in value.keys():
-                body.left = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.left = ActiveHingeV1(rotation)
                 body.left.attachment = BrickV1(0.0)
                 build_body_recursive(body.left.attachment, node["left"]["hinge"]["brick"])
         
         if key == "right":
             if "hinge" in value.keys():
-                body.right = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.right = ActiveHingeV1(rotation)
                 body.right.attachment = BrickV1(0.0)
                 build_body_recursive(body.right.attachment, node["right"]["hinge"]["brick"])
 
         if key == "back":
             if "hinge" in value.keys():
-                body.back = ActiveHingeV1(0.0)
+                rotation = value["hinge"]["rotation"]
+                body.back = ActiveHingeV1(rotation)
                 body.back.attachment = BrickV1(0.0)
                 build_body_recursive(body.back.attachment, node["back"]["hinge"]["brick"])
     return body
@@ -133,3 +138,4 @@ if __name__ == "__main__":
     )
 
     print(xy_displacement)
+

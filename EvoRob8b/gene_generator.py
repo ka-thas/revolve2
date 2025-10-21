@@ -84,11 +84,11 @@ class Gene_Generator:
             
             #Only uses back on the spine. and doesnt make a left on the side
             if is_core:
-                sides = ["front", "right", "back"]
+                sides = ["right","front", "back"]
             elif spine:
-                sides = ["front", "right"]
+                sides = ["right","front"]
             else:
-                sides = ["front", "left", "right"]
+                sides = ["right", "left","front"]
             for side in sides:
                 #can have up to 38 bricks with a limit of 20. because it doesnt count the doubling when its copied from right to left. other than the first time
                 # Might make the body wider than longer

@@ -1,0 +1,44 @@
+{
+    "core": {
+        "front": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "left": {}
+                            },
+                            "rotation": 0.0
+                        }
+                    },
+                    "left": {}
+                },
+                "rotation": 0.0
+            }
+        },
+        "right": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "right": {},
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "left": {}
+                            },
+                            "rotation": -0.0
+                        }
+                    }
+                },
+                "rotation": 0.0
+            }
+        },
+        "back": {},
+        "left": {}
+    }
+}
