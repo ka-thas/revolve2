@@ -229,7 +229,11 @@ class JSONGeneEA:
         return mutated
     
     def crossover_genes(self, parent1: Individual, parent2: Individual) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        """Perform crossover between two parent genes."""
+        """
+        Perform crossover between two parent genes.
+        see ./images/sub-tree-crossover.png
+        """
+        
         # Create offspring as copies of parents
         offspring1 = copy.deepcopy(parent1.gene)
         offspring2 = copy.deepcopy(parent2.gene)
