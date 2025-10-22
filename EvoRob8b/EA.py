@@ -169,9 +169,9 @@ class JSONGeneEA:
         # Return the best individual from the tournament
         return max(tournament, key=lambda x: x.fitness)
     
-    def mutate_gene(self, Individual: Dict[str, Any]) -> Dict[str, Any]:
+    def mutate_gene(self, gene: Dict[str, Any]) -> Dict[str, Any]:
         """Mutate a gene with various mutation operators."""
-        mutated = copy.deepcopy(Individual.gene)
+        mutated = copy.deepcopy(gene)
         
         def mutate_recursive(node, depth=0):
             print(node.keys())
@@ -181,12 +181,12 @@ class JSONGeneEA:
             for key, value in list(node.items()):
                 if key in ["front", "right", "left"]:
                     if random.random() < self.mutation_rate:
-                        pmutate = 0.1+0.03*depth
-                        pskip = 0.7-0.09*depth
+                        pmutate = 0.15+0.05*depth
+                        pskip = 0.7-0.10*depth
                         # Mutation operations
                         mutation_type = np.random.choice([
-                            "add_hinge", "remove_hinge", "modify_existing", "swap_sides"
-                        ], p=[pmutate, pmutate, pskip, pmutate])
+                            "add_hinge", "remove_hinge", "modify_existing"
+                        ], p=[pmutate, pmutate, pskip])
                         
                         
                         if mutation_type == "add_hinge" and (not value or value == {}):
@@ -214,14 +214,15 @@ class JSONGeneEA:
                                 print(node.keys(), "modify")
                                 mutate_recursive(value["hinge"]["brick"], depth + 1)
                             
-                        
+                        """
                         elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
                             # Swap with another side
+                            print(node.keys(), "swap")
                             other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
                             other_key = random.choice(other_sides)
                             if other_key in node:
                                 node[key], node[other_key] = node[other_key], node[key]
-                        
+                        """
             
             return node
         
@@ -245,26 +246,29 @@ class JSONGeneEA:
 
         def recursive(node):
             """
-            input: brick
-            ouput: hinge
+            input: hinge: {brick: {...}}
+            output: hinge: {brick: {...}}
             """
-            
-            face = random.choice(list(node.keys()))
-            if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:
-                if node[face]: # eg. if node["front"] has content 
-                    child = recursive(node[face]["hinge"]["brick"])
+            faces = ["front", "right", "left"]
+            face = random.choice(faces)
+
+            if node["brick"][face]: # eg. if node["front"] has content
+                if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:        
+                    child = recursive(node["brick"][face]["hinge"])
                     if child:
                         return child
             return node
 
 
-        subtree1 = recursive(offspring1["core"])
-        subtree2 = recursive(offspring2["core"])
+        # get subtrees to swap
+        face = random.choice(["front", "back", "right"])
+        subtree1 = recursive(offspring1["core"][face]["hinge"]) if "hinge" in offspring1["core"][face] else None
+        subtree2 = recursive(offspring2["core"][face]["hinge"]) if "hinge" in offspring2["core"][face] else None
+        
+        if subtree1 and subtree2:
+            subtree1["brick"], subtree2["brick"] = subtree2["brick"], subtree1["brick"]
 
-        if "hinge" in subtree1.keys() and "hinge" in subtree2.keys():
-            subtree1["hinge"], subtree2["hinge"] = subtree2["hinge"], subtree1["hinge"]
-
-        return Individual(offspring1), Individual(offspring2)
+        return offspring1, offspring2
     
     def create_offspring(self) -> List[Individual]:
         """Create offspring using selection, crossover, and mutation."""
@@ -328,35 +332,28 @@ class JSONGeneEA:
         self.logger.info(f"Best individual saved to {filename} (fitness: {best.fitness:.3f})")
     
     def run(self) -> Individual:
+        print("Running EA")
         """Run the evolutionary algorithm."""
         self.logger.info("Starting evolutionary algorithm")
-        print(1)
         # Initialize population
         self.initialize_population()
-        print(2)
         # Evaluate initial population
         self.evaluate_population()
-        print(3)
         # Evolution loop
         while self.evaluations < self.function_evaluations:
             self.generation += 1
-            print(4)
             # Create offspring
             offspring = self.create_offspring()
-            print(5)
             # Survival selection
             self.survival_selection(offspring)
-            print(6)
             # Log progress
             if self.generation % 10 == 0:
                 self.save_best_individual()
-            print(7)
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
-            print(8)
+            print(f"Evaluation:{self.evaluations}")
         self.logger.info(f"Evolution completed after {self.generation} generations and {self.evaluations} evaluations")
-        print(9)
         # Save final best individual
         self.save_best_individual(config.LOG_FOLDER + f"final_best_individual.json")
         

@@ -1,0 +1,64 @@
+{
+  "core": {
+    "right": {},
+    "front": {
+      "hinge": {
+        "brick": {
+          "front": {
+            "hinge": {
+              "brick": {
+                "front": {
+                  "hinge": {
+                    "brick": {
+                      "front": {
+                        "hinge": {
+                          "brick": {
+                            "front": {},
+                            "right": {},
+                            "left": {}
+                          },
+                          "rotation": 1.5707963267948966
+                        }
+                      },
+                      "right": {},
+                      "left": {}
+                    },
+                    "rotation": 0.0
+                  }
+                },
+                "right": {},
+                "left": {}
+              },
+              "rotation": 1.5707963267948966
+            }
+          },
+          "right": {},
+          "left": {}
+        },
+        "rotation": 0.0
+      }
+    },
+    "back": {
+      "hinge": {
+        "brick": {
+          "front": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": 0.0
+            }
+          },
+          "right": {},
+          "left": {}
+        },
+        "rotation": 0.0
+      }
+    },
+    "left": {}
+  },
+  "id": 4,
+  "brain": {}
+}

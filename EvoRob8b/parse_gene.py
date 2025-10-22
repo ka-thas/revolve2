@@ -93,11 +93,14 @@ def dump_brain(brain_weights):
 
 
 if __name__ == "__main__":
-    
-    nr = input("gene nr.")
-    with open(f"./genes_wardrobe/gene_{nr}.json", "r") as f:
-        gene = json.load(f)
-    
+
+    gene_name = input("gene name: ")
+    if gene_name == "final":
+        gene = json.load(open("./experiments/final_best_individual.json", "r"))
+    else:
+        with open(f"./genes_wardrobe/gene_{gene_name}.json", "r") as f:
+            gene = json.load(f)
+
     print("Gene Structure:")
     print_json_gene(gene)
 

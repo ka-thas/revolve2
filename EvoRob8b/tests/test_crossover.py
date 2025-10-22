@@ -6,8 +6,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from EA import JSONGeneEA, Individual
 import json
 
-nr = 4
-nr2 = 2
+nr = 1
+nr2 = 5
 
 ea = JSONGeneEA()
 

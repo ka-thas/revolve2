@@ -21,8 +21,8 @@
 - [ ] Track rng if time
 - [ ] Save and load to file brain -- Emma
 
-- [ ] EA -- Sofie
- - [ ] Crossover !!! -- Sofie
+- [x] EA
+ - [x] Crossover
  - [x] Mutation
  - [ ] Inner learning loop for brain optimization @brains
    - [x] Mutation
