@@ -53,6 +53,7 @@ import config
 import multineat
 import numpy as np
 import numpy.typing as npt
+import numpy
 
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
@@ -66,7 +67,7 @@ from revolve2.standards.simulation_parameters import make_standard_batch_paramet
 
 from copy import deepcopy
 
-def mutate_brain(weights):
+def mutate_brain(weights, rng):
     """Return a mutated copy of this genotype.
 
     Mutation is applied element-wise to each parameter with 80% chance;
@@ -84,7 +85,7 @@ def mutate_brain(weights):
     for y in range(len(weights)):
             for x in range(len(weights[y])):
                 if (weights[y][x] != 0 and random.random() > 1-config.BRAIN_MUTATION_RATE ):
-                    weights[y][x] += random.random()* epsilon*2 - epsilon
+                    weights[y][x] += + rng.normal(loc=0, scale=config.MUTATION_EPSILON)
     # print("\n new weights")
     # print(weights)        
 
@@ -198,11 +199,10 @@ class BrainGenotype():
             print(best_fitness)
 
             if (iterations_since_update > 40): # random for now
-                config.BRAIN_MUTATION_RATE = 0.3
                 config.MUTATION_EPSILON = 0.3
+                
 
             elif (best_fitness > config.EXPLORATION_RATE):
-                 config.BRAIN_MUTATION_RATE = 0.1
                  config.MUTATION_EPSILON = 0.05
 
 
@@ -212,7 +212,7 @@ class BrainGenotype():
 
             new_weights = new_brain.get_weights()
 
-            mutated_weights = mutate_brain(new_weights)
+            mutated_weights = mutate_brain(new_weights, rng)
 
             new_brain.update_weights(mutated_weights)
 
