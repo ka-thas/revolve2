@@ -134,7 +134,7 @@ class Gene_Generator:
 
 
 if __name__ == "__main__":
-    random.seed(7449)
+    random.seed(config.SEED)
 
     generator = Gene_Generator()
 

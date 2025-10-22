@@ -169,9 +169,9 @@ class JSONGeneEA:
         # Return the best individual from the tournament
         return max(tournament, key=lambda x: x.fitness)
     
-    def mutate_gene(self, gene_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def mutate_gene(self, Individual: Dict[str, Any]) -> Dict[str, Any]:
         """Mutate a gene with various mutation operators."""
-        mutated = copy.deepcopy(gene_dict)
+        mutated = copy.deepcopy(Individual.gene)
         
         def mutate_recursive(node, depth=0):
             print(node.keys())
@@ -191,7 +191,11 @@ class JSONGeneEA:
                         
                         if mutation_type == "add_hinge" and (not value or value == {}):
                             print(node.keys(), "add")
-                            new_brick = {}
+                            new_brick = {
+                            "front": {},
+                            "right": {},
+                            "left": {}
+                            }
                             rotation = 0.0
                             if random.random() < config.CHANCE_TO_ROTATE:
                                 rotation = random.randint(1,3) * np.pi/2
@@ -202,6 +206,7 @@ class JSONGeneEA:
                             # Remove hinge structure
                             print(node.keys(), "remove")
                             node[key] = {}
+                            print(node)
                         
                         elif mutation_type == "modify_existing" and isinstance(value, dict) and "hinge" in value:
                             # Recursively mutate the brick structure
@@ -249,9 +254,9 @@ class JSONGeneEA:
                 if node[face]: # eg. if node["front"] has content 
                     child = recursive(node[face]["hinge"]["brick"])
                     if child:
-                        return child # only return child if not empty
-            print(f"\nres:   {node[face]}") 
-            return node[face]
+                        return child
+            
+            return node
         
         print(f"offspring type: {type(offspring1)} and off2: {type(offspring2)}")
         # print(f"offcore type: {type(offspring1["core"])} and offcore2: {type(offspring2["core"]) }")
@@ -261,17 +266,8 @@ class JSONGeneEA:
 
         subtree1 = recursive(offspring1["core"])
         subtree2 = recursive(offspring2["core"])
-
-        if subtree1 and subtree2:
-            subtree1["hinge"], subtree2["hinge"] = subtree2["hinge"], subtree1["hinge"] #Feil her
-
-        elif subtree1 and not subtree2:
-            subtree2["hinge"] = subtree1["hinge"]
-            subtree1["hinge"] = {}
-
-        elif not subtree1 and subtree2:
-            subtree1["hinge"] = subtree2["hinge"]
-            subtree2["hinge"] = {}
+        if "hinge" in subtree1.keys() and "hinge" in subtree2.keys():
+            subtree1["hinge"], subtree2["hinge"] = subtree2["hinge"], subtree1["hinge"]
 
         return Individual(offspring1), Individual(offspring2)
     
