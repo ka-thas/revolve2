@@ -9,7 +9,7 @@ import logging
 import pickle
 from typing import Any
 
-import multineat
+# import multineat
 import numpy as np
 import numpy.typing as npt
 import json
