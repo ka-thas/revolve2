@@ -16,6 +16,7 @@
   - [ ] hinge has brick
   - [ ] spine symmetry
   - [ ] module count
+  - [x] count bricks
 
 - [x] brain representation
 - [ ] Track rng if time
@@ -34,4 +35,5 @@
 - [ ] Ploting -- Ka
   - [ ] Matplotlib
   - [ ] Fitness over generations
+  - [ ] Compare own morph with EA the same amount of generation?
 

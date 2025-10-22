@@ -1,0 +1,19 @@
+{
+    "core": {
+        "front": {"hinge": {
+                            "brick": {
+                                    "front": {},
+                                            "right": {},
+                                                    "left": {}
+                                                                },
+                                                                "rotation": 0.0
+                                                            }},
+
+        "right": {},
+
+        "back": {},
+
+        "left": {}
+    }
+}
+
