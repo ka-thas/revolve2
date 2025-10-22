@@ -240,7 +240,7 @@ class JSONGeneEA:
         """
         
         # Create offspring as copies of parents
-        offspring1 = copy.deepcopy(parent1.gene)
+        offspring1 = copy.deepcopy(parent1.gene)  # Dict[str, Any]
         offspring2 = copy.deepcopy(parent2.gene)
 
         def recursive(node):
@@ -251,13 +251,19 @@ class JSONGeneEA:
 
             face = random.choice(list(node.keys()))
             if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:
-                if node[face]: 
+                if node[face]: # eg. if node["front"] has content 
                     child = recursive(node[face]["hinge"]["brick"])
                     if child:
                         return child
             
             return node
         
+        print(f"offspring type: {type(offspring1)} and off2: {type(offspring2)}")
+        # print(f"offcore type: {type(offspring1["core"])} and offcore2: {type(offspring2["core"]) }")
+        print(f"\noffspring1: {(offspring1)}")
+        print(f"offspring2: {(offspring2)}")
+
+
         subtree1 = recursive(offspring1["core"])
         subtree2 = recursive(offspring2["core"])
         if "hinge" in subtree1.keys() and "hinge" in subtree2.keys():

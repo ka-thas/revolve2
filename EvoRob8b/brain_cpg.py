@@ -53,6 +53,7 @@ import config
 import multineat
 import numpy as np
 import numpy.typing as npt
+import numpy
 
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
@@ -66,7 +67,7 @@ from revolve2.standards.simulation_parameters import make_standard_batch_paramet
 
 from copy import deepcopy
 
-def mutate_brain(weights):
+def mutate_brain(weights, rng):
     """Return a mutated copy of this genotype.
 
     Mutation is applied element-wise to each parameter with 80% chance;
@@ -84,7 +85,7 @@ def mutate_brain(weights):
     for y in range(len(weights)):
             for x in range(len(weights[y])):
                 if (weights[y][x] != 0 and random.random() > 1-config.BRAIN_MUTATION_RATE ):
-                    weights[y][x] += random.random()* epsilon*2 - epsilon
+                    weights[y][x] += + rng.normal(loc=0, scale=config.MUTATION_EPSILON)
     # print("\n new weights")
     # print(weights)        
 
@@ -154,21 +155,24 @@ class BrainGenotype():
         # Grid brain match grid body, active hinges get pos
         # need 3 weights for each grid pos, or 2
         # one for inetrnal , one for the neighboring tree distance
-        print(cpg_network_structure.connections)
+        if config.DEBUG_BRAIN: print(cpg_network_structure.connections)
 
 
         brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
         brain._make_weights(active_hinges, cpg_network_structure.connections, rng)
         self.brain = brain
-        print("weights: ")
-        print(brain.get_weights())
-        print("\n\n outputmap: ")
+
+        if config.DEBUG_BRAIN:
+            print("weights: ")
+            print(brain.get_weights())
+            print("\n\n outputmap: ")
         self.weights = brain.get_weights()
-        
-        print(brain.get_outputmap())
-        print("\n\n initial state:")
-        print(brain.get_initial_state())
-        #print(f"weights: " + brain.get_weights() + "\n\n outputmap: " + brain.get_outputmap()+ "\n\n initial state: " + brain.get_initial_state())
+
+        if config.DEBUG_BRAIN:
+            print(brain.get_outputmap())
+            print("\n\n initial state:")
+            print(brain.get_initial_state())
+            #print(f"weights: " + brain.get_weights() + "\n\n outputmap: " + brain.get_outputmap()+ "\n\n initial state: " + brain.get_initial_state())
 
         
 
@@ -193,26 +197,24 @@ class BrainGenotype():
     
 
         while (iterations > 0):
-            print(f" \n iteration: ", {config.INNER_LOOP_ITERATIONS -iterations})
-            print("\n Best fitness: ")
-            print(best_fitness)
+            if config.DEBUG_BRAIN:
+                print(f" \n iteration: ", {config.INNER_LOOP_ITERATIONS -iterations})
+                print("\n Best fitness: ")
+                print(best_fitness)
 
             if (iterations_since_update > 40): # random for now
-                config.BRAIN_MUTATION_RATE = 0.3
                 config.MUTATION_EPSILON = 0.3
+                
 
             elif (best_fitness > config.EXPLORATION_RATE):
-                 config.BRAIN_MUTATION_RATE = 0.1
                  config.MUTATION_EPSILON = 0.05
-
-
 
 
             new_brain = copy.deepcopy(best_brain)
 
             new_weights = new_brain.get_weights()
 
-            mutated_weights = mutate_brain(new_weights)
+            mutated_weights = mutate_brain(new_weights, rng)
 
             new_brain.update_weights(mutated_weights)
 
@@ -244,7 +246,7 @@ class BrainGenotype():
                 robot_state_begin, robot_state_end
             )
 
-            print(xy_displacement)
+            if config.DEBUG_BRAIN: print(xy_displacement)
 
             iterations_since_update += 1
 
@@ -259,5 +261,3 @@ class BrainGenotype():
         self.brain = best_brain
         self.brain.make_instance()
     
-
-
