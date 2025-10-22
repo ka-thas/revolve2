@@ -22,11 +22,11 @@ with open(f"../genes_wardrobe/gene_{nr2}.json", "r") as f:
 individual2 = Individual(gene2)
 
 with open("test.json", "w") as f:
-    json.dump(individual1.gene["core"], f)
-    json.dump(individual2.gene["core"], f)
+    todump = {"core1": individual1.gene["core"], "core2": individual2.gene["core"]}
+    json.dump(todump, f, indent=4)
 
 individual1, individual2 = ea.crossover_genes(individual1, individual2)
 
 with open("test2.json", "w") as f:
-    json.dump(individual1.gene["core"], f)
-    json.dump(individual2.gene["core"], f)
+    todump = {"core1": individual1.gene["core"], "core2": individual2.gene["core"]}
+    json.dump(todump, f, indent=4)
