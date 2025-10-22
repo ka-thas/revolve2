@@ -248,24 +248,19 @@ class JSONGeneEA:
             input: brick
             ouput: hinge
             """
-
+            
             face = random.choice(list(node.keys()))
             if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:
                 if node[face]: # eg. if node["front"] has content 
                     child = recursive(node[face]["hinge"]["brick"])
                     if child:
                         return child
-            
             return node
-        
-        print(f"offspring type: {type(offspring1)} and off2: {type(offspring2)}")
-        # print(f"offcore type: {type(offspring1["core"])} and offcore2: {type(offspring2["core"]) }")
-        print(f"\noffspring1: {(offspring1)}")
-        print(f"offspring2: {(offspring2)}")
 
 
         subtree1 = recursive(offspring1["core"])
         subtree2 = recursive(offspring2["core"])
+
         if "hinge" in subtree1.keys() and "hinge" in subtree2.keys():
             subtree1["hinge"], subtree2["hinge"] = subtree2["hinge"], subtree1["hinge"]
 
