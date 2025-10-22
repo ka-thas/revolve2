@@ -54,6 +54,7 @@ import multineat
 import numpy as np
 import numpy.typing as npt
 import numpy
+import time
 
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
@@ -68,6 +69,7 @@ from revolve2.standards.simulation_parameters import make_standard_batch_paramet
 from copy import deepcopy
 
 def mutate_brain(weights, rng):
+
     """Return a mutated copy of this genotype.
 
     Mutation is applied element-wise to each parameter with 80% chance;
@@ -88,6 +90,8 @@ def mutate_brain(weights, rng):
                     weights[y][x] += + rng.normal(loc=0, scale=config.MUTATION_EPSILON)
     # print("\n new weights")
     # print(weights)        
+
+
 
     return weights
 
@@ -133,10 +137,15 @@ class BrainGenotype():
         self.weights = self.brain.get_weights()
         
 
+    def get_weights(self):
+         return self.weights
+    
+    def update_weights(self, new_weights):
+        self.brain.update_weights(new_weights)
+        self.weights = new_weights
 
 
-
-    def develop_brain(self, body, rng):
+    def develop_brain(self, body, rng, weights=np.array(0)):
         """Convert the genotype into a runnable CPG brain instance.
 
         Steps:
@@ -159,8 +168,12 @@ class BrainGenotype():
 
 
         brain = BrainCpgNetworkNeighborRandom(body=body, rng=rng)
-        brain._make_weights(active_hinges, cpg_network_structure.connections, rng)
+        if (weights.any()):
+            brain.update_weights(weights)
+        else:
+            brain._make_weights(active_hinges, cpg_network_structure.connections, rng)
         self.brain = brain
+        self.weights = brain.get_weights()
 
         if config.DEBUG_BRAIN:
             print("weights: ")
@@ -168,10 +181,7 @@ class BrainGenotype():
             print("\n\n outputmap: ")
         self.weights = brain.get_weights()
 
-        if config.DEBUG_BRAIN:
-            print(brain.get_outputmap())
-            print("\n\n initial state:")
-            print(brain.get_initial_state())
+
             #print(f"weights: " + brain.get_weights() + "\n\n outputmap: " + brain.get_outputmap()+ "\n\n initial state: " + brain.get_initial_state())
 
         
@@ -188,6 +198,7 @@ class BrainGenotype():
 
 
     def improve(self, body, iterations, rng):
+        start_time = time.time()
         best_fitness = 0
         best_brain = copy.deepcopy(self.brain)
         best_brain.make_instance()
@@ -203,36 +214,33 @@ class BrainGenotype():
                 print(best_fitness)
 
             if (iterations_since_update > 40): # random for now
-                config.MUTATION_EPSILON = 0.3
+                config.MUTATION_EPSILON = 0.
                 
 
             elif (best_fitness > config.EXPLORATION_RATE):
                  config.MUTATION_EPSILON = 0.05
 
 
-            new_brain = copy.deepcopy(best_brain)
+            old_weights = best_brain.get_weights()
 
-            new_weights = new_brain.get_weights()
+            mutated_weights = mutate_brain(old_weights, rng)
 
-            mutated_weights = mutate_brain(new_weights, rng)
+            best_brain.update_weights(mutated_weights)
 
-            new_brain.update_weights(mutated_weights)
-
-            robot = ModularRobot(body, new_brain)
+            robot = ModularRobot(body, best_brain)
             # Create a scene.
             scene = ModularRobotScene(terrain=terrains.flat())
             scene.add_robot(robot)
 
             # Create a simulator.
             simulator = LocalSimulator(headless=True)
-
             # Simulate the scene and obtain states sampled during the simulation.
             scene_states = simulate_scenes(
                 simulator=simulator,
                 batch_parameters=make_standard_batch_parameters(),
                 scenes=scene,
             )
-
+            
             # Get the state at the beginning and end of the simulation.
             scene_state_begin = scene_states[0]
             scene_state_end = scene_states[-1]
@@ -249,15 +257,21 @@ class BrainGenotype():
             if config.DEBUG_BRAIN: print(xy_displacement)
 
             iterations_since_update += 1
-
-            if (xy_displacement > best_fitness):
-                best_brain = copy.copy(new_brain)
-
+            # If worse, revert
+            if (xy_displacement < best_fitness):
+                best_brain.update_weights(old_weights)
+            else:
                 best_fitness = xy_displacement
                 iterations_since_update = 0
 
             iterations -= 1
             
         self.brain = best_brain
+        self.weights = self.brain.get_weights()
         self.brain.make_instance()
+
+        end_time = time.time()
+        if config.DEBUG_BRAIN:
+            print(f"\n total_time", end_time-start_time)
+
     

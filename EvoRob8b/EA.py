@@ -23,18 +23,22 @@ from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 from revolve2.standards import fitness_functions, terrains
 
+from brain_cpg import BrainGenotype
 
 @dataclass
+# To get weights use:             individual.brain.get_weights() 
 class Individual:
     """Represents an individual in the population."""
-    gene: Dict[str, Any]
-    fitness: float = -float('inf')
-    id: int = 0
-    
-    def __post_init__(self):
-        if self.id == 0:
-            self.id = random.randint(1, 1000000)
+    def __init__(self, gene):
+        # Build the robot body from the gene
+        self.gene = gene
 
+
+        self.body = None
+        self.brain = None
+        self.weights = None
+        self.fitness: float = -float('inf')
+    
 
 class JSONGeneEA:
     """Evolutionary Algorithm for JSON gene representation."""
@@ -69,9 +73,9 @@ class JSONGeneEA:
             # gene_generator was refactored into a class - use it here
             gene_dict = self.generator.make_core()
             gene_dict["id"] = i + 1
-            gene_dict["brain"] = {}
             
-            individual = Individual(gene=gene_dict, id=i + 1)
+            
+            individual = Individual(gene=gene_dict)
             self.population.append(individual)
             
         self.logger.info("Population initialized successfully")
@@ -99,14 +103,28 @@ class JSONGeneEA:
     def evaluate_individual(self, individual: Individual) -> float:
         """Evaluate the fitness of an individual."""
         try:
-            # Build the robot body from the gene
-            body = build_body(individual.gene)
-            
+
+            individual.body = build_body(individual.gene)
+            body = individual.body
+            print("\n en")
+
+            rng = make_rng_time_seed()
             # Create brain
-            brain = BrainCpgNetworkNeighborRandom(body=body, rng=self.rng)
+            brain = BrainGenotype()
+            print("\n to")
+
+            brain.develop_brain(body, rng=rng)
+            brain.improve(body, config.INNER_LOOP_ITERATIONS, rng) 
+
+            individual.brain = brain  
+            individual.weights = individual.brain.get_weights() 
+
+
             robot = ModularRobot(body, brain)
-            
-            # Create scene
+
+            print("\n tre")
+  
+                    # Create scene
             scene = ModularRobotScene(terrain=terrains.flat())
             scene.add_robot(robot)
             
@@ -117,7 +135,8 @@ class JSONGeneEA:
                 batch_parameters=make_standard_batch_parameters(),
                 scenes=scene,
             )
-            
+            print("\n fire")
+
             # Get the state at the beginning and end of the simulation.
             scene_state_begin = scene_states[0]
             scene_state_end = scene_states[-1]
@@ -139,7 +158,7 @@ class JSONGeneEA:
             return fitness
             
         except Exception as e:
-            self.logger.warning(f"Error evaluating individual {individual.id}: {str(e)}")
+            self.logger.warning(f"Error evaluating individual : {str(e)}")
             return -1000.0  # Very low fitness for invalid individuals
     
     def evaluate_population(self) -> None:
@@ -328,6 +347,11 @@ class JSONGeneEA:
         
         with open(filename, 'w') as f:
             json.dump(best.gene, f, indent=2)
+            print_json_gene(best.brain)
+            json.dump(best.brain.weights.tolist(), f, indent=2)
+
+
+
         
         self.logger.info(f"Best individual saved to {filename} (fitness: {best.fitness:.3f})")
     
@@ -355,14 +379,14 @@ class JSONGeneEA:
             print(f"Evaluation:{self.evaluations}")
         self.logger.info(f"Evolution completed after {self.generation} generations and {self.evaluations} evaluations")
         # Save final best individual
-        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual.json")
+        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual2.json")
         
         return self.population[0]
 
 
 def main():
     """Main function to run the evolutionary algorithm."""
-    random.seed(50)
+    random.seed(config.SEED)
     ea = JSONGeneEA()
     best_individual = ea.run()
     

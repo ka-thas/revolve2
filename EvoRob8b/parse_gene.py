@@ -88,6 +88,32 @@ def print_json_gene(node, depth=0):
 def load_brain():
     pass
 
+def load_body_and_brain(file):
+
+    content = file.read()
+
+    # Find the index of the last closing brace for the dictionary
+    dict_end = content.rindex('}')  # Find the last '}'
+    array_start = dict_end + 1  # Everything after that is part of the array
+
+    # Extract the dictionary part and array part
+    dict_str = content[:array_start].strip()  # Dictionary portion
+    array_str = content[array_start:].strip()  # Array portion
+
+    # Load the dictionary and array as Python objects
+    dict_data = json.loads(dict_str)
+    array_data = json.loads(array_str)
+    id_value = dict_data.pop("id", None)  # Extract and remove 'id' from the dictionary
+    gene = dict_data
+
+
+    print_json_gene(gene)
+
+    return gene, array_data, id
+
+
+
+
 def dump_brain(brain_weights):
     json.dump(brain_weights)
 
@@ -96,23 +122,21 @@ if __name__ == "__main__":
 
     gene_name = input("gene name: ")
     if gene_name == "final":
-        gene = json.load(open("./experiments/final_best_individual.json", "r"))
+        with open("./experiments/final_best_individual2.json", "r") as f:
+            gene, weights, id = load_body_and_brain(f)
     else:
         with open(f"./genes_wardrobe/gene_{gene_name}.json", "r") as f:
-            gene = json.load(f)
+            gene = load_body_and_brain(f)
 
     print("Gene Structure:")
     print_json_gene(gene)
 
     body = build_body(gene) # Most important function here
-    
+    weights = np.array(weights)
     rng = make_rng_time_seed()
     print(rng)
     brain = BrainGenotype()
-    brain.develop_brain(body=body, rng=rng)
-
-    brain.improve(body, config.INNER_LOOP_ITERATIONS, rng)
-    config.BRAIN_MUTATION_RATE = 0
+    brain.develop_brain(body=body, rng=rng, weights=weights)
 
 
     robot = ModularRobot(body, brain)
