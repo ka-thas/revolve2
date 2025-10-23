@@ -82,7 +82,10 @@ def print_json_gene(node, depth=0):
         return
     
     for key, value in node.items():
-        print(f"{indent}- {key}")
+        if not value:
+            continue
+        if key != "hinge" and key != "brick" and key != "rotation":
+            print(f"{indent}- {key}")
         print_json_gene(value, depth + 1)
 
 def load_brain():
@@ -114,14 +117,25 @@ def load_body_and_brain(file):
 
 if __name__ == "__main__":
 
-    gene_name = input("gene name: ")
-    if gene_name == "final":
-        with open("./experiments/final_best_individual.json", "r") as f:
-            gene = json.load(f)
-    else:
-        with open(f"./genes_wardrobe/gene_{gene_name}.json", "r") as f:
-            gene = json.load(f)
+    folders = ["experiments", "genes_wardrobe"]
+
+    print("--- Available folders ---")
+    for i in range(len(folders)):
+        print(i, ": ", folders[i])
+    foldernr = input("> Select folder: ")
+    # default to experiments
+    folder = folders[int(foldernr)] if foldernr else "experiments" 
+
+    gene_name = input("> Gene: ")
+    # default to final_best_individual
+    gene_name = "final_best_individual" if not gene_name else gene_name
+
+    if folder == "genes_wardrobe":
+        gene_name = "gene_"+gene_name
     
+
+    with open(f"./{folder}/{gene_name}.json", "r") as f:
+        gene = json.load(f)
 
     if config.DEBUGGING: 
         print("\n-----| Gene Structure |-----")
