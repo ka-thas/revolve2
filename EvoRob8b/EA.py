@@ -25,8 +25,25 @@ from revolve2.standards import fitness_functions, terrains
 
 from brain_cpg import BrainGenotype
 
+class plotter:
+    """ gathers data for plotting after ea """
+    def __init__(self):
+        self.generations = []
+        self.best_fitness = []
+        self.worst_fitness = []
+        self.mean_fitness = []
+        self.median_fitness = []
+        self.std = []
+        self.num_modules_in_best_individual = []
+
+    def log_generation(self, generation: int, best: float, worst: float, avg: float):
+        self.generations.append(generation)
+        self.best_fitness.append(best)
+        self.worst_fitness.append(worst)
+        self.avg_fitness.append(avg)
+
+
 @dataclass
-# To get weights use:             individual.brain.get_weights() 
 class Individual:
     """Represents an individual in the population."""
     def __init__(self, gene):
