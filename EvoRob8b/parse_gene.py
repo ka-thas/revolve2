@@ -112,42 +112,39 @@ def load_body_and_brain(file):
     return gene, array_data, id
 
 
-
-
-def dump_brain(brain_weights):
-    json.dump(brain_weights)
-
-
 if __name__ == "__main__":
 
     gene_name = input("gene name: ")
     if gene_name == "final":
-        with open("./experiments/final_best_individual2.json", "r") as f:
-            gene, weights, id = load_body_and_brain(f)
+        with open("./experiments/final_best_individual.json", "r") as f:
+            gene = json.load(f)
     else:
         with open(f"./genes_wardrobe/gene_{gene_name}.json", "r") as f:
-            gene = load_body_and_brain(f)
+            gene = json.load(f)
+    
 
-    print("Gene Structure:")
-    print_json_gene(gene)
+    if config.DEBUGGING: 
+        print("\n-----| Gene Structure |-----")
+        print_json_gene(gene)
 
-    body = build_body(gene) # Most important function here
-    weights = np.array(weights)
+
+    body = build_body(gene) # Renders body into revolve2
     rng = make_rng_time_seed()
     brain = BrainGenotype()
+    weights = gene.get("brain_weights", [])
+    weights = np.array(weights)
     brain.develop_brain(body=body, rng=rng, weights=weights)
-
 
     robot = ModularRobot(body, brain)
 
-    input("ready")
+    input("ready?")
 
     # Create a scene.
     scene = ModularRobotScene(terrain=terrains.flat())
     scene.add_robot(robot)
 
     # Create a simulator.
-    simulator = LocalSimulator(headless=False)
+    simulator = LocalSimulator(headless=True)
 
     # Simulate the scene and obtain states sampled during the simulation.
     scene_states = simulate_scenes(
@@ -169,5 +166,5 @@ if __name__ == "__main__":
         robot_state_begin, robot_state_end
     )
 
-    print(xy_displacement)
+    print(f"\n->> xy_displacement: {xy_displacement}")
 
