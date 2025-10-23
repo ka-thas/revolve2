@@ -33,7 +33,6 @@ class Individual:
         # Build the robot body from the gene
         self.gene = gene
 
-
         self.body = None
         self.brain = None
         self.weights = None
@@ -59,6 +58,8 @@ class JSONGeneEA:
         
         # Initialize random number generator
         self.rng = make_rng_time_seed()
+
+        self.runID = random.randint(0, 1000000) # To not overwrite logs
         
         # Setup logging
         logging.basicConfig(level=logging.INFO)
@@ -343,15 +344,12 @@ class JSONGeneEA:
             return
         
         best = self.population[0]
-        filename = filename or config.LOG_FOLDER+f"best_individual_gen_{self.generation}.json"
-        
+        best.gene["brain_weights"] = best.brain.weights.tolist()
+
+        filename = filename or config.LOG_FOLDER+f"best_individual_{self.runID}_gen_{self.generation}.json"
+
         with open(filename, 'w') as f:
             json.dump(best.gene, f, indent=2)
-            print_json_gene(best.brain)
-            json.dump(best.brain.weights.tolist(), f, indent=2)
-
-
-
         
         self.logger.info(f"Best individual saved to {filename} (fitness: {best.fitness:.3f})")
     
@@ -379,14 +377,15 @@ class JSONGeneEA:
             print(f"Evaluation:{self.evaluations}")
         self.logger.info(f"Evolution completed after {self.generation} generations and {self.evaluations} evaluations")
         # Save final best individual
-        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual2.json")
+        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual_{self.runID}.json")
         
         return self.population[0]
 
 
 def main():
     """Main function to run the evolutionary algorithm."""
-    random.seed(config.SEED)
+    
+    #random.seed(config.SEED)
     ea = JSONGeneEA()
     best_individual = ea.run()
     
