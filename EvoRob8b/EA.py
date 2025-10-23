@@ -59,8 +59,9 @@ class JSONGeneEA:
         # Initialize random number generator
         self.rng = make_rng_time_seed()
 
-        self.runID = random.randint(0, 1000000) # To not overwrite logs
-        
+        self.runID = str(random.randint(0, 999999)) # To not overwrite logs
+        self.runID = self.runID.zfill(6)
+
         # Setup logging
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)

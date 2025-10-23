@@ -119,19 +119,19 @@ if __name__ == "__main__":
 
     folders = ["experiments", "genes_wardrobe"]
 
-    print("--- Available folders ---")
+    print("\n-----| Available folders |-----")
     for i in range(len(folders)):
         print(i, ": ", folders[i])
-    foldernr = input("> Select folder: ")
+    foldernr = input("> Select folder [number]: ")
     # default to experiments
     folder = folders[int(foldernr)] if foldernr else "experiments" 
 
-    gene_name = input("> Gene: ")
+    gene_name = input("> Gene [name]: ")
     # default to final_best_individual
     gene_name = "final_best_individual" if not gene_name else gene_name
 
     if folder == "genes_wardrobe":
-        gene_name = "gene_"+gene_name
+        gene_name = "gene_" + gene_name
     
 
     with open(f"./{folder}/{gene_name}.json", "r") as f:
@@ -151,7 +151,7 @@ if __name__ == "__main__":
 
     robot = ModularRobot(body, brain)
 
-    input("ready?")
+    input("> ready [press enter]: ")
 
     # Create a scene.
     scene = ModularRobotScene(terrain=terrains.flat())
