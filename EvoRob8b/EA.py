@@ -176,12 +176,32 @@ class JSONGeneEA:
         
         # Sort population by fitness (descending)
         self.population.sort(key=lambda x: x.fitness, reverse=True)
-        
+
+    def log_generation_stats(self) -> None:
+        """Log statistics of the current generation."""
+
+        self.plotter.log_generation(
+            generation=self.generation,
+            best=self.population[0].fitness,
+            worst=self.population[-1].fitness,
+            mean=sum(individual.fitness for individual in self.population) / len(self.population),
+            median=self.population[len(self.population) // 2].fitness,
+            std=np.std([individual.fitness for individual in self.population]),
+            num_modules=self.count_modules(self.population[0].gene)
+        )
+
         best_fitness = self.population[0].fitness
-        avg_fitness = sum(individual.fitness for individual in self.population) / len(self.population)
-        
-        self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Avg={avg_fitness:.3f}")
-    
+        mean_fitness = sum(individual.fitness for individual in self.population) / len(self.population)
+        # Compute values for logging/printing (use the same values we logged to plotter)
+        median_fitness = self.population[len(self.population) // 2].fitness
+        std_fitness = np.std([individual.fitness for individual in self.population])
+        num_modules_fitness = self.count_modules(self.population[0].gene)
+
+        self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}")
+        if config.VERBOSE_PRINTS:
+            print(f"\n--- Generation {self.generation} ---\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
+
+
     def tournament_selection(self, tournament_size: int = None) -> Individual:
         """Select an individual using tournament selection."""
         tournament_size = tournament_size or self.tournament_size
@@ -251,7 +271,6 @@ class JSONGeneEA:
         
         # Mutate the core and ensure symmetry
         if "core" in mutated:
-            print("oof")
             mutate_recursive(mutated["core"])
             self.generator.spine_symmetry(mutated["core"])
 
@@ -358,29 +377,40 @@ class JSONGeneEA:
     
     def run(self) -> Individual:
         print("Running EA")
-        """Run the evolutionary algorithm."""
-        self.logger.info("Starting evolutionary algorithm")
-        # Initialize population
+        
+        
         self.initialize_population()
-        # Evaluate initial population
-        self.evaluate_population()
-        # Evolution loop
+        self.evaluate_population() # Evaluate init
+        self.log_generation_stats() # Log init
+
         while self.evaluations < self.function_evaluations:
             self.generation += 1
-            # Create offspring
             offspring = self.create_offspring()
-            # Survival selection
             self.survival_selection(offspring)
-            # Log progress
+            self.log_generation_stats() # Log the new generation and update plotter
+            
+            # Save new data
             if self.generation % 10 == 0:
                 self.save_best_individual()
+                # Append last 10 logged generations to a progress CSV
+                try:
+                    self.plotter.append_last_n_to_csv(config.LOG_FOLDER + f"progress_{self.runID}.csv", n=10)
+                except Exception:
+                    self.logger.exception("Failed to append generation progress to CSV")
+           
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
-            print(f"Evaluation:{self.evaluations}")
-        self.logger.info(f"Evolution completed after {self.generation} generations and {self.evaluations} evaluations")
-        # Save final best individual
-        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual_{self.runID}.json")
+            if config.DEBUGGING: print(f"Evaluation:{self.evaluations}")
+
+        if self.generation % 10 != 0:
+            # Ensure final data is saved if not already done
+            try:
+                self.plotter.append_last_n_to_csv(config.LOG_FOLDER + f"progress_{self.runID}.csv", n=self.generation % 10)
+            except Exception:
+                self.logger.exception("Failed to append final generation progress to CSV")
+        print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
+        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual_{self.runID}.json") # Save final best individual
         
         return self.population[0]
 

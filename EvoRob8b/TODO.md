@@ -39,6 +39,7 @@ Gene validator could enforce invariant during ea runs
    - [x] Selection
  - [x] Evaluation
  - [x] Tournament selection
+ - [ ] Elitism 🐻‍❄️
 
 - [ ] Ploting -- Ka <!-- started class in EA.py -->
   - [ ] Matplotlib
