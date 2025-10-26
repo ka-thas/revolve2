@@ -382,6 +382,8 @@ class JSONGeneEA:
 
         while self.evaluations < self.function_evaluations:
             self.generation += 1
+            if config.DEBUGGING: print(f"Generation:{self.generation}")
+            
             offspring = self.create_offspring()
             self.survival_selection(offspring)
             self.log_generation_stats() # Log the new generation and update plotter

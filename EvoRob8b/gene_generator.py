@@ -57,8 +57,10 @@ class Gene_Generator:
         hinge rotation is inverted
         """
 
+        spinebrick["spinebrick"] = True
         spinebrick["left"] = {}
-        if spinebrick["right"]:
+
+        if spinebrick["right"]: # right has content
             new_left_brick = {}
             rotation = spinebrick["right"]["hinge"]["rotation"] 
             spinebrick["left"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation}}
