@@ -1,5 +1,10 @@
 # To do
 
+- Ka 🌱
+- Vebjørn 🐻‍❄️
+- Sofie 🪱
+- Emma ⛰️
+
 ## Code
 
 - [x] Gene generator
@@ -43,7 +48,7 @@ Gene validator could enforce invariant during ea runs
 ## Writing
 
 - [ ] Pseudo code and illustrations
-  - [ ] Crossover
-  - [ ] Mutation
-  - [ ] Selection
-  - [ ]  
+  - [ ] Crossover illustration and pseudo-code 🌱
+  - [ ] Mutation 🐻‍❄️
+  - [ ] Selection 🪱
+- [ ] Ethics statement ⛰️
