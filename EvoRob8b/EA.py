@@ -220,8 +220,8 @@ class JSONGeneEA:
             
             for key, value in list(node.items()):
                 if key in ["front", "right", "left"]:
-                    pmutate = 0.15 #0.15+0.05*depth
-                    pskip = 0.7 #0.7-0.10*depth
+                    pmutate = 0.15+0.05*depth
+                    pskip = 0.7-0.10*depth
                     # Mutation operations
                     mutation_type = np.random.choice([
                         "add_hinge", "remove_hinge", "modify_existing"
