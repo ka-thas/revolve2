@@ -240,18 +240,20 @@ class JSONGeneEA:
                             rotation = random.randint(1,3) * np.pi/2
                         node[key] = {"hinge": {"brick": new_brick, "rotation": rotation}               
                             }
+                        print(node.keys(), "added")
                     
                     elif mutation_type == "remove_hinge" and isinstance(value, dict) and "hinge" in value:
                         # Remove hinge structure
                         print(node.keys(), "remove")
                         node[key] = {}
-                        print(node)
+                        print(node.keys(), "removed")
                     
                     elif mutation_type == "modify_existing" and isinstance(value, dict) and "hinge" in value:
                         # Recursively mutate the brick structure
                         if "brick" in value["hinge"]:
                             print(node.keys(), "modify")
                             mutate_recursive(value["hinge"]["brick"], depth + 1)
+                            print(node.keys(), "modified")
                         
                     """
                     elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
@@ -290,7 +292,6 @@ class JSONGeneEA:
             """
             faces = ["front", "right", "left"]
             face = random.choice(faces)
-
             if node["brick"][face]: # eg. if node["front"] has content
                 if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:        
                     child = recursive(node["brick"][face]["hinge"])

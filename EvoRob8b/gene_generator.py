@@ -56,10 +56,14 @@ class Gene_Generator:
         per brick: left becomes right, right becomes left
         hinge rotation is inverted
         """
-
+        print(spinebrick)
         spinebrick["left"] = {}
         if spinebrick["right"]:
-            new_left_brick = {}
+            new_left_brick = {
+                        "front": {},
+                        "right": {},
+                        "left": {}
+                        }
             rotation = spinebrick["right"]["hinge"]["rotation"] 
             spinebrick["left"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation}}
             new_right_brick = spinebrick["right"]["hinge"]["brick"]
