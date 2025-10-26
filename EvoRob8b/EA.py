@@ -24,23 +24,7 @@ from revolve2.standards.simulation_parameters import make_standard_batch_paramet
 from revolve2.standards import fitness_functions, terrains
 
 from brain_cpg import BrainGenotype
-
-class plotter:
-    """ gathers data for plotting after ea """
-    def __init__(self):
-        self.generations = []
-        self.best_fitness = []
-        self.worst_fitness = []
-        self.mean_fitness = []
-        self.median_fitness = []
-        self.std = []
-        self.num_modules_in_best_individual = []
-
-    def log_generation(self, generation: int, best: float, worst: float, avg: float):
-        self.generations.append(generation)
-        self.best_fitness.append(best)
-        self.worst_fitness.append(worst)
-        self.avg_fitness.append(avg)
+from plotter import Plotter
 
 
 @dataclass
@@ -72,6 +56,7 @@ class JSONGeneEA:
         self.evaluations = 0
 
         self.generator = Gene_Generator()
+        self.plotter = Plotter()
         
         # Initialize random number generator
         self.rng = make_rng_time_seed()
@@ -218,7 +203,7 @@ class JSONGeneEA:
             
             for key, value in list(node.items()):
                 if key in ["front", "right", "left"]:
-                    if random.random() < self.mutation_rate:
+                    if random.random() < config.MUTATION_RATE:
                         pmutate = 0.15+0.05*depth
                         pskip = 0.7-0.10*depth
                         # Mutation operations
