@@ -1,0 +1,7 @@
+Run ID: 174804
+Population Size: 10
+Offspring Size: 10
+Max Modules: 15
+Tournament Size: 5
+Function Evaluations: 150
+Mutation Rate: 0.7

@@ -31,9 +31,7 @@ from plotter import Plotter
 class Individual:
     """Represents an individual in the population."""
     def __init__(self, gene):
-        # Build the robot body from the gene
-        self.gene = gene
-
+        self.gene = gene # Build the robot body from the gene
         self.body = None
         self.brain = None
         self.weights = None
@@ -56,17 +54,29 @@ class JSONGeneEA:
         self.evaluations = 0
 
         self.generator = Gene_Generator()
-        self.plotter = Plotter()
         
         # Initialize random number generator
         self.rng = make_rng_time_seed()
 
         self.runID = str(random.randint(0, 999999)) # To not overwrite logs
         self.runID = self.runID.zfill(6)
+        self.plotter = Plotter(filename=config.LOG_FOLDER + f"{self.runID}.csv", runID=self.runID)
+        self.write_run_info()
 
         # Setup logging
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
+
+    def write_run_info(self) -> None:
+        """Write run configuration info to a log file."""
+        filename = config.LOG_FOLDER + f"{self.runID}_run_info.txt"
+        with open(filename, 'w') as f:
+            with open("config.py", 'r') as config_file:
+                f.write(f"Run ID: {self.runID}\n")
+                f.write("Configuration:\n")
+                f.write(config_file.read())
+                f.write("\n")
+
         
     def initialize_population(self) -> None:
         """Initialize the population with random individuals."""
@@ -76,8 +86,6 @@ class JSONGeneEA:
             # Generate random gene
             # gene_generator was refactored into a class - use it here
             gene_dict = self.generator.make_core()
-            gene_dict["id"] = i + 1
-            
             
             individual = Individual(gene=gene_dict)
             self.population.append(individual)
@@ -162,7 +170,6 @@ class JSONGeneEA:
             return -1000.0  # Very low fitness for invalid individuals
     
     def evaluate_population(self) -> None:
-        print(self.generation)
         """Evaluate all individuals in the population."""
         self.logger.info(f"Evaluating population (generation {self.generation})")
         
@@ -196,7 +203,7 @@ class JSONGeneEA:
 
         self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}")
         if config.VERBOSE_PRINTS:
-            print(f"\n--- Generation {self.generation} ---\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
+            print(f"\n----- Generation {self.generation} -----\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
 
 
     def tournament_selection(self, tournament_size: int = None) -> Individual:
@@ -214,7 +221,7 @@ class JSONGeneEA:
         mutated = copy.deepcopy(gene)
         
         def mutate_recursive(node, depth=0):
-            print(node.keys())
+            if config.DEBUG_EA: print(node.keys())
             if not isinstance(node, dict) or depth > 6:  # Limit depth to prevent infinite growth
                 return node
             
@@ -229,7 +236,7 @@ class JSONGeneEA:
                     
                     
                     if mutation_type == "add_hinge" and (not value or value == {}):
-                        print(node.keys(), "add")
+                        if config.DEBUG_EA: print(node.keys(), "add")
                         new_brick = {
                         "front": {},
                         "right": {},
@@ -240,25 +247,25 @@ class JSONGeneEA:
                             rotation = random.randint(1,3) * np.pi/2
                         node[key] = {"hinge": {"brick": new_brick, "rotation": rotation}               
                             }
-                        print(node.keys(), "added")
+                        if config.DEBUG_EA: print(node.keys(), "added")
                     
                     elif mutation_type == "remove_hinge" and isinstance(value, dict) and "hinge" in value:
                         # Remove hinge structure
-                        print(node.keys(), "remove")
+                        if config.DEBUG_EA: print(node.keys(), "remove")
                         node[key] = {}
-                        print(node.keys(), "removed")
+                        if config.DEBUG_EA: print(node.keys(), "removed")
                     
                     elif mutation_type == "modify_existing" and isinstance(value, dict) and "hinge" in value:
                         # Recursively mutate the brick structure
                         if "brick" in value["hinge"]:
-                            print(node.keys(), "modify")
+                            if config.DEBUG_EA: print(node.keys(), "modify")
                             mutate_recursive(value["hinge"]["brick"], depth + 1)
-                            print(node.keys(), "modified")
-                        
+                            if config.DEBUG_EA: print(node.keys(), "modified")
+
                     """
                     elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
                         # Swap with another side
-                        print(node.keys(), "swap")
+                        if config.DEBUG_EA: print(node.keys(), "swap")
                         other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
                         other_key = random.choice(other_sides)
                         if other_key in node:
@@ -312,6 +319,9 @@ class JSONGeneEA:
     
     def create_offspring(self) -> List[Individual]:
         """Create offspring using selection, crossover, and mutation."""
+        
+        if config.VERBOSE_PRINTS: print("   Creating offspring")
+
         offspring = []
         
         for _ in range(self.offspring_size // 2):
@@ -349,6 +359,7 @@ class JSONGeneEA:
         # Combine population and offspring
         combined = self.population + offspring
         
+        if config.VERBOSE_PRINTS: print(f"   Evaluating offspring")
         # Evaluate offspring
         for individual in offspring:
             individual.fitness = self.evaluate_individual(individual)
@@ -364,9 +375,12 @@ class JSONGeneEA:
             return
         
         best = self.population[0]
+        best.gene["runID"] = self.runID
+        best.gene["fitness"] = best.fitness
+        best.gene["generation"] = self.generation
         best.gene["brain_weights"] = best.brain.weights.tolist()
 
-        filename = filename or config.LOG_FOLDER+f"best_individual_{self.runID}_gen_{self.generation}.json"
+        filename = filename or config.LOG_FOLDER+f"{self.runID}_best_gen_{self.generation}.json"
 
         with open(filename, 'w') as f:
             json.dump(best.gene, f, indent=2)
@@ -383,7 +397,7 @@ class JSONGeneEA:
 
         while self.evaluations < self.function_evaluations:
             self.generation += 1
-            if config.DEBUGGING: print(f"Generation:{self.generation}")
+            if config.DEBUGGING: print(f"->> Generation:{self.generation}")
             
             offspring = self.create_offspring()
             self.survival_selection(offspring)
@@ -394,23 +408,23 @@ class JSONGeneEA:
                 self.save_best_individual()
                 # Append last 10 logged generations to a progress CSV
                 try:
-                    self.plotter.append_last_n_to_csv(config.LOG_FOLDER + f"progress_{self.runID}.csv", n=10)
+                    self.plotter.append_last_n_to_csv(config.LOG_FOLDER + f"{self.runID}_progress.csv", n=10)
                 except Exception:
                     self.logger.exception("Failed to append generation progress to CSV")
            
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
-            if config.DEBUGGING: print(f"Evaluation:{self.evaluations}")
+            if config.DEBUGGING: print(f"->> Evaluation:{self.evaluations}")
 
         if self.generation % 10 != 0:
             # Ensure final data is saved if not already done
             try:
-                self.plotter.append_last_n_to_csv(config.LOG_FOLDER + f"progress_{self.runID}.csv", n=self.generation % 10)
+                self.plotter.append_last_n_to_csv(config.LOG_FOLDER + f"{self.runID}_progress.csv", n=self.generation % 10)
             except Exception:
                 self.logger.exception("Failed to append final generation progress to CSV")
         print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
-        self.save_best_individual(config.LOG_FOLDER + f"final_best_individual_{self.runID}.json") # Save final best individual
+        self.save_best_individual(config.LOG_FOLDER + f"{self.runID}_final_best_individual.json") # Save final best individual
         
         return self.population[0]
 

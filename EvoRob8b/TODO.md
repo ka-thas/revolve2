@@ -53,3 +53,11 @@ Gene validator could enforce invariant during ea runs
   - [ ] Mutation 🐻‍❄️
   - [x] Selection 🪱
 - [ ] Ethics statement ⛰️
+
+
+# Experiments
+
+- [ ] parse_gene:
+  - [ ] final_best_individual_047246
+  - [ ] 174804_final_best_individual
+- [ ] plot 174804

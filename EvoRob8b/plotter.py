@@ -3,8 +3,9 @@ import os
 
 class Plotter:
     """ gathers data for plotting after ea """
-    def __init__(self, filename: str = ""):
+    def __init__(self, filename: str = "", runID: str = ""):
         self.filename = filename
+        self.runID = runID
 
         self.generations = []
         self.best_fitness = []
