@@ -110,12 +110,10 @@ class JSONGeneEA:
 
             individual.body = build_body(individual.gene)
             body = individual.body
-            print("\n en")
 
             rng = make_rng_time_seed()
             # Create brain
             brain = BrainGenotype()
-            print("\n to")
 
             brain.develop_brain(body, rng=rng)
             brain.improve(body, config.INNER_LOOP_ITERATIONS, rng) 
@@ -126,7 +124,6 @@ class JSONGeneEA:
 
             robot = ModularRobot(body, brain)
 
-            print("\n tre")
   
                     # Create scene
             scene = ModularRobotScene(terrain=terrains.flat())
@@ -139,7 +136,6 @@ class JSONGeneEA:
                 batch_parameters=make_standard_batch_parameters(),
                 scenes=scene,
             )
-            print("\n fire")
 
             # Get the state at the beginning and end of the simulation.
             scene_state_begin = scene_states[0]
@@ -166,6 +162,7 @@ class JSONGeneEA:
             return -1000.0  # Very low fitness for invalid individuals
     
     def evaluate_population(self) -> None:
+        print(self.generation)
         """Evaluate all individuals in the population."""
         self.logger.info(f"Evaluating population (generation {self.generation})")
         
@@ -203,57 +200,56 @@ class JSONGeneEA:
             
             for key, value in list(node.items()):
                 if key in ["front", "right", "left"]:
-                    if random.random() < config.MUTATION_RATE:
-                        pmutate = 0.15+0.05*depth
-                        pskip = 0.7-0.10*depth
-                        # Mutation operations
-                        mutation_type = np.random.choice([
-                            "add_hinge", "remove_hinge", "modify_existing"
-                        ], p=[pmutate, pmutate, pskip])
-                        
-                        
-                        if mutation_type == "add_hinge" and (not value or value == {}):
-                            print(node.keys(), "add")
-                            new_brick = {
-                            "front": {},
-                            "right": {},
-                            "left": {}
+                    pmutate = 0.15 #0.15+0.05*depth
+                    pskip = 0.7 #0.7-0.10*depth
+                    # Mutation operations
+                    mutation_type = np.random.choice([
+                        "add_hinge", "remove_hinge", "modify_existing"
+                    ], p=[pmutate, pmutate, pskip])
+                    
+                    
+                    if mutation_type == "add_hinge" and (not value or value == {}):
+                        print(node.keys(), "add")
+                        new_brick = {
+                        "front": {},
+                        "right": {},
+                        "left": {}
+                        }
+                        rotation = 0.0
+                        if random.random() < config.CHANCE_TO_ROTATE:
+                            rotation = random.randint(1,3) * np.pi/2
+                        node[key] = {"hinge": {"brick": new_brick, "rotation": rotation}               
                             }
-                            rotation = 0.0
-                            if random.random() < config.CHANCE_TO_ROTATE:
-                                rotation = random.randint(1,3) * np.pi/2
-                            node[key] = {"hinge": {"brick": new_brick, "rotation": rotation}               
-                                }
+                    
+                    elif mutation_type == "remove_hinge" and isinstance(value, dict) and "hinge" in value:
+                        # Remove hinge structure
+                        print(node.keys(), "remove")
+                        node[key] = {}
+                        print(node)
+                    
+                    elif mutation_type == "modify_existing" and isinstance(value, dict) and "hinge" in value:
+                        # Recursively mutate the brick structure
+                        if "brick" in value["hinge"]:
+                            print(node.keys(), "modify")
+                            mutate_recursive(value["hinge"]["brick"], depth + 1)
                         
-                        elif mutation_type == "remove_hinge" and isinstance(value, dict) and "hinge" in value:
-                            # Remove hinge structure
-                            print(node.keys(), "remove")
-                            node[key] = {}
-                            print(node)
-                        
-                        elif mutation_type == "modify_existing" and isinstance(value, dict) and "hinge" in value:
-                            # Recursively mutate the brick structure
-                            if "brick" in value["hinge"]:
-                                print(node.keys(), "modify")
-                                mutate_recursive(value["hinge"]["brick"], depth + 1)
-                            
-                        """
-                        elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
-                            # Swap with another side
-                            print(node.keys(), "swap")
-                            other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
-                            other_key = random.choice(other_sides)
-                            if other_key in node:
-                                node[key], node[other_key] = node[other_key], node[key]
-                        """
+                    """
+                    elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
+                        # Swap with another side
+                        print(node.keys(), "swap")
+                        other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
+                        other_key = random.choice(other_sides)
+                        if other_key in node:
+                            node[key], node[other_key] = node[other_key], node[key]
+                    """
             
             return node
         
         # Mutate the core and ensure symmetry
         if "core" in mutated:
-            print("oof")
-            mutate_recursive(mutated["core"])
-            self.generator.spine_symmetry(mutated["core"])
+            if random.random() < config.MUTATION_RATE:
+                mutate_recursive(mutated["core"])
+                self.generator.spine_symmetry(mutated["core"])
 
         return mutated
     
