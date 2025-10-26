@@ -132,7 +132,11 @@ class Gene_Generator:
 
         self.spine_symmetry(core)
         self.brick_count = 0
-        return {"core" : core}
+        return {
+            "runID": 0,
+            "fitness": 0.0,
+            "generation": 0,
+            "core" : core}
 
     #json dump to save gene
     def save_gene(self, gene, filename):

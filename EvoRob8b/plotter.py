@@ -1,5 +1,6 @@
 import csv
 import os
+import config
 
 class Plotter:
     """ gathers data for plotting after ea """
@@ -138,3 +139,14 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.show()
+
+
+if __name__ == "__main__":
+    """ Cannot run over ssh bc of plotting """
+    plotter = Plotter()
+    run_id = input("> run ID: ")
+    plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}_progress.csv")
+    plotter.plot_best_worst()
+    plotter.boxplot_fitness()
+    plotter.plot_std()
+    plotter.plot_num_modules()

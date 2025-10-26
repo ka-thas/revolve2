@@ -1,3 +1,5 @@
+Run ID: 843652
+Configuration:
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 

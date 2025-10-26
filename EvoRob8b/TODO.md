@@ -58,6 +58,10 @@ Gene validator could enforce invariant during ea runs
 # Experiments
 
 - [ ] parse_gene:
-  - [ ] final_best_individual_047246
+  - [ ] final_best_individual_047246 <- slange, men veldig god fitness
   - [ ] 174804_final_best_individual
 - [ ] plot 174804
+- [ ] https://robin.wiki.ifi.uio.no/index.php?title=Robin-hpc 
+  - Dette var den Kyrre sa var lettest å bruke
+  - men tror den kun kan ssh fra uio-eduroam
+- [ ] https://robin.wiki.ifi.uio.no/index.php?title=Deep_Learning_Workstations
