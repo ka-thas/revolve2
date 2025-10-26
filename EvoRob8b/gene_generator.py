@@ -58,10 +58,15 @@ class Gene_Generator:
         """
 
         spinebrick["spinebrick"] = True
+        if config.DEBUGGING: print(spinebrick)
         spinebrick["left"] = {}
+        if spinebrick["right"]:
+            new_left_brick = {
+                        "front": {},
+                        "right": {},
+                        "left": {}
+                        }
 
-        if spinebrick["right"]: # right has content
-            new_left_brick = {}
             rotation = spinebrick["right"]["hinge"]["rotation"] 
             spinebrick["left"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation}}
             new_right_brick = spinebrick["right"]["hinge"]["brick"]
