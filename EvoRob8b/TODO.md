@@ -50,5 +50,5 @@ Gene validator could enforce invariant during ea runs
 - [ ] Pseudo code and illustrations
   - [ ] Crossover illustration and pseudo-code 🌱
   - [ ] Mutation 🐻‍❄️
-  - [ ] Selection 🪱
+  - [x] Selection 🪱
 - [ ] Ethics statement ⛰️
