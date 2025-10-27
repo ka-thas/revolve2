@@ -426,7 +426,7 @@ class JSONGeneEA:
         print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
 
         #tempindividualname = "Vebj_SBrain_1"
-        individualname = f"{self.runID}_final_best_individual.json"
+        tempindividualname = f"{self.runID}_final_best_individual.json"
         self.save_best_individual(config.LOG_FOLDER + tempindividualname) # Save final best individual
         
         return self.population[0]
