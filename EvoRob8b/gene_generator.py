@@ -59,6 +59,7 @@ class Gene_Generator:
 
         spinebrick["spinebrick"] = True
         if config.DEBUGGING: print(spinebrick)
+        
         spinebrick["left"] = {}
         if spinebrick["right"]:
             new_left_brick = {
