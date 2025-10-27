@@ -69,6 +69,8 @@ class JSONGeneEA:
                 break
             except FileExistsError:
                 continue
+        
+        if config.VERBOSE_PRINTS: print(f"Logging to folder: {self.log_folder} with runID: {self.runID}")
 
         self.start_time = None
         self.plotter = Plotter(filename=self.log_folder + "progress.csv", runID=self.runID)
@@ -84,11 +86,17 @@ class JSONGeneEA:
         with open(filename, 'w') as f:
             with open("config.py", 'r') as config_file:
                 f.write(f"Run ID: {self.runID}\n")
+                f.write(f"Start Time: {time.strftime('%Y-%m-%d %H:%M', time.localtime())}\n")
                 f.write("----- config.py -----\n")
                 f.write(config_file.read())
                 f.write("\n")
 
-        
+    def debug_dump(self, gene: Dict[str, Any], header: str) -> None:
+        filename = self.log_folder + "debug.txt"
+        with open(filename, 'w') as f:
+            f.write(f"{header}\n")
+            f.write(json.dumps(gene, indent=4))
+
     def initialize_population(self) -> None:
         """Initialize the population with random individuals."""
         self.logger.info(f"Initializing population of size {self.population_size}")
@@ -311,19 +319,34 @@ class JSONGeneEA:
             """
             faces = ["front", "right", "left"]
             face = random.choice(faces)
+            if not face in node["brick"]: 
+                return None
             if node["brick"][face]: # eg. if node["front"] has content
                 if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:        
                     child = recursive(node["brick"][face]["hinge"])
                     if child:
                         return child
+                    else:
+                        return None
             return node
 
 
         # get subtrees to swap
         face = random.choice(["front", "back", "right"])
-        subtree1 = recursive(offspring1["core"][face]["hinge"]) if "hinge" in offspring1["core"][face] else None
-        subtree2 = recursive(offspring2["core"][face]["hinge"]) if "hinge" in offspring2["core"][face] else None
-        
+        if "hinge" in offspring1["core"][face] and "hinge" in offspring2["core"][face]:
+            subtree1 = recursive(offspring1["core"][face]["hinge"])
+            if subtree1 is None:
+                print("Crossover failed: no subtree found in offspring1")
+                if config.DEBUGGING:
+                    self.debug_dump(offspring1, "offspring1:")
+            subtree2 = recursive(offspring2["core"][face]["hinge"])
+            if subtree2 is None:
+                print("Crossover failed: no subtree found in offspring2")
+                if config.DEBUGGING:
+                    self.debug_dump(offspring2, "offspring2:")
+                    self.debug_dump(f" {offspring2}")
+
+
         if subtree1 and subtree2:
             subtree1["brick"], subtree2["brick"] = subtree2["brick"], subtree1["brick"]
 
