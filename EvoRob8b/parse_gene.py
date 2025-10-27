@@ -158,7 +158,7 @@ if __name__ == "__main__":
     scene.add_robot(robot)
 
     # Create a simulator.
-    simulator = LocalSimulator(headless=True)
+    simulator = LocalSimulator(headless=False)
 
     # Simulate the scene and obtain states sampled during the simulation.
     scene_states = simulate_scenes(

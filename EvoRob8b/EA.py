@@ -424,7 +424,10 @@ class JSONGeneEA:
             except Exception:
                 self.logger.exception("Failed to append final generation progress to CSV")
         print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
-        self.save_best_individual(config.LOG_FOLDER + f"{self.runID}_final_best_individual.json") # Save final best individual
+
+        #tempindividualname = "Vebj_SBrain_1"
+        individualname = f"{self.runID}_final_best_individual.json"
+        self.save_best_individual(config.LOG_FOLDER + tempindividualname) # Save final best individual
         
         return self.population[0]
 
