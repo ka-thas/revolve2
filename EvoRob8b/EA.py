@@ -4,6 +4,7 @@ This EA handles evolution of robot body structures represented as nested JSON.
 """
 
 import json
+import os
 import random
 import copy
 from typing import List, Dict, Any, Tuple, Optional
@@ -59,10 +60,17 @@ class JSONGeneEA:
         # Initialize random number generator
         self.rng = make_rng_time_seed()
 
-        self.runID = str(random.randint(0, 999999)) # To not overwrite logs
-        self.runID = self.runID.zfill(6)
+        while True:
+            self.runID = str(random.randint(0, 999999)) # To not overwrite logs
+            self.runID = self.runID.zfill(6)
+            self.log_folder = config.LOG_FOLDER + f"{self.runID}/"
+            try:
+                os.makedirs(self.log_folder)
+                break
+            except FileExistsError:
+                continue
+
         self.start_time = None
-        self.log_folder = config.LOG_FOLDER + f"{self.runID}/"
         self.plotter = Plotter(filename=self.log_folder + "progress.csv", runID=self.runID)
         self.write_run_info()
 
@@ -76,7 +84,7 @@ class JSONGeneEA:
         with open(filename, 'w') as f:
             with open("config.py", 'r') as config_file:
                 f.write(f"Run ID: {self.runID}\n")
-                f.write("Configuration:\n")
+                f.write("----- config.py -----\n")
                 f.write(config_file.read())
                 f.write("\n")
 

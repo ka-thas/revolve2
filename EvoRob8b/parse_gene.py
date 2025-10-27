@@ -114,27 +114,52 @@ def load_body_and_brain(file):
 
     return gene, array_data, id
 
+import os
 
-if __name__ == "__main__":
-
+def json_file_select():
     folders = ["experiments", "genes_wardrobe"]
 
     print("\n-----| Available folders |-----")
-    for i in range(len(folders)):
-        print(i, ": ", folders[i])
-    foldernr = input("> Select folder [number]: ")
-    # default to experiments
-    folder = folders[int(foldernr)] if foldernr else "experiments" 
+    for i, f in enumerate(folders):
+        print(f"{i}: {f}")
 
-    gene_name = input("> Gene [name]: ")
-    # default to final_best_individual
-    gene_name = "final_best_individual" if not gene_name else gene_name
+    # Select folder
+    foldernr = input("> Select folder [number, default=0]: ").strip()
+    folder = folders[int(foldernr)] if foldernr.isdigit() and int(foldernr) < len(folders) else "experiments"
 
-    if folder == "genes_wardrobe":
-        gene_name = "gene_" + gene_name
-    
+    if folder == "experiments":
+        folder = os.path.join(folder, input("> Enter experiment id [xxxxxx]: ").strip())
 
-    with open(f"./{folder}/{gene_name}.json", "r") as f:
+    # List JSON files in the folder
+    files = [f for f in os.listdir(folder) if f.endswith(".json")]
+    if not files:
+        print(f"\n(no JSON files found in '{folder}')")
+        return None
+
+    print(f"\n-----| JSON files in '{folder}' |-----")
+    for i, f in enumerate(files):
+        print(f"{i}: {f}")
+
+    # Select file by name or index
+    selection = input("> Select file [number or name, default=0]: ").strip()
+    if selection.isdigit() and int(selection) < len(files):
+        filename = files[int(selection)]
+    elif selection and selection in files:
+        filename = selection
+    else:
+        filename = files[0]
+
+    jsonfile = os.path.join(folder, filename)
+    print(f"\nSelected file: {jsonfile}")
+    return jsonfile
+
+
+
+if __name__ == "__main__":
+
+    jsonfile = json_file_select()
+
+    with open(jsonfile, "r") as f:
         gene = json.load(f)
 
     if config.DEBUGGING: 
@@ -158,7 +183,7 @@ if __name__ == "__main__":
     scene.add_robot(robot)
 
     # Create a simulator.
-    simulator = LocalSimulator(headless=False)
+    simulator = LocalSimulator(headless=True)
 
     # Simulate the scene and obtain states sampled during the simulation.
     scene_states = simulate_scenes(
