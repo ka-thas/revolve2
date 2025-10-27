@@ -8,12 +8,9 @@ import random
 import copy
 from typing import List, Dict, Any, Tuple, Optional
 import numpy as np
+import time
 from dataclasses import dataclass
 import logging
-
-import config
-from parse_gene import build_body, print_json_gene
-from gene_generator import Gene_Generator
 
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
@@ -23,6 +20,9 @@ from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 from revolve2.standards import fitness_functions, terrains
 
+import config
+from parse_gene import build_body, print_json_gene
+from gene_generator import Gene_Generator
 from brain_cpg import BrainGenotype
 from plotter import Plotter
 
@@ -36,6 +36,7 @@ class Individual:
         self.brain = None
         self.weights = None
         self.fitness: float = -float('inf')
+
     
 
 class JSONGeneEA:
@@ -60,7 +61,9 @@ class JSONGeneEA:
 
         self.runID = str(random.randint(0, 999999)) # To not overwrite logs
         self.runID = self.runID.zfill(6)
-        self.plotter = Plotter(filename=config.LOG_FOLDER + f"{self.runID}.csv", runID=self.runID)
+        self.start_time = None
+        self.log_folder = config.LOG_FOLDER + f"{self.runID}/"
+        self.plotter = Plotter(filename=self.log_folder + "progress.csv", runID=self.runID)
         self.write_run_info()
 
         # Setup logging
@@ -69,7 +72,7 @@ class JSONGeneEA:
 
     def write_run_info(self) -> None:
         """Write run configuration info to a log file."""
-        filename = config.LOG_FOLDER + f"{self.runID}_run_info.txt"
+        filename = self.log_folder + "run_info.txt"
         with open(filename, 'w') as f:
             with open("config.py", 'r') as config_file:
                 f.write(f"Run ID: {self.runID}\n")
@@ -191,7 +194,8 @@ class JSONGeneEA:
             mean=sum(individual.fitness for individual in self.population) / len(self.population),
             median=self.population[len(self.population) // 2].fitness,
             std=np.std([individual.fitness for individual in self.population]),
-            num_modules=self.count_modules(self.population[0].gene)
+            num_modules=self.count_modules(self.population[0].gene),
+            total_elapsed_time=time.time() - self.start_time
         )
 
         best_fitness = self.population[0].fitness
@@ -380,7 +384,7 @@ class JSONGeneEA:
         best.gene["generation"] = self.generation
         best.gene["brain_weights"] = best.brain.weights.tolist()
 
-        filename = filename or config.LOG_FOLDER+f"{self.runID}_best_gen_{self.generation}.json"
+        filename = filename or config.LOG_FOLDER+f"{self.runID}/best_gen_{self.generation}.json"
 
         with open(filename, 'w') as f:
             json.dump(best.gene, f, indent=2)
@@ -389,8 +393,9 @@ class JSONGeneEA:
     
     def run(self) -> Individual:
         print("Running EA")
-        
-        
+
+        self.start_time = time.time()
+
         self.initialize_population()
         self.evaluate_population() # Evaluate init
         self.log_generation_stats() # Log init
@@ -408,7 +413,7 @@ class JSONGeneEA:
                 self.save_best_individual()
                 # Append last 10 logged generations to a progress CSV
                 try:
-                    self.plotter.append_last_n_to_csv(config.LOG_FOLDER + f"{self.runID}_progress.csv", n=10)
+                    self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=10)
                 except Exception:
                     self.logger.exception("Failed to append generation progress to CSV")
            
@@ -420,11 +425,11 @@ class JSONGeneEA:
         if self.generation % 10 != 0:
             # Ensure final data is saved if not already done
             try:
-                self.plotter.append_last_n_to_csv(config.LOG_FOLDER + f"{self.runID}_progress.csv", n=self.generation % 10)
+                self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=self.generation % 10)
             except Exception:
                 self.logger.exception("Failed to append final generation progress to CSV")
         print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
-        self.save_best_individual(config.LOG_FOLDER + f"{self.runID}_final_best_individual.json") # Save final best individual
+        self.save_best_individual(self.log_folder + "final_best_individual.json") # Save final best individual
         
         return self.population[0]
 

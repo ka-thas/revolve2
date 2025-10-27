@@ -1,6 +1,7 @@
 import csv
 import os
 import config
+import time
 
 class Plotter:
     """ gathers data for plotting after ea """
@@ -15,8 +16,11 @@ class Plotter:
         self.median_fitness = []
         self.std = []
         self.num_modules_in_best_individual = []
+        self.total_elapsed_time = []
+        self.time_per_generation = []
 
-    def log_generation(self, generation: int, best: float, worst: float, mean: float, median: float, std: float, num_modules: int):
+
+    def log_generation(self, generation: int, best: float, worst: float, mean: float, median: float, std: float, num_modules: int, total_elapsed_time: float):
         self.generations.append(generation)
         self.best_fitness.append(best)
         self.worst_fitness.append(worst)
@@ -24,6 +28,12 @@ class Plotter:
         self.median_fitness.append(median)
         self.std.append(std)
         self.num_modules_in_best_individual.append(num_modules)
+        self.total_elapsed_time.append(total_elapsed_time)
+
+        if generation == 0:
+            self.time_per_generation.append(total_elapsed_time)
+        else:
+            self.time_per_generation.append(total_elapsed_time - self.total_elapsed_time[generation - 1])
 
     def save_to_csv(self, filename: str):
         # Use newline='' to avoid extra blank lines on some platforms
