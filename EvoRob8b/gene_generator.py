@@ -104,9 +104,9 @@ class Gene_Generator:
                     self.brick_count += 2
                 else:
                     self.brick_count +=1
-                if side == "front" or side == "back":
+                if side == "front" or side == "back" or is_core: #higher chance to place bricks from core and front/back
                     chance = config.CHANCE_TO_PLACE_BRICK_FRONT
-                else:
+                elif not is_core:
                     chance = config.CHANCE_TO_PLACE_BRICK_SIDES
 
                 if random.random() < chance and self.brick_count <= config.MAX_BRICKS:
