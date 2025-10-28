@@ -20,7 +20,11 @@ class Gene_Generator:
         for key, value in right_brick.items():
             if key == "front":
                 if "hinge" in value.keys():
-                    new_left_brick = {}
+                    new_left_brick = {
+                        "front": {},
+                        "right": {},
+                        "left": {}
+                        }
                     rotation = right_brick["front"]["hinge"]["rotation"] 
                     left_brick["front"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation}}
                     new_right_brick = right_brick["front"]["hinge"]["brick"]
@@ -29,7 +33,11 @@ class Gene_Generator:
             if key == "left":
                 if "hinge" in value.keys():
                     rotation = right_brick["left"]["hinge"]["rotation"]
-                    new_left_brick = {}
+                    new_left_brick = {
+                        "front": {},
+                        "right": {},
+                        "left": {}
+                    }
                     left_brick["right"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation }}
                     new_right_brick = right_brick["left"]["hinge"]["brick"]
                     self.mirror_right(new_left_brick, new_right_brick)
@@ -37,7 +45,11 @@ class Gene_Generator:
             if key == "right":
                 if "hinge" in value.keys():
                     rotation = right_brick["right"]["hinge"]["rotation"]
-                    new_left_brick = {}
+                    new_left_brick = {
+                        "front": {},
+                        "right": {},
+                        "left": {}
+                        }
                     left_brick["left"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation }}
                     new_right_brick = right_brick["right"]["hinge"]["brick"]
                     self.mirror_right(new_left_brick, new_right_brick)
