@@ -1,6 +1,5 @@
-
-Run ID: 796675
------ config.py -----
+Run ID: 693506
+Configuration:
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
@@ -11,19 +10,19 @@ SEED = 2140
 PARENT_TOURNAMENT_SIZE = 5 
 POPULATION_SIZE = 15
 OFFSPRING_SIZE = 15
-FUNCTION_EVALUATIONS = 500
+FUNCTION_EVALUATIONS = 1500
 LOCAL_COMPETITION_NEIGHBOURHOOD_SIZE = 2 # From Ege, not in use
 MUTATION_RATE = 0.5
 CROSSOVER_RATE = 0.5
 CROSSOVER_CHANCE_TO_DIVE = 0.4
 PARENT_SELECT_STRATEGY = 'tournament'
-ELITISM = False # TODO: Not implemented yet
+ELITISM = True # TODO: Not implemented yet
 
 # Gene generator / Initial population
 CHANCE_TO_PLACE_BRICK_FRONT = 0.8
-CHANCE_TO_PLACE_BRICK_SIDES = 0.4
+CHANCE_TO_PLACE_BRICK_SIDES = 0.3
 CHANCE_TO_ROTATE = 0.3
-MAX_BRICKS = 20
+MAX_BRICKS = 15
 
 
 # Brain
@@ -34,6 +33,6 @@ MUTATION_EPSILON = 0.7
 
 # Debugging flags
 VERBOSE_PRINTS = True
-DEBUGGING = True
+DEBUGGING = False
 DEBUG_BRAIN = False
 DEBUG_EA = False
