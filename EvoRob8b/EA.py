@@ -61,7 +61,7 @@ class JSONGeneEA:
         self.rng = make_rng_time_seed()
         i=0
         while True:
-            self.runID = i # To not overwrite logs
+            self.runID = str(i) # To not overwrite logs
             self.runID = self.runID.zfill(6)
             self.log_folder = config.LOG_FOLDER + f"{self.runID}/"
             try:
@@ -75,7 +75,6 @@ class JSONGeneEA:
 
         self.start_time = None
         self.plotter = Plotter(filename=self.log_folder + "progress.csv", runID=self.runID)
-        self.write_run_info()
 
         # Setup logging
         logging.basicConfig(level=logging.INFO)
@@ -473,6 +472,7 @@ def main():
     
     #random.seed(config.SEED)
     ea = JSONGeneEA()
+    ea.write_run_info()
     best_individual = ea.run()
     
     print(f"\nBest individual found:")
