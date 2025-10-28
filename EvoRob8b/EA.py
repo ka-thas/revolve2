@@ -120,7 +120,7 @@ class JSONGeneEA:
             count = 0
             for key, value in node.items():
                 if key in ["front", "left", "right", "back"] and "hinge" in str(value):
-                    count += 1  # Count the hinge
+                    #count += 1  # Count the hinge
                     if isinstance(value, dict) and "hinge" in value and "brick" in value["hinge"]:
                         count += 1  # Count the brick
                         count += count_recursive(value["hinge"]["brick"])

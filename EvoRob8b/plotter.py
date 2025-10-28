@@ -155,7 +155,7 @@ if __name__ == "__main__":
     """ Cannot run over ssh bc of plotting """
     plotter = Plotter()
     run_id = input("> run ID: ")
-    plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}_progress.csv")
+    plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}/progress.csv")
     plotter.plot_best_worst()
     plotter.boxplot_fitness()
     plotter.plot_std()
