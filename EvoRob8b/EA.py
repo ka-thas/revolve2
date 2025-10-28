@@ -417,7 +417,7 @@ class JSONGeneEA:
         best.gene["generation"] = self.generation
         best.gene["brain_weights"] = best.brain.weights.tolist()
 
-        filename = filename or config.LOG_FOLDER+f"{self.runID}/best_gen_{self.generation}.json"
+        filename = filename or f"{self.log_folder}/best_gen_{self.generation}.json"
 
         with open(filename, 'w') as f:
             json.dump(best.gene, f, indent=2)
