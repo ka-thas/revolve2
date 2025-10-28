@@ -1,0 +1,45 @@
+{
+    "made By": "Ka Thas",
+    "core": {
+        "right": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "left": {}
+                            },
+                            "rotation": 1.57
+                        }
+                    },
+                    "left": {}
+                },
+                "rotation": 1.57
+            }
+        },
+        "front": {},
+        "back": {},
+        "left": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "right": {},
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "left": {}
+                            },
+                            "rotation": -1.57
+                        }
+                    }
+                },
+                "rotation": -1.57
+            }
+        }
+    }
+}
