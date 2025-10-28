@@ -11,7 +11,8 @@
                                 "front": {},
                                 "right": {},
                                 "left": {}
-                            }
+                            },
+                            "rotation": 0
                         }
                     },
                     "left": {}
@@ -29,7 +30,8 @@
                                 "front": {},
                                 "right": {},
                                 "left": {}
-                            }
+                            },
+                            "rotation": 0
                         }
                     },
                     "left": {}
@@ -47,7 +49,8 @@
                                 "front": {},
                                 "right": {},
                                 "left": {}
-                            }
+                            },
+                            "rotation": 0
                         }
                     },
                     "left": {}
@@ -66,7 +69,8 @@
                                 "front": {},
                                 "right": {},
                                 "left": {}
-                            }
+                            },
+                            "rotation": 0
                         }
                     }
                 },
