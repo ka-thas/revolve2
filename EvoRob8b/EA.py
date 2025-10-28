@@ -427,7 +427,7 @@ class JSONGeneEA:
     
     def run(self) -> Individual:
         print("Running EA")
-
+        fitness_check = -float('inf')
         self.start_time = time.time()
 
         self.initialize_population()
@@ -443,14 +443,19 @@ class JSONGeneEA:
             self.log_generation_stats() # Log the new generation and update plotter
             
             # Save new data
-            if self.generation % 10 == 0:
-                self.save_best_individual()
-                # Append last 10 logged generations to a progress CSV
-                try:
-                    self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=10)
-                except Exception:
-                    self.logger.exception("Failed to append generation progress to CSV")
-           
+            if config.SAVE_ALL_BEST_INDIVIDUALS:
+                if fitness_check < self.population[0].fitness:
+                    fitness_check = self.population[0].fitness
+                    self.save_best_individual()
+            else:
+                if self.generation % 10 == 0:
+                    self.save_best_individual()
+                    # Append last 10 logged generations to a progress CSV
+                    try:
+                        self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=10)
+                    except Exception:
+                        self.logger.exception("Failed to append generation progress to CSV")
+                
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break

@@ -14,7 +14,7 @@ MUTATION_RATE = 0.5
 CROSSOVER_RATE = 0.5
 CROSSOVER_CHANCE_TO_DIVE = 0.3
 PARENT_SELECT_STRATEGY = 'tournament'
-ELITISM = False # TODO: Not implemented yet
+SAVE_ALL_BEST_INDIVIDUALS = True
 
 # Gene generator / Initial population
 CHANCE_TO_PLACE_BRICK_FRONT = 0.8
