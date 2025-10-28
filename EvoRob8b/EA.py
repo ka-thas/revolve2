@@ -347,7 +347,6 @@ class JSONGeneEA:
                 print("Crossover failed: no subtree found in offspring2")
                 if config.DEBUGGING:
                     self.debug_dump(offspring2, "offspring2:")
-                    self.debug_dump(f" {offspring2}")
 
         if subtree1 and subtree2:  # Values 0 and None indicate failure to find subtree
             subtree1["brick"], subtree2["brick"] = subtree2["brick"], subtree1["brick"]

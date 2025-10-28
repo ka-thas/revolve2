@@ -1,0 +1,105 @@
+{
+    "core": {
+        "right": {},
+        "front": {
+            "hinge": {
+                "brick": {
+                    "front": {
+                        "hinge": {
+                            "brick": {
+                                "front": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {},
+                                                        "right": {},
+                                                        "left": {},
+                                                        "spinebrick": true
+                                                    },
+                                                    "rotation": 0.0
+                                                }
+                                            },
+                                            "right": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {},
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": 0.0
+                                                }
+                                            },
+                                            "left": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {},
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": -0.0
+                                                }
+                                            },
+                                            "spinebrick": true
+                                        },
+                                        "rotation": 3.141592653589793
+                                    }
+                                },
+                                "right": {},
+                                "left": {},
+                                "spinebrick": true
+                            },
+                            "rotation": 4.71238898038469
+                        }
+                    },
+                    "right": {},
+                    "left": {},
+                    "spinebrick": true
+                },
+                "rotation": 0.0
+            }
+        },
+        "back": {
+            "hinge": {
+                "brick": {
+                    "front": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {},
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 3.141592653589793
+                                    }
+                                },
+                                "left": {
+                                    "hinge": {
+                                        "brick": {
+                                            "front": {},
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": -3.141592653589793
+                                    }
+                                },
+                                "spinebrick": true
+                            },
+                            "rotation": 0.0
+                        }
+                    },
+                    "right": {},
+                    "left": {},
+                    "spinebrick": true
+                },
+                "rotation": 3.141592653589793
+            }
+        },
+        "left": {},
+        "spinebrick": true
+    }
+}
