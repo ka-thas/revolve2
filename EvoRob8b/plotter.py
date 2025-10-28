@@ -2,6 +2,7 @@ import csv
 import os
 import config
 import time
+import matplotlib.pyplot as plt
 
 class Plotter:
     """ gathers data for plotting after ea """
@@ -39,7 +40,7 @@ class Plotter:
         # Use newline='' to avoid extra blank lines on some platforms
         with open(filename, 'w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(["generation", "best_fitness", "worst_fitness", "mean_fitness", "median_fitness", "std_fitness", "num_modules"])
+            writer.writerow(["generation", "best_fitness", "worst_fitness", "mean_fitness", "median_fitness", "std_fitness", "num_modules", "time_per_generation"])
             for i in range(len(self.generations)):
                 writer.writerow([
                     self.generations[i],
@@ -48,7 +49,8 @@ class Plotter:
                     self.mean_fitness[i],
                     self.median_fitness[i],
                     self.std[i],
-                    self.num_modules_in_best_individual[i]
+                    self.num_modules_in_best_individual[i],
+                    self.time_per_generation[i]
                 ])
 
     def append_last_n_to_csv(self, filename: str, n: int = 10):
@@ -97,7 +99,6 @@ class Plotter:
                 self.num_modules_in_best_individual.append(int(row[6]))
 
     def plot_best_worst(self):
-        import matplotlib.pyplot as plt
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations, self.best_fitness, label='Best Fitness')
@@ -112,7 +113,6 @@ class Plotter:
         plt.show()
 
     def boxplot_fitness(self):
-        import matplotlib.pyplot as plt
 
         data = [self.best_fitness, self.worst_fitness, self.mean_fitness]
 
@@ -125,7 +125,6 @@ class Plotter:
         plt.show()
     
     def plot_std(self):
-        import matplotlib.pyplot as plt
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations, self.std, label='Standard Deviation')
@@ -138,7 +137,6 @@ class Plotter:
         plt.show()
 
     def plot_num_modules(self):
-        import matplotlib.pyplot as plt
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations, self.num_modules_in_best_individual, label='Num Modules in Best Individual')
@@ -150,13 +148,25 @@ class Plotter:
         plt.grid()
         plt.show()
 
+    def plot_time_per_generation(self):
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(self.generations, self.time_per_generation, label='Time per Generation')
+
+        plt.xlabel('Generation')
+        plt.ylabel('Time (seconds)')
+        plt.title('Time per Generation')
+        plt.legend()
+        plt.grid()
+        plt.show()
 
 if __name__ == "__main__":
     """ Cannot run over ssh bc of plotting """
     plotter = Plotter()
     run_id = input("> run ID: ")
-    plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}_progress.csv")
+    plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}/progress.csv")
     plotter.plot_best_worst()
     plotter.boxplot_fitness()
     plotter.plot_std()
     plotter.plot_num_modules()
+    #plotter.plot_time_per_generation()

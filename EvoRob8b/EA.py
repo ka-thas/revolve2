@@ -120,7 +120,7 @@ class JSONGeneEA:
             count = 0
             for key, value in node.items():
                 if key in ["front", "left", "right", "back"] and "hinge" in str(value):
-                    count += 1  # Count the hinge
+                    #count += 1  # Count the hinge
                     if isinstance(value, dict) and "hinge" in value and "brick" in value["hinge"]:
                         count += 1  # Count the brick
                         count += count_recursive(value["hinge"]["brick"])
@@ -223,7 +223,9 @@ class JSONGeneEA:
 
         self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}")
         if config.VERBOSE_PRINTS:
-            print(f"\n----- Generation {self.generation} -----\nRunID={self.runID}\nTime={time.time() - self.start_time:.3f}\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
+            elapsed = time.time() - self.start_time
+            elapsed_str = time.strftime("%H:%M:%S", time.gmtime(elapsed))
+            print(f"\n----- Generation {self.generation} -----\nRunID={self.runID}\nElapsed={elapsed_str}\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
 
 
     def tournament_selection(self, tournament_size: int = None) -> Individual:
@@ -298,7 +300,7 @@ class JSONGeneEA:
         if "core" in mutated:
             if random.random() < config.MUTATION_RATE:
                 mutate_recursive(mutated["core"])
-                self.generator.spine_symmetry(mutated["core"])
+            self.generator.spine_symmetry(mutated["core"])
 
         return mutated
     
@@ -425,7 +427,7 @@ class JSONGeneEA:
     
     def run(self) -> Individual:
         print("Running EA")
-
+        fitness_check = -float('inf')
         self.start_time = time.time()
 
         self.initialize_population()
@@ -441,14 +443,19 @@ class JSONGeneEA:
             self.log_generation_stats() # Log the new generation and update plotter
             
             # Save new data
-            if self.generation % 10 == 0:
-                self.save_best_individual()
-                # Append last 10 logged generations to a progress CSV
-                try:
-                    self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=10)
-                except Exception:
-                    self.logger.exception("Failed to append generation progress to CSV")
-           
+            if config.SAVE_ALL_BEST_INDIVIDUALS:
+                if fitness_check < self.population[0].fitness:
+                    fitness_check = self.population[0].fitness
+                    self.save_best_individual()
+            else:
+                if self.generation % 10 == 0:
+                    self.save_best_individual()
+                    # Append last 10 logged generations to a progress CSV
+                    try:
+                        self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=10)
+                    except Exception:
+                        self.logger.exception("Failed to append generation progress to CSV")
+                
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
