@@ -223,7 +223,7 @@ class JSONGeneEA:
 
         self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}")
         if config.VERBOSE_PRINTS:
-            print(f"\n----- Generation {self.generation} -----\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
+            print(f"\n----- Generation {self.generation} -----\nRunID={self.runID}\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
 
 
     def tournament_selection(self, tournament_size: int = None) -> Individual:
@@ -333,6 +333,9 @@ class JSONGeneEA:
 
         # get subtrees to swap
         face = random.choice(["front", "back", "right"])
+        subtree1 = 0
+        subtree2 = 0
+
         if "hinge" in offspring1["core"][face] and "hinge" in offspring2["core"][face]:
             subtree1 = recursive(offspring1["core"][face]["hinge"])
             if subtree1 is None:
@@ -346,8 +349,7 @@ class JSONGeneEA:
                     self.debug_dump(offspring2, "offspring2:")
                     self.debug_dump(f" {offspring2}")
 
-
-        if subtree1 and subtree2:
+        if subtree1 and subtree2:  # Values 0 and None indicate failure to find subtree
             subtree1["brick"], subtree2["brick"] = subtree2["brick"], subtree1["brick"]
 
         return offspring1, offspring2
