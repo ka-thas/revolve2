@@ -131,7 +131,7 @@ class Plotter:
         plt.plot(self.generations, self.std, label='Standard Deviation')
 
         plt.xlabel('Generation')
-        plt.ylabel('Fitness')
+        plt.ylabel('Standard Deviation')
         plt.title('EA progression')
         plt.legend()
         plt.grid()
@@ -144,7 +144,7 @@ class Plotter:
         plt.plot(self.generations, self.num_modules_in_best_individual, label='Num Modules in Best Individual')
 
         plt.xlabel('Generation')
-        plt.ylabel('Fitness')
+        plt.ylabel('Number of modules')
         plt.title('EA progression')
         plt.legend()
         plt.grid()

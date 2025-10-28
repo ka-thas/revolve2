@@ -205,21 +205,12 @@ class BrainGenotype():
         iterations_since_update = 0
         self.weights = best_brain.get_weights()
 
-    
 
         while (iterations > 0):
             if config.DEBUG_BRAIN:
                 print(f" \n iteration: ", {config.INNER_LOOP_ITERATIONS -iterations})
                 print("\n Best fitness: ")
-                print(best_fitness)
-
-            if (iterations_since_update > 40): # random for now
-                config.MUTATION_EPSILON = 0.
-                
-
-            elif (best_fitness > config.EXPLORATION_RATE):
-                 config.MUTATION_EPSILON = 0.05
-
+                print(best_fitness)               
 
             old_weights = best_brain.get_weights()
 

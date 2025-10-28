@@ -49,10 +49,17 @@ Gene validator could enforce invariant during ea runs
 ## Writing
 
 - [ ] Pseudo code and illustrations
-  - [ ] Crossover illustration and pseudo-code 🌱
+  - [x] Crossover illustration and pseudo-code 🌱
   - [ ] Mutation 🐻‍❄️
   - [x] Selection 🪱
-- [ ] Ethics statement ⛰️
+- [x] Ethics statement ⛰️
+- [] Explain why we cut off Lamarckian
+- [] Explain parameters
+- [] Describe the brain, how parallelization works etc
+
+
+After the paper is finished:
+- [] Go through the paper, rewrite so the paper remians one style
 
 
 # Experiments
@@ -65,3 +72,8 @@ Gene validator could enforce invariant during ea runs
   - Dette var den Kyrre sa var lettest å bruke
   - men tror den kun kan ssh fra uio-eduroam
 - [ ] https://robin.wiki.ifi.uio.no/index.php?title=Deep_Learning_Workstations
+
+
+Hyperparametere lamarkian evoulution
+https://www.nature.com/articles/s41598-023-48338-4/tables/1
+
