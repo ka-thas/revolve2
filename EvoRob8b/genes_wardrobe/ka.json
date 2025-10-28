@@ -12,7 +12,7 @@
                                 "right": {},
                                 "left": {}
                             },
-                            "rotation": 0
+                            "rotation": 0.0
                         }
                     },
                     "left": {}
@@ -31,7 +31,7 @@
                                 "right": {},
                                 "left": {}
                             },
-                            "rotation": 0
+                            "rotation": 0.0
                         }
                     },
                     "left": {}
@@ -50,7 +50,7 @@
                                 "right": {},
                                 "left": {}
                             },
-                            "rotation": 0
+                            "rotation": 0.0
                         }
                     },
                     "left": {}
@@ -70,7 +70,7 @@
                                 "right": {},
                                 "left": {}
                             },
-                            "rotation": 0
+                            "rotation": 0.0
                         }
                     }
                 },
