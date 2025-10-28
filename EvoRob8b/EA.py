@@ -59,15 +59,16 @@ class JSONGeneEA:
         
         # Initialize random number generator
         self.rng = make_rng_time_seed()
-
+        i=0
         while True:
-            self.runID = str(random.randint(0, 999999)) # To not overwrite logs
+            self.runID = i # To not overwrite logs
             self.runID = self.runID.zfill(6)
             self.log_folder = config.LOG_FOLDER + f"{self.runID}/"
             try:
                 os.makedirs(self.log_folder)
                 break
             except FileExistsError:
+                i += 1
                 continue
         
         if config.VERBOSE_PRINTS: print(f"Logging to folder: {self.log_folder} with runID: {self.runID}")
@@ -223,7 +224,7 @@ class JSONGeneEA:
 
         self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}")
         if config.VERBOSE_PRINTS:
-            print(f"\n----- Generation {self.generation} -----\nRunID={self.runID}\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
+            print(f"\n----- Generation {self.generation} -----\nRunID={self.runID}\nTime={time.time() - self.start_time:.3f}\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
 
 
     def tournament_selection(self, tournament_size: int = None) -> Individual:
@@ -417,7 +418,7 @@ class JSONGeneEA:
         best.gene["generation"] = self.generation
         best.gene["brain_weights"] = best.brain.weights.tolist()
 
-        filename = filename or config.LOG_FOLDER+f"{self.runID}/best_gen_{self.generation}.json"
+        filename = filename or f"{self.log_folder}/best_gen_{self.generation}.json"
 
         with open(filename, 'w') as f:
             json.dump(best.gene, f, indent=2)

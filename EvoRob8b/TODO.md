@@ -49,10 +49,17 @@ Gene validator could enforce invariant during ea runs
 ## Writing
 
 - [ ] Pseudo code and illustrations
-  - [ ] Crossover illustration and pseudo-code 🌱
+  - [x] Crossover illustration and pseudo-code 🌱
   - [ ] Mutation 🐻‍❄️
   - [x] Selection 🪱
-- [ ] Ethics statement ⛰️
+- [x] Ethics statement ⛰️
+- [] Explain why we cut off Lamarckian
+- [] Explain parameters
+- [] Describe the brain, how parallelization works etc
+
+
+After the paper is finished:
+- [] Go through the paper, rewrite so the paper remians one style
 
 
 # Experiments
