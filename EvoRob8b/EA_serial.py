@@ -54,6 +54,17 @@ class JSONGeneEA:
         self.population: List[Individual] = []
         self.generation = 0
         self.evaluations = 0
+        self.terrain = terrains.flat()
+
+        self.best_flat_brain = None
+        self.best_crater_fitness = 0
+
+        self.best_uneven_brain = None
+        self.best_flat_fitness = 0
+    
+        self.best_crater_brain = None
+        self.best_uneven_fitness = 0
+
 
         self.generator = Gene_Generator()
         
@@ -154,7 +165,7 @@ class JSONGeneEA:
 
   
                     # Create scene
-            scene = ModularRobotScene(terrain=terrains.flat())
+            scene = ModularRobotScene(terrain=self.terrain)
             scene.add_robot(robot)
             
             # Simulate
@@ -192,7 +203,6 @@ class JSONGeneEA:
     def evaluate_population(self) -> None:
         """Evaluate all individuals in the population."""
         self.logger.info(f"Evaluating population (generation {self.generation})")
-        
         for individual in self.population:
             if individual.fitness == -float('inf'):  # Only evaluate if not already evaluated
                 individual.fitness = self.evaluate_individual(individual)
