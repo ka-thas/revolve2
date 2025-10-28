@@ -176,6 +176,14 @@ if __name__ == "__main__":
 
     robot = ModularRobot(body, brain)
 
+    headless_s =     input("> Headless? [y/ n]: ")
+    if (headless_s == "y"):
+        headless = True
+    else:        
+        headless = False
+
+
+
     input("> ready [press enter]: ")
 
     # Create a scene.
@@ -183,7 +191,7 @@ if __name__ == "__main__":
     scene.add_robot(robot)
 
     # Create a simulator.
-    simulator = LocalSimulator(headless=True)
+    simulator = LocalSimulator(headless=headless)
 
     # Simulate the scene and obtain states sampled during the simulation.
     scene_states = simulate_scenes(
