@@ -223,7 +223,9 @@ class JSONGeneEA:
 
         self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}")
         if config.VERBOSE_PRINTS:
-            print(f"\n----- Generation {self.generation} -----\nRunID={self.runID}\nTime={time.time() - self.start_time:.3f}\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
+            elapsed = time.time() - self.start_time
+            elapsed_str = time.strftime("%H:%M:%S", time.gmtime(elapsed))
+            print(f"\n----- Generation {self.generation} -----\nRunID={self.runID}\nElapsed={elapsed_str}\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
 
 
     def tournament_selection(self, tournament_size: int = None) -> Individual:
@@ -298,7 +300,7 @@ class JSONGeneEA:
         if "core" in mutated:
             if random.random() < config.MUTATION_RATE:
                 mutate_recursive(mutated["core"])
-                self.generator.spine_symmetry(mutated["core"])
+            self.generator.spine_symmetry(mutated["core"])
 
         return mutated
     
