@@ -1,0 +1,142 @@
+{
+  "runID": "000013",
+  "fitness": 0.5770487003774557,
+  "generation": 4,
+  "core": {
+    "right": {
+      "hinge": {
+        "brick": {
+          "front": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": 0.0
+            }
+          },
+          "right": {},
+          "left": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": 0.0
+            }
+          }
+        },
+        "rotation": 0.0
+      }
+    },
+    "front": {
+      "hinge": {
+        "brick": {
+          "front": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {},
+                "spinebrick": true
+              },
+              "rotation": 0.0
+            }
+          },
+          "right": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": 0.0
+            }
+          },
+          "left": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": -0.0
+            }
+          },
+          "spinebrick": true
+        },
+        "rotation": 0.0
+      }
+    },
+    "back": {
+      "hinge": {
+        "brick": {
+          "front": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {},
+                "spinebrick": true
+              },
+              "rotation": 0.0
+            }
+          },
+          "right": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": 0.0
+            }
+          },
+          "left": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": -0.0
+            }
+          },
+          "spinebrick": true
+        },
+        "rotation": 0.0
+      }
+    },
+    "spinebrick": true,
+    "left": {
+      "hinge": {
+        "brick": {
+          "front": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": -0.0
+            }
+          },
+          "right": {
+            "hinge": {
+              "brick": {
+                "front": {},
+                "right": {},
+                "left": {}
+              },
+              "rotation": -0.0
+            }
+          },
+          "left": {}
+        },
+        "rotation": -0.0
+      }
+    }
+  },
+  "brain_weights flat": 

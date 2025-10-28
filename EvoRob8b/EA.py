@@ -36,8 +36,23 @@ class Individual:
         self.body = None
         self.brain = None
         self.weights = None
-        self.fitness: float = -float('inf')
+        self.exists = False
 
+        self.flat_brain = None
+        self.flat_fitness = -float('inf')
+        self.flat_weights = []
+        
+        self.crater_brain = None
+        self.crater_fitness = -float('inf')
+        self.crater_weights = []
+
+    
+        self.uneven_brain = None
+        self.uneven_fitness = -float('inf')
+        self.uneven_weights = []
+
+
+        self.fitness: float = self.flat_fitness + self.crater_fitness + self.uneven_fitness
     
 
 class JSONGeneEA:
@@ -57,6 +72,17 @@ class JSONGeneEA:
 
         self.generator = Gene_Generator()
         
+        self.terrain = "flat"
+
+        self.best_flat_brain = None
+        self.best_crater_fitness = 0
+
+        self.best_uneven_brain = None
+        self.best_flat_fitness = 0
+    
+        self.best_crater_brain = None
+        self.best_uneven_fitness = 0
+
         # Initialize random number generator
         self.rng = make_rng_time_seed()
         i=0
@@ -132,6 +158,61 @@ class JSONGeneEA:
         return count_recursive(gene_dict.get("core", {}))
     
     def evaluate_individual(self, individual: Individual) -> float:
+        """ Give brain, improve brain and evaluate the fitness of an individual ."""
+        try:
+
+            individual.body = build_body(individual.gene)
+            body = individual.body
+
+            rng = make_rng_time_seed()
+            # Create brain
+            brain = BrainGenotype()
+
+            if (self.terrain == "crater"):
+                terrain =  terrains.crater([20.0, 20.0], 0.1, 10)
+
+            elif (self.terrain == "uneven"):
+                terrain = terrains.crater([20.0, 20.0], 0.25, 0.1)
+
+            elif (self.terrain == "flat"):
+                terrain = terrains.flat()
+
+            brain.develop_brain(body, rng=rng)
+            brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrain) 
+
+            if (self.terrain == "crater"):
+                terrain =  terrains.crater([20.0, 20.0], 0.1, 10)
+                individual.crater_brain = brain
+                individual.crater_fitness = brain.fitness
+                individual.crater_weights = brain.get_weights() 
+
+            elif (self.terrain == "uneven"):
+                terrain = terrains.crater([20.0, 20.0], 0.25, 0.1)
+                individual.uneven_brain = brain
+                individual.uneven_fitness = brain.fitness
+                individual.uneven_weights = brain.get_weights() 
+
+            elif (self.terrain == "flat"):
+                terrain = terrains.flat()
+                individual.flat_brain = brain
+                individual.flat_fitness = brain.fitness
+                individual.flat_weights = brain.get_weights() 
+            individual.exists = True
+            
+            fitness = brain.fitness
+            # Penalize for having too many modules
+            module_count = self.count_modules(individual.gene)
+            if module_count > self.max_modules:
+                fitness *= 1+((self.max_modules-module_count)*0.02)
+            
+            return fitness
+
+        except Exception as e:
+            self.logger.warning(f"Error evaluating individual : {str(e)}")
+            return -1000.0  # Very low fitness for invalid individuals
+        
+
+    def evaluate_individual_parallel(self, individual: Individual) -> float:
         """Evaluate the fitness of an individual."""
         try:
 
@@ -143,39 +224,29 @@ class JSONGeneEA:
             brain = BrainGenotype()
 
             brain.develop_brain(body, rng=rng)
-            brain.improve(body, config.INNER_LOOP_ITERATIONS, rng) 
 
-            individual.brain = brain  
-            individual.weights = individual.brain.get_weights() 
+            individual.flat_brain = copy.deepcopy(brain)
+            individual.flat_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat()) 
+            individual.flat_weights = individual.flat_brain.get_weights() 
+            individual.flat_fitness = individual.flat_brain.fitness 
+
+            individual.uneven_brain = copy.deepcopy(brain)  
+            individual.uneven_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.25, 0.1)) 
+            individual.uneven_weights = individual.uneven_brain.get_weights()
+            individual.uneven_fitness = individual.uneven_brain.fitness 
+
+ 
 
 
-            robot = ModularRobot(body, brain)
+            individual.crater_brain = copy.deepcopy(brain)  
+            individual.crater_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.1, 10)) 
+            individual.crater_weights = individual.crater_brain.get_weights()             
+            individual.crater_fitness = individual.crater_brain.fitness 
 
-  
-                    # Create scene
-            scene = ModularRobotScene(terrain=terrains.flat())
-            scene.add_robot(robot)
-            
-            # Simulate
-            simulator = LocalSimulator(headless=True)
-            scene_states = simulate_scenes(
-                simulator=simulator,
-                batch_parameters=make_standard_batch_parameters(),
-                scenes=scene,
-            )
+            individual.exists = True
 
-            # Get the state at the beginning and end of the simulation.
-            scene_state_begin = scene_states[0]
-            scene_state_end = scene_states[-1]
 
-            # Retrieve the states of the modular robot.
-            robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(robot)
-            robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
-
-            # Calculate the xy displacement (fitness) of the robot.
-            fitness = fitness_functions.xy_displacement(
-                robot_state_begin, robot_state_end
-            )
+            fitness = individual.fitness
             
             # Penalize for having too many modules
             module_count = self.count_modules(individual.gene)
@@ -183,6 +254,7 @@ class JSONGeneEA:
                 fitness *= 1+((self.max_modules-module_count)*0.02)
             
             return fitness
+        
             
         except Exception as e:
             self.logger.warning(f"Error evaluating individual : {str(e)}")
@@ -193,12 +265,37 @@ class JSONGeneEA:
         self.logger.info(f"Evaluating population (generation {self.generation})")
         
         for individual in self.population:
-            if individual.fitness == -float('inf'):  # Only evaluate if not already evaluated
-                individual.fitness = self.evaluate_individual(individual)
-                self.evaluations += 1
+            if (self.terrain == "flat"):
+                if (individual.flat_weights == []):                
+                    # Only evaluate if not already evaluated
+                    individual.fitness = self.evaluate_individual(individual)
+                    self.evaluations += 1
+            elif (self.terrain == "uneven"):
+                if (individual.uneven_weights == []):                
+                    # Only evaluate if not already evaluated
+                    individual.fitness = self.evaluate_individual(individual)
+                    self.evaluations += 1
+            elif (self.terrain == "crater"):
+                if (individual.crater_weights == []):                
+                    # Only evaluate if not already evaluated
+                    individual.fitness = self.evaluate_individual(individual)
+                    self.evaluations += 1         
+        # Sort population by fitness (descending)
+        self.population.sort(key=lambda x: x.fitness, reverse=True)
+
+
+    def evaluate_population_parallel(self) -> None:
+        """Evaluate all individuals in the population."""
+        self.logger.info(f"Evaluating population (generation {self.generation})")
+        
+        for individual in self.population:
+            if not individual.exists:  # Only evaluate if not already evaluated
+                individual.fitness = self.evaluate_individual_parallel(individual)
+                self.evaluations += 3
         
         # Sort population by fitness (descending)
         self.population.sort(key=lambda x: x.fitness, reverse=True)
+
 
     def log_generation_stats(self) -> None:
         """Log statistics of the current generation."""
@@ -406,7 +503,24 @@ class JSONGeneEA:
         # Sort by fitness (descending) and keep the best
         combined.sort(key=lambda x: x.fitness, reverse=True)
         self.population = combined[:self.population_size]
+
+
+    def survival_selection_parallel(self, offspring: List[Individual]) -> None:
+        """Combine population and offspring, then select survivors."""
+        # Combine population and offspring
+        combined = self.population + offspring
+        
+        if config.VERBOSE_PRINTS: print(f"   Evaluating offspring")
+        # Evaluate offspring
+        for individual in offspring:
+            individual.fitness = self.evaluate_individual_parallel(individual)
+            self.evaluations += 3
+        
+        # Sort by fitness (descending) and keep the best
+        combined.sort(key=lambda x: x.fitness, reverse=True)
+        self.population = combined[:self.population_size]
     
+
     def save_best_individual(self, filename: str = None) -> None:
         """Save the best individual to a file."""
         if not self.population:
@@ -416,7 +530,15 @@ class JSONGeneEA:
         best.gene["runID"] = self.runID
         best.gene["fitness"] = best.fitness
         best.gene["generation"] = self.generation
-        best.gene["brain_weights"] = best.brain.weights.tolist()
+
+        print(best.flat_weights)
+        print(best.uneven_weights)
+        print(best.crater_weights)
+
+        best.gene["brain_weights flat"] = best.flat_weights
+        best.gene["brain_weights uneven"] = best.uneven_weights.tolist
+        best.gene["brain_weights crater"] = best.crater_weights.tolist
+
 
         filename = filename or f"{self.log_folder}/best_gen_{self.generation}.json"
 
@@ -436,6 +558,69 @@ class JSONGeneEA:
 
         while self.evaluations < self.function_evaluations:
             self.generation += 1
+            if config.DEBUGGING: print(f"->> Generation:{self.generation}")
+
+            print(self.evaluations)
+            
+            if(self.evaluations > self.function_evaluations/3 *2-1):
+                self.terrain = "crater"
+                self.best_uneven_brain = self.population[0].brain
+
+
+            elif(self.evaluations > self.function_evaluations/3-1):
+                self.terrain = "uneven"
+                self.best_flat_brain = self.population[0].brain
+                self.best_flat_fitness = self.population[0].fitness
+
+            print(self.terrain)
+            offspring = self.create_offspring()
+
+            self.survival_selection(offspring) # only evaluates offspring and selects survivors from both parents and offspring
+            self.log_generation_stats() # Log the new generation and update plotter
+            
+            # Save new data
+            if self.generation % 10 == 0:
+                self.save_best_individual()
+                # Append last 10 logged generations to a progress CSV
+                try:
+                    self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=10)
+                except Exception:
+                    self.logger.exception("Failed to append generation progress to CSV")
+           
+            # Check termination condition
+            if self.evaluations >= self.function_evaluations:
+                break
+            if config.DEBUGGING: print(f"->> Evaluation:{self.evaluations}")
+
+        if self.generation % 10 != 0:
+            # Ensure final data is saved if not already done
+            try:
+                self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=self.generation % 10)
+            except Exception:
+                self.logger.exception("Failed to append final generation progress to CSV")
+        print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
+        self.save_best_individual(self.log_folder + "final_best_individual.json") # Save final best individual
+        
+        return self.population[0]
+    
+
+
+    def run_parallel(self) -> Individual:
+        print("Running EA")
+
+        self.start_time = time.time()
+
+        self.initialize_population()
+        self.evaluate_population() # Evaluate init
+        self.log_generation_stats() # Log init
+
+        while self.evaluations < self.function_evaluations:
+            self.generation += 1
+
+
+
+                              
+
             if config.DEBUGGING: print(f"->> Generation:{self.generation}")
             
             offspring = self.create_offspring()

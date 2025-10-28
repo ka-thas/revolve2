@@ -1,3 +1,6 @@
+Run ID: 000024
+Start Time: 2025-10-28 21:02
+----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
@@ -25,7 +28,7 @@ MAX_BRICKS = 13
 
 # Brain
 BRAIN_MUTATION_RATE = 0.8
-INNER_LOOP_ITERATIONS = 1
+INNER_LOOP_ITERATIONS = 5
 EXPLORATION_RATE = 1
 MUTATION_EPSILON = 0.8
 

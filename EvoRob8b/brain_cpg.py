@@ -115,6 +115,7 @@ class BrainGenotype():
 
             self.weights = []
             self.brain = None
+            self.fitness = 0
 
 
 
@@ -197,7 +198,7 @@ class BrainGenotype():
         return self.brain.make_instance()
 
 
-    def improve(self, body, iterations, rng):
+    def improve(self, body, iterations, rng, terrain):
         start_time = time.time()
         best_fitness = 0
         best_brain = copy.deepcopy(self.brain)
@@ -220,7 +221,7 @@ class BrainGenotype():
 
             robot = ModularRobot(body, best_brain)
             # Create a scene.
-            scene = ModularRobotScene(terrain=terrains.flat())
+            scene = ModularRobotScene(terrain=terrain)
             scene.add_robot(robot)
 
             # Create a simulator.
@@ -260,6 +261,7 @@ class BrainGenotype():
         self.brain = best_brain
         self.weights = self.brain.get_weights()
         self.brain.make_instance()
+        self.fitness = best_fitness
 
         end_time = time.time()
         if config.DEBUG_BRAIN:

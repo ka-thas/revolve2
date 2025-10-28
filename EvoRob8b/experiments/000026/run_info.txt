@@ -1,3 +1,6 @@
+Run ID: 000026
+Start Time: 2025-10-28 21:11
+----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 

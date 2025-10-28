@@ -187,7 +187,7 @@ if __name__ == "__main__":
     input("> ready [press enter]: ")
 
     # Create a scene.
-    scene = ModularRobotScene(terrain=terrains.flat())
+    scene = ModularRobotScene(terrain=terrains.crater([20.0, 20.0], 0.25, 0.1))
     scene.add_robot(robot)
 
     # Create a simulator.
