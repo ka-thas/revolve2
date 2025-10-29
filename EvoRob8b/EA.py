@@ -31,7 +31,6 @@ from plotter import Plotter
 @dataclass
 class Individual:
     """Represents an individual in the population."""
-
     def __init__(self, gene):
         self.gene = gene  # Build the robot body from the gene
         self.body = None

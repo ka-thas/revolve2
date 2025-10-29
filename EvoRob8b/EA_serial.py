@@ -32,17 +32,16 @@ from plotter import Plotter
 class Individual:
     """Represents an individual in the population."""
     def __init__(self, gene):
-        self.gene = gene # Build the robot body from the gene
+        self.gene = gene  # Build the robot body from the gene
         self.body = None
         self.brain = None
         self.weights = None
-        self.fitness: float = -float('inf')
+        self.fitness: float = -float("inf")
 
-    
 
 class JSONGeneEA:
     """Evolutionary Algorithm for JSON gene representation."""
-    
+
     def __init__(self, population_size: int = None, offspring_size: int = None):
         """Initialize the EA with configuration parameters."""
         self.population_size = population_size or config.POPULATION_SIZE
@@ -67,10 +66,10 @@ class JSONGeneEA:
 
 
         self.generator = Gene_Generator()
-        
+
         # Initialize random number generator
         self.rng = make_rng_time_seed()
-        i=0
+        i = 0
         while True:
             self.runID = i # To not overwrite logs
             self.runID = self.runID.zfill(6)
@@ -309,7 +308,7 @@ class JSONGeneEA:
         if "core" in mutated:
             if random.random() < config.MUTATION_RATE:
                 mutate_recursive(mutated["core"])
-                self.generator.spine_symmetry(mutated["core"])
+            self.generator.spine_symmetry(mutated["core"])
 
         return mutated
     
