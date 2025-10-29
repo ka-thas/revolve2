@@ -207,6 +207,12 @@ class JSONGeneEA:
                 "inf"
             ):  # Only evaluate if not already evaluated
                 individual.fitness = self.evaluate_individual(individual)
+
+                if config.VERBOSE_PRINTS:
+                    print(
+                        time.strftime("%H:%M:%S", time.gmtime(time.time())),
+                        f"Evaluated individual with fitness: {individual.fitness:.3f}",
+                    )
                 self.evaluations += 1
 
         # Sort population by fitness (descending)
@@ -433,6 +439,9 @@ class JSONGeneEA:
             parent = self.tournament_selection()
             child_gene = self.mutate_gene(copy.deepcopy(parent.gene))
             offspring.append(Individual(gene=child_gene))
+            
+        if config.VERBOSE_PRINTS:
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Created offspring")
 
         return offspring
 
@@ -481,7 +490,7 @@ class JSONGeneEA:
         )
 
     def run(self) -> Individual:
-        print("Running EA")
+        print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Running EA")
         best_fitness = -float("inf")
         self.start_time = time.time()
 
@@ -492,7 +501,7 @@ class JSONGeneEA:
         while self.evaluations < self.function_evaluations:
             self.generation += 1
             if config.VERBOSE_PRINTS:
-                print(f"{time.time()} Starting generation {self.generation}")
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Starting generation", self.generation)
 
             offspring = self.create_offspring()
             self.survival_selection(
@@ -507,6 +516,8 @@ class JSONGeneEA:
 
             # Append last 5 logged generations to a progress CSV
             if self.generation % 5 == 0:
+                if config.VERBOSE_PRINTS:
+                    print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending last 5 generations to progress CSV")
                 try:
                     self.plotter.append_last_n_to_csv(
                         self.log_folder + "progress.csv", n=5
