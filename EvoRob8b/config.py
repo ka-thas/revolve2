@@ -14,6 +14,8 @@ MUTATION_RATE = 0.7
 CROSSOVER_RATE = 0.7
 CROSSOVER_CHANCE_TO_DIVE = 0.15
 PARENT_SELECT_STRATEGY = 'tournament'
+FITNESS_FUNCTION = "x_displacement"  # Options: 'x_displacement', 'xy_displacement', 'y_displacement'
+
 
 # Gene generator / Initial population
 CHANCE_TO_PLACE_BRICK_FRONT = 0.8
