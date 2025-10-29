@@ -189,7 +189,7 @@ class JSONGeneEA:
                 "xy_displacement": fitness_functions.xy_displacement,
             }
 
-            xy_displacement = select_fitness_function[config.FITNESS_FUNCTION](
+            fitness = select_fitness_function[config.FITNESS_FUNCTION](
                 robot_state_begin, robot_state_end
             )
 
