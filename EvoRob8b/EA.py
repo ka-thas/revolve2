@@ -403,7 +403,7 @@ class JSONGeneEA:
         """Create offspring using selection, crossover, and mutation."""
 
         if config.VERBOSE_PRINTS:
-            print("   Creating offspring")
+            print(time.time(),"Creating offspring")
 
         offspring = []
 
@@ -442,11 +442,19 @@ class JSONGeneEA:
         combined = self.population + offspring
 
         if config.VERBOSE_PRINTS:
-            print(f"   Evaluating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Evaluating offspring")
         # Evaluate offspring
         for individual in offspring:
             individual.fitness = self.evaluate_individual(individual)
+            
+            if config.VERBOSE_PRINTS:
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), f"Evaluated individual with fitness: {individual.fitness:.3f}")
+            
             self.evaluations += 1
+
+        if config.VERBOSE_PRINTS:
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Finished evaluating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "population size:", len(self.population), "offspring size:", len(offspring), "combined size:", len(combined))
 
         # Sort by fitness (descending) and keep the best
         combined.sort(key=lambda x: x.fitness, reverse=True)
@@ -484,7 +492,7 @@ class JSONGeneEA:
         while self.evaluations < self.function_evaluations:
             self.generation += 1
             if config.VERBOSE_PRINTS:
-                print(f"{time.time()} Start generation:{self.generation}")
+                print(f"{time.time()} Starting generation {self.generation}")
 
             offspring = self.create_offspring()
             self.survival_selection(
