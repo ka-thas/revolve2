@@ -50,7 +50,7 @@ Gene validator could enforce invariant during ea runs
 
 - [ ] Pseudo code and illustrations
   - [x] Crossover illustration and pseudo-code 🌱
-  - [ ] Mutation 🐻‍❄️
+  - [x] Mutation 🐻‍❄️
   - [x] Selection 🪱
 - [x] Ethics statement ⛰️
 - [] Explain why we cut off Lamarckian
