@@ -182,8 +182,8 @@ class JSONGeneEA:
             )
             robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
 
-            # Calculate the xy displacement (fitness) of the robot.
-            fitness = fitness_functions.xy_displacement(
+            # Calculate the x displacement (fitness) of the robot.
+            fitness = fitness_functions.x_displacement(
                 robot_state_begin, robot_state_end
             )
 
