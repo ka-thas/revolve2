@@ -27,7 +27,6 @@ from revolve2.experimentation.rng import make_rng_time_seed
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 
-from revolve2.standards import fitness_functions, modular_robots_v1, terrains
 
 def build_body(gene):
     body = BodyV1()
