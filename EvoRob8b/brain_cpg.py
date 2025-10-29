@@ -85,9 +85,9 @@ def mutate_brain(weights, rng):
     # print(weights)     
     epsilon = config.MUTATION_EPSILON   
     for y in range(len(weights)):
-            for x in range(len(weights[y])):
-                if (weights[y][x] != 0 and random.random() > 1-config.BRAIN_MUTATION_RATE ):
-                    weights[y][x] += + rng.normal(loc=0, scale=config.MUTATION_EPSILON)
+        for x in range(len(weights[y])):
+            if (weights[y][x] != 0 and random.random() < config.BRAIN_MUTATION_RATE ):
+                weights[y][x] += rng.normal(loc=0, scale=config.MUTATION_EPSILON)
     # print("\n new weights")
     # print(weights)        
 

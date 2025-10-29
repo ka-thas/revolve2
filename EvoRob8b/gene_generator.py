@@ -23,7 +23,8 @@ class Gene_Generator:
                     new_left_brick = {
                         "front": {},
                         "right": {},
-                        "left": {}
+                        "left": {},
+                        "rotation" : random.randint(0,3) * np.pi/2
                         }
                     rotation = right_brick["front"]["hinge"]["rotation"] 
                     left_brick["front"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation}}
@@ -36,7 +37,8 @@ class Gene_Generator:
                     new_left_brick = {
                         "front": {},
                         "right": {},
-                        "left": {}
+                        "left": {},
+                        "rotation" : random.randint(0,3) * np.pi/2
                     }
                     left_brick["right"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation }}
                     new_right_brick = right_brick["left"]["hinge"]["brick"]
@@ -48,7 +50,8 @@ class Gene_Generator:
                     new_left_brick = {
                         "front": {},
                         "right": {},
-                        "left": {}
+                        "left": {},
+                        "rotation" : random.randint(0,3) * np.pi/2
                         }
                     left_brick["left"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation }}
                     new_right_brick = right_brick["right"]["hinge"]["brick"]
@@ -77,7 +80,8 @@ class Gene_Generator:
             new_left_brick = {
                         "front": {},
                         "right": {},
-                        "left": {}
+                        "left": {},
+                        "rotation" : random.randint(0,3) * np.pi/2
                         }
 
             rotation = spinebrick["right"]["hinge"]["rotation"] 
@@ -125,7 +129,8 @@ class Gene_Generator:
                     new_module = {
                         "front": {},
                         "right": {},
-                        "left": {}
+                        "left": {},
+                        "rotation" : random.randint(0,3) * np.pi/2
                     }
                     rotation = 0.0
                     if random.random() < config.CHANCE_TO_ROTATE:
