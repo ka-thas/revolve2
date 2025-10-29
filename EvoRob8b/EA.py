@@ -298,7 +298,11 @@ class JSONGeneEA:
                     if mutation_type == "add_hinge" and (not value or value == {}):
                         if config.DEBUG_EA:
                             print(node.keys(), "add")
-                        new_brick = {"front": {}, "right": {}, "left": {}}
+                        new_brick = {
+                        "front": {}, 
+                        "right": {},
+                        "left": {},
+                        "rotation" : random.randint(0,3) * np.pi/2}
                         rotation = 0.0
                         if random.random() < config.CHANCE_TO_ROTATE:
                             rotation = random.randint(1, 3) * np.pi / 2
