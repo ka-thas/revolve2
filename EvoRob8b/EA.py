@@ -31,18 +31,18 @@ from plotter import Plotter
 @dataclass
 class Individual:
     """Represents an individual in the population."""
+
     def __init__(self, gene):
-        self.gene = gene # Build the robot body from the gene
+        self.gene = gene  # Build the robot body from the gene
         self.body = None
         self.brain = None
         self.weights = None
-        self.fitness: float = -float('inf')
+        self.fitness: float = -float("inf")
 
-    
 
 class JSONGeneEA:
     """Evolutionary Algorithm for JSON gene representation."""
-    
+
     def __init__(self, population_size: int = None, offspring_size: int = None):
         """Initialize the EA with configuration parameters."""
         self.population_size = population_size or config.POPULATION_SIZE
@@ -56,12 +56,12 @@ class JSONGeneEA:
         self.evaluations = 0
 
         self.generator = Gene_Generator()
-        
+
         # Initialize random number generator
         self.rng = make_rng_time_seed()
-        i=0
+        i = 0
         while True:
-            self.runID = str(i) # To not overwrite logs
+            self.runID = str(i)  # To not overwrite logs
             self.runID = self.runID.zfill(6)
             self.log_folder = config.LOG_FOLDER + f"{self.runID}/"
             try:
@@ -70,11 +70,14 @@ class JSONGeneEA:
             except FileExistsError:
                 i += 1
                 continue
-        
-        if config.VERBOSE_PRINTS: print(f"Logging to folder: {self.log_folder} with runID: {self.runID}")
+
+        if config.VERBOSE_PRINTS:
+            print(f"Logging to folder: {self.log_folder} with runID: {self.runID}")
 
         self.start_time = None
-        self.plotter = Plotter(filename=self.log_folder + "progress.csv", runID=self.runID)
+        self.plotter = Plotter(
+            filename=self.log_folder + "progress.csv", runID=self.runID
+        )
 
         # Setup logging
         logging.basicConfig(level=logging.INFO)
@@ -83,54 +86,61 @@ class JSONGeneEA:
     def write_run_info(self) -> None:
         """Write run configuration info to a log file."""
         filename = self.log_folder + "run_info.txt"
-        with open(filename, 'w') as f:
-            with open("config.py", 'r') as config_file:
+        with open(filename, "w") as f:
+            with open("config.py", "r") as config_file:
                 f.write(f"Run ID: {self.runID}\n")
-                f.write(f"Start Time: {time.strftime('%Y-%m-%d %H:%M', time.localtime())}\n")
+                f.write(
+                    f"Start Time: {time.strftime('%Y-%m-%d %H:%M', time.localtime())}\n"
+                )
                 f.write("----- config.py -----\n")
                 f.write(config_file.read())
                 f.write("\n")
 
     def debug_dump(self, gene: Dict[str, Any], header: str) -> None:
         filename = self.log_folder + "debug.txt"
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             f.write(f"{header}\n")
             f.write(json.dumps(gene, indent=4))
 
     def initialize_population(self) -> None:
         """Initialize the population with random individuals."""
         self.logger.info(f"Initializing population of size {self.population_size}")
-        
+
         for i in range(self.population_size):
             # Generate random gene
             # gene_generator was refactored into a class - use it here
             gene_dict = self.generator.make_core()
-            
+
             individual = Individual(gene=gene_dict)
             self.population.append(individual)
-            
+
         self.logger.info("Population initialized successfully")
-    
+
     def count_modules(self, gene_dict: Dict[str, Any]) -> int:
         """Count the total number of modules in a gene."""
+
         def count_recursive(node):
             if not isinstance(node, dict) or not node:
                 return 0
-            
+
             count = 0
             for key, value in node.items():
                 if key in ["front", "left", "right", "back"] and "hinge" in str(value):
-                    #count += 1  # Count the hinge
-                    if isinstance(value, dict) and "hinge" in value and "brick" in value["hinge"]:
+                    # count += 1  # Count the hinge
+                    if (
+                        isinstance(value, dict)
+                        and "hinge" in value
+                        and "brick" in value["hinge"]
+                    ):
                         count += 1  # Count the brick
                         count += count_recursive(value["hinge"]["brick"])
                 elif isinstance(value, dict):
                     count += count_recursive(value)
-            
+
             return count
-        
+
         return count_recursive(gene_dict.get("core", {}))
-    
+
     def evaluate_individual(self, individual: Individual) -> float:
         """Evaluate the fitness of an individual."""
         try:
@@ -143,19 +153,17 @@ class JSONGeneEA:
             brain = BrainGenotype()
 
             brain.develop_brain(body, rng=rng)
-            brain.improve(body, config.INNER_LOOP_ITERATIONS, rng) 
+            brain.improve(body, config.INNER_LOOP_ITERATIONS, rng)
 
-            individual.brain = brain  
-            individual.weights = individual.brain.get_weights() 
-
+            individual.brain = brain
+            individual.weights = individual.brain.get_weights()
 
             robot = ModularRobot(body, brain)
 
-  
-                    # Create scene
+            # Create scene
             scene = ModularRobotScene(terrain=terrains.flat())
             scene.add_robot(robot)
-            
+
             # Simulate
             simulator = LocalSimulator(headless=True)
             scene_states = simulate_scenes(
@@ -169,34 +177,38 @@ class JSONGeneEA:
             scene_state_end = scene_states[-1]
 
             # Retrieve the states of the modular robot.
-            robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(robot)
+            robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(
+                robot
+            )
             robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
 
             # Calculate the xy displacement (fitness) of the robot.
             fitness = fitness_functions.xy_displacement(
                 robot_state_begin, robot_state_end
             )
-            
+
             # Penalize for having too many modules
             module_count = self.count_modules(individual.gene)
             if module_count > self.max_modules:
-                fitness *= 1+((self.max_modules-module_count)*0.02)
-            
+                fitness *= 1 + ((self.max_modules - module_count) * 0.02)
+
             return fitness
-            
+
         except Exception as e:
             self.logger.warning(f"Error evaluating individual : {str(e)}")
             return -1000.0  # Very low fitness for invalid individuals
-    
+
     def evaluate_population(self) -> None:
         """Evaluate all individuals in the population."""
         self.logger.info(f"Evaluating population (generation {self.generation})")
-        
+
         for individual in self.population:
-            if individual.fitness == -float('inf'):  # Only evaluate if not already evaluated
+            if individual.fitness == -float(
+                "inf"
+            ):  # Only evaluate if not already evaluated
                 individual.fitness = self.evaluate_individual(individual)
                 self.evaluations += 1
-        
+
         # Sort population by fitness (descending)
         self.population.sort(key=lambda x: x.fitness, reverse=True)
 
@@ -207,82 +219,113 @@ class JSONGeneEA:
             generation=self.generation,
             best=self.population[0].fitness,
             worst=self.population[-1].fitness,
-            mean=sum(individual.fitness for individual in self.population) / len(self.population),
+            mean=sum(individual.fitness for individual in self.population)
+            / len(self.population),
             median=self.population[len(self.population) // 2].fitness,
             std=np.std([individual.fitness for individual in self.population]),
             num_modules=self.count_modules(self.population[0].gene),
-            total_elapsed_time=time.time() - self.start_time
+            total_elapsed_time=time.time() - self.start_time,
         )
 
         best_fitness = self.population[0].fitness
-        mean_fitness = sum(individual.fitness for individual in self.population) / len(self.population)
+        mean_fitness = sum(individual.fitness for individual in self.population) / len(
+            self.population
+        )
         # Compute values for logging/printing (use the same values we logged to plotter)
         median_fitness = self.population[len(self.population) // 2].fitness
         std_fitness = np.std([individual.fitness for individual in self.population])
         num_modules_fitness = self.count_modules(self.population[0].gene)
 
-        self.logger.info(f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}")
+        self.logger.info(
+            f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}"
+        )
         if config.VERBOSE_PRINTS:
             elapsed = time.time() - self.start_time
             elapsed_str = time.strftime("%H:%M:%S", time.gmtime(elapsed))
-            print(f"\n----- Generation {self.generation} -----\nRunID={self.runID}\nElapsed={elapsed_str}\nBest={best_fitness:.3f}\nMean={mean_fitness:.3f}\nMedian={median_fitness:.3f}\nStd={std_fitness:.3f}\nNumModules={num_modules_fitness:.3f}")
-
+            print(
+                f"\n----- Generation {self.generation} -----",
+                f"RunID={self.runID}",
+                f"Elapsed={elapsed_str}",
+                f"Best={best_fitness:.3f}",
+                f"Mean={mean_fitness:.3f}",
+                f"Median={median_fitness:.3f}",
+                f"Std={std_fitness:.3f}",
+                f"NumModules={num_modules_fitness:.3f}",
+                end="\n",
+                sep="\n",
+            )
 
     def tournament_selection(self, tournament_size: int = None) -> Individual:
         """Select an individual using tournament selection."""
         tournament_size = tournament_size or self.tournament_size
-        
+
         # Select random individuals for tournament
-        tournament = random.sample(self.population, min(tournament_size, len(self.population)))
-        
+        tournament = random.sample(
+            self.population, min(tournament_size, len(self.population))
+        )
+
         # Return the best individual from the tournament
         return max(tournament, key=lambda x: x.fitness)
-    
+
     def mutate_gene(self, gene: Dict[str, Any]) -> Dict[str, Any]:
         """Mutate a gene with various mutation operators."""
         mutated = copy.deepcopy(gene)
-        
+
         def mutate_recursive(node, depth=0):
-            if config.DEBUG_EA: print(node.keys())
-            if not isinstance(node, dict) or depth > 6:  # Limit depth to prevent infinite growth
+            if config.DEBUG_EA:
+                print(node.keys())
+            if (
+                not isinstance(node, dict) or depth > 6
+            ):  # Limit depth to prevent infinite growth
                 return node
-            
+
             for key, value in list(node.items()):
                 if key in ["front", "right", "left"]:
-                    pmutate = 0.15+0.05*depth
-                    pskip = 0.7-0.10*depth
+                    pmutate = 0.15 + 0.05 * depth
+                    pskip = 0.7 - 0.10 * depth
                     # Mutation operations
-                    mutation_type = np.random.choice([
-                        "add_hinge", "remove_hinge", "modify_existing"
-                    ], p=[pmutate, pmutate, pskip])
-                    
-                    
+                    mutation_type = np.random.choice(
+                        ["add_hinge", "remove_hinge", "modify_existing"],
+                        p=[pmutate, pmutate, pskip],
+                    )
+
                     if mutation_type == "add_hinge" and (not value or value == {}):
-                        if config.DEBUG_EA: print(node.keys(), "add")
-                        new_brick = {
-                        "front": {},
-                        "right": {},
-                        "left": {}
-                        }
+                        if config.DEBUG_EA:
+                            print(node.keys(), "add")
+                        new_brick = {"front": {}, "right": {}, "left": {}}
                         rotation = 0.0
                         if random.random() < config.CHANCE_TO_ROTATE:
-                            rotation = random.randint(1,3) * np.pi/2
-                        node[key] = {"hinge": {"brick": new_brick, "rotation": rotation}               
-                            }
-                        if config.DEBUG_EA: print(node.keys(), "added")
-                    
-                    elif mutation_type == "remove_hinge" and isinstance(value, dict) and "hinge" in value:
+                            rotation = random.randint(1, 3) * np.pi / 2
+                        node[key] = {
+                            "hinge": {"brick": new_brick, "rotation": rotation}
+                        }
+                        if config.DEBUG_EA:
+                            print(node.keys(), "added")
+
+                    elif (
+                        mutation_type == "remove_hinge"
+                        and isinstance(value, dict)
+                        and "hinge" in value
+                    ):
                         # Remove hinge structure
-                        if config.DEBUG_EA: print(node.keys(), "remove")
+                        if config.DEBUG_EA:
+                            print(node.keys(), "remove")
                         node[key] = {}
-                        if config.DEBUG_EA: print(node.keys(), "removed")
-                    
-                    elif mutation_type == "modify_existing" and isinstance(value, dict) and "hinge" in value:
+                        if config.DEBUG_EA:
+                            print(node.keys(), "removed")
+
+                    elif (
+                        mutation_type == "modify_existing"
+                        and isinstance(value, dict)
+                        and "hinge" in value
+                    ):
                         # Recursively mutate the brick structure
                         if "brick" in value["hinge"]:
-                            if config.DEBUG_EA: print(node.keys(), "modify")
+                            if config.DEBUG_EA:
+                                print(node.keys(), "modify")
                             mutate_recursive(value["hinge"]["brick"], depth + 1)
-                            if config.DEBUG_EA: print(node.keys(), "modified")
+                            if config.DEBUG_EA:
+                                print(node.keys(), "modified")
 
                     """
                     elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
@@ -293,9 +336,9 @@ class JSONGeneEA:
                         if other_key in node:
                             node[key], node[other_key] = node[other_key], node[key]
                     """
-            
+
             return node
-        
+
         # Mutate the core and ensure symmetry
         if "core" in mutated:
             if random.random() < config.MUTATION_RATE:
@@ -303,13 +346,15 @@ class JSONGeneEA:
             self.generator.spine_symmetry(mutated["core"])
 
         return mutated
-    
-    def crossover_genes(self, parent1: Individual, parent2: Individual) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+
+    def crossover_genes(
+        self, parent1: Individual, parent2: Individual
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """
         Perform crossover between two parent genes.
         see ./images/sub-tree-crossover.png
         """
-        
+
         # Create offspring as copies of parents
         offspring1 = copy.deepcopy(parent1.gene)  # Dict[str, Any]
         offspring2 = copy.deepcopy(parent2.gene)
@@ -321,17 +366,16 @@ class JSONGeneEA:
             """
             faces = ["front", "right", "left"]
             face = random.choice(faces)
-            if not face in node["brick"]: 
+            if not face in node["brick"]:
                 return None
-            if node["brick"][face]: # eg. if node["front"] has content
-                if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:        
+            if node["brick"][face]:  # eg. if node["front"] has content
+                if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:
                     child = recursive(node["brick"][face]["hinge"])
                     if child:
                         return child
                     else:
                         return None
             return node
-
 
         # get subtrees to swap
         face = random.choice(["front", "back", "right"])
@@ -354,64 +398,65 @@ class JSONGeneEA:
             subtree1["brick"], subtree2["brick"] = subtree2["brick"], subtree1["brick"]
 
         return offspring1, offspring2
-    
+
     def create_offspring(self) -> List[Individual]:
         """Create offspring using selection, crossover, and mutation."""
-        
-        if config.VERBOSE_PRINTS: print("   Creating offspring")
+
+        if config.VERBOSE_PRINTS:
+            print("   Creating offspring")
 
         offspring = []
-        
+
         for _ in range(self.offspring_size // 2):
             # Select parents
             parent1 = self.tournament_selection()
             parent2 = self.tournament_selection()
-            
+
             # Crossover
             if random.random() < config.CROSSOVER_RATE:
                 child1_gene, child2_gene = self.crossover_genes(parent1, parent2)
             else:
                 child1_gene = copy.deepcopy(parent1.gene)
                 child2_gene = copy.deepcopy(parent2.gene)
-            
+
             # Mutation
             child1_gene = self.mutate_gene(child1_gene)
             child2_gene = self.mutate_gene(child2_gene)
-            
+
             # Create offspring individuals
-            offspring.extend([
-                Individual(gene=child1_gene),
-                Individual(gene=child2_gene)
-            ])
-        
+            offspring.extend(
+                [Individual(gene=child1_gene), Individual(gene=child2_gene)]
+            )
+
         # If odd offspring size, create one more
         if self.offspring_size % 2 == 1:
             parent = self.tournament_selection()
             child_gene = self.mutate_gene(copy.deepcopy(parent.gene))
             offspring.append(Individual(gene=child_gene))
-        
+
         return offspring
-    
+
     def survival_selection(self, offspring: List[Individual]) -> None:
         """Combine population and offspring, then select survivors."""
         # Combine population and offspring
         combined = self.population + offspring
-        
-        if config.VERBOSE_PRINTS: print(f"   Evaluating offspring")
+
+        if config.VERBOSE_PRINTS:
+            print(f"   Evaluating offspring")
         # Evaluate offspring
         for individual in offspring:
             individual.fitness = self.evaluate_individual(individual)
             self.evaluations += 1
-        
+
         # Sort by fitness (descending) and keep the best
         combined.sort(key=lambda x: x.fitness, reverse=True)
-        self.population = combined[:self.population_size]
-    
+        self.population = combined[: self.population_size]
+
     def save_best_individual(self, filename: str = None) -> None:
         """Save the best individual to a file."""
         if not self.population:
             return
-        
+
         best = self.population[0]
         best.gene["runID"] = self.runID
         best.gene["fitness"] = best.fitness
@@ -420,71 +465,85 @@ class JSONGeneEA:
 
         filename = filename or f"{self.log_folder}/best_gen_{self.generation}.json"
 
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
             json.dump(best.gene, f, indent=2)
-        
-        self.logger.info(f"Best individual saved to {filename} (fitness: {best.fitness:.3f})")
-    
+
+        self.logger.info(
+            f"Best individual saved to {filename} (fitness: {best.fitness:.3f})"
+        )
+
     def run(self) -> Individual:
         print("Running EA")
-        fitness_check = -float('inf')
+        best_fitness = -float("inf")
         self.start_time = time.time()
 
         self.initialize_population()
-        self.evaluate_population() # Evaluate init
-        self.log_generation_stats() # Log init
+        self.evaluate_population()  # Evaluate init
+        self.log_generation_stats()  # Log init
 
         while self.evaluations < self.function_evaluations:
             self.generation += 1
-            if config.DEBUGGING: print(f"->> Generation:{self.generation}")
-            
+            if config.VERBOSE_PRINTS:
+                print(f"{time.time()} Start generation:{self.generation}")
+
             offspring = self.create_offspring()
-            self.survival_selection(offspring) # only evaluates offspring and selects survivors from both parents and offspring
-            self.log_generation_stats() # Log the new generation and update plotter
-            
-            # Save new data
-            if config.SAVE_ALL_BEST_INDIVIDUALS:
-                if fitness_check < self.population[0].fitness:
-                    fitness_check = self.population[0].fitness
-                    self.save_best_individual()
-            else:
-                if self.generation % 10 == 0:
-                    self.save_best_individual()
-                    # Append last 10 logged generations to a progress CSV
-                    try:
-                        self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=10)
-                    except Exception:
-                        self.logger.exception("Failed to append generation progress to CSV")
-                
+            self.survival_selection(
+                offspring
+            )  # only evaluates offspring and selects survivors from both parents and offspring
+            self.log_generation_stats()  # Log the new generation and update plotter
+
+            # Save new individual if improved
+            if best_fitness < self.population[0].fitness:
+                best_fitness = self.population[0].fitness
+                self.save_best_individual()
+
+            # Append last 5 logged generations to a progress CSV
+            if self.generation % 5 == 0:
+                try:
+                    self.plotter.append_last_n_to_csv(
+                        self.log_folder + "progress.csv", n=5
+                    )
+                except Exception:
+                    self.logger.exception("Failed to append generation progress to CSV")
+
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
-            if config.DEBUGGING: print(f"->> Evaluation:{self.evaluations}")
+            if config.DEBUGGING:
+                print(f"->> Evaluation:{self.evaluations}")
 
-        if self.generation % 10 != 0:
+        if self.generation % 5 != 0:
             # Ensure final data is saved if not already done
             try:
-                self.plotter.append_last_n_to_csv(self.log_folder + "progress.csv", n=self.generation % 10)
+                self.plotter.append_last_n_to_csv(
+                    self.log_folder + "progress.csv", n=self.generation % 5
+                )
             except Exception:
-                self.logger.exception("Failed to append final generation progress to CSV")
-        print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
-        self.save_best_individual(self.log_folder + "final_best_individual.json") # Save final best individual
-        
+                self.logger.exception(
+                    "Failed to append final generation progress to CSV"
+                )
+        print(
+            f"EA completed after {self.generation} generations and {self.evaluations} evaluations"
+        )
+        self.save_best_individual(
+            self.log_folder + "final_best_individual.json"
+        )  # Save final best individual
+
         return self.population[0]
 
 
 def main():
     """Main function to run the evolutionary algorithm."""
-    
-    #random.seed(config.SEED)
+
+    # random.seed(config.SEED)
     ea = JSONGeneEA()
     ea.write_run_info()
     best_individual = ea.run()
-    
+
     print(f"\nBest individual found:")
     print(f"Fitness: {best_individual.fitness:.3f}")
     print(f"Modules: {ea.count_modules(best_individual.gene)}")
-    
+
     # Print gene structure
     print("\nGene structure:")
     print_json_gene(best_individual.gene)
