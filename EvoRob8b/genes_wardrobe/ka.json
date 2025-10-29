@@ -11,7 +11,104 @@
                                 "front": {
                                     "hinge": {
                                         "brick": {
-                                            "front": {},
+                                            "front": {"hinge": {
+                                        "brick": {
+                                            "front": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {
+                                                            "hinge": {
+                                                                "brick": {
+                                                                    "front": {
+                                                                        "hinge": {
+                                                                            "brick": {
+                                                                                "front": {
+                                                                                    "hinge": {
+                                                                                        "brick": {
+                                                                                            "front": {
+                                                                                                "hinge": {
+                                                                                                    "brick": {
+                                                                                                        "front": {
+                                                                                                            "hinge": {
+                                                                                                                "brick": {
+                                                                                                                    "front": {
+                                                                                                                        "hinge": {
+                                                                                                                            "brick": {
+                                                                                                                                "front": {
+                                                                                                                                    "hinge": {
+                                                                                                                                        "brick": {
+                                                                                                                                            "front": {
+                                                                                                                                                "hinge": {
+                                                                                                                                                    "brick": {
+                                                                                                                                                        "front": {
+                                                                                                                                                            "hinge": {
+                                                                                                                                                                "brick": {
+                                                                                                                                                                    "front": {},
+                                                                                                                                                                    "right": {},
+                                                                                                                                                                    "left": {}
+                                                                                                                                                                },
+                                                                                                                                                                "rotation": 0.0
+                                                                                                                                                            }
+                                                                                                                                                        },
+                                                                                                                                                        "right": {},
+                                                                                                                                                        "left": {}
+                                                                                                                                                    },
+                                                                                                                                                    "rotation": 0.0
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            "right": {},
+                                                                                                                                            "left": {}
+                                                                                                                                        },
+                                                                                                                                        "rotation": 0.0
+                                                                                                                                    }
+                                                                                                                                },
+                                                                                                                                "right": {},
+                                                                                                                                "left": {}
+                                                                                                                            },
+                                                                                                                            "rotation": 0.0
+                                                                                                                        }
+                                                                                                                    },
+                                                                                                                    "right": {},
+                                                                                                                    "left": {}
+                                                                                                                },
+                                                                                                                "rotation": 0.0
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "right": {},
+                                                                                                        "left": {}
+                                                                                                    },
+                                                                                                    "rotation": 0.0
+                                                                                                }
+                                                                                            },
+                                                                                            "right": {},
+                                                                                            "left": {}
+                                                                                        },
+                                                                                        "rotation": 0.0
+                                                                                    }
+                                                                                },
+                                                                                "right": {},
+                                                                                "left": {}
+                                                                            },
+                                                                            "rotation": 0.0
+                                                                        }
+                                                                    },
+                                                                    "right": {},
+                                                                    "left": {}
+                                                                },
+                                                                "rotation": 0.0
+                                                            }
+                                                        },
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": 0.0
+                                                }
+                                            },
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }},
                                             "right": {},
                                             "left": {}
                                         },
@@ -38,15 +135,110 @@
                             "brick": {
                                 "front": {
                                     "hinge": {
-                            "brick": {
-                                "front": {
-                                    
-                                },
-                                "right": {},
-                                "left": {}
-                            },
-                            "rotation": 0.0
-                        }
+                                        "brick": {
+                                            "front": {"hinge": {
+                                        "brick": {
+                                            "front": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {
+                                                            "hinge": {
+                                                                "brick": {
+                                                                    "front": {
+                                                                        "hinge": {
+                                                                            "brick": {
+                                                                                "front": {
+                                                                                    "hinge": {
+                                                                                        "brick": {
+                                                                                            "front": {
+                                                                                                "hinge": {
+                                                                                                    "brick": {
+                                                                                                        "front": {
+                                                                                                            "hinge": {
+                                                                                                                "brick": {
+                                                                                                                    "front": {
+                                                                                                                        "hinge": {
+                                                                                                                            "brick": {
+                                                                                                                                "front": {
+                                                                                                                                    "hinge": {
+                                                                                                                                        "brick": {
+                                                                                                                                            "front": {
+                                                                                                                                                "hinge": {
+                                                                                                                                                    "brick": {
+                                                                                                                                                        "front": {
+                                                                                                                                                            "hinge": {
+                                                                                                                                                                "brick": {
+                                                                                                                                                                    "front": {},
+                                                                                                                                                                    "right": {},
+                                                                                                                                                                    "left": {}
+                                                                                                                                                                },
+                                                                                                                                                                "rotation": 0.0
+                                                                                                                                                            }
+                                                                                                                                                        },
+                                                                                                                                                        "right": {},
+                                                                                                                                                        "left": {}
+                                                                                                                                                    },
+                                                                                                                                                    "rotation": 0.0
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            "right": {},
+                                                                                                                                            "left": {}
+                                                                                                                                        },
+                                                                                                                                        "rotation": 0.0
+                                                                                                                                    }
+                                                                                                                                },
+                                                                                                                                "right": {},
+                                                                                                                                "left": {}
+                                                                                                                            },
+                                                                                                                            "rotation": 0.0
+                                                                                                                        }
+                                                                                                                    },
+                                                                                                                    "right": {},
+                                                                                                                    "left": {}
+                                                                                                                },
+                                                                                                                "rotation": 0.0
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "right": {},
+                                                                                                        "left": {}
+                                                                                                    },
+                                                                                                    "rotation": 0.0
+                                                                                                }
+                                                                                            },
+                                                                                            "right": {},
+                                                                                            "left": {}
+                                                                                        },
+                                                                                        "rotation": 0.0
+                                                                                    }
+                                                                                },
+                                                                                "right": {},
+                                                                                "left": {}
+                                                                            },
+                                                                            "rotation": 0.0
+                                                                        }
+                                                                    },
+                                                                    "right": {},
+                                                                    "left": {}
+                                                                },
+                                                                "rotation": 0.0
+                                                            }
+                                                        },
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": 0.0
+                                                }
+                                            },
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }},
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }
                                 },
                                 "right": {},
                                 "left": {}
@@ -68,15 +260,110 @@
                             "brick": {
                                 "front": {
                                     "hinge": {
-                            "brick": {
-                                "front": {
-                                    
-                                },
-                                "right": {},
-                                "left": {}
-                            },
-                            "rotation": 0.0
-                        }
+                                        "brick": {
+                                            "front": {"hinge": {
+                                        "brick": {
+                                            "front": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {
+                                                            "hinge": {
+                                                                "brick": {
+                                                                    "front": {
+                                                                        "hinge": {
+                                                                            "brick": {
+                                                                                "front": {
+                                                                                    "hinge": {
+                                                                                        "brick": {
+                                                                                            "front": {
+                                                                                                "hinge": {
+                                                                                                    "brick": {
+                                                                                                        "front": {
+                                                                                                            "hinge": {
+                                                                                                                "brick": {
+                                                                                                                    "front": {
+                                                                                                                        "hinge": {
+                                                                                                                            "brick": {
+                                                                                                                                "front": {
+                                                                                                                                    "hinge": {
+                                                                                                                                        "brick": {
+                                                                                                                                            "front": {
+                                                                                                                                                "hinge": {
+                                                                                                                                                    "brick": {
+                                                                                                                                                        "front": {
+                                                                                                                                                            "hinge": {
+                                                                                                                                                                "brick": {
+                                                                                                                                                                    "front": {},
+                                                                                                                                                                    "right": {},
+                                                                                                                                                                    "left": {}
+                                                                                                                                                                },
+                                                                                                                                                                "rotation": 0.0
+                                                                                                                                                            }
+                                                                                                                                                        },
+                                                                                                                                                        "right": {},
+                                                                                                                                                        "left": {}
+                                                                                                                                                    },
+                                                                                                                                                    "rotation": 0.0
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            "right": {},
+                                                                                                                                            "left": {}
+                                                                                                                                        },
+                                                                                                                                        "rotation": 0.0
+                                                                                                                                    }
+                                                                                                                                },
+                                                                                                                                "right": {},
+                                                                                                                                "left": {}
+                                                                                                                            },
+                                                                                                                            "rotation": 0.0
+                                                                                                                        }
+                                                                                                                    },
+                                                                                                                    "right": {},
+                                                                                                                    "left": {}
+                                                                                                                },
+                                                                                                                "rotation": 0.0
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "right": {},
+                                                                                                        "left": {}
+                                                                                                    },
+                                                                                                    "rotation": 0.0
+                                                                                                }
+                                                                                            },
+                                                                                            "right": {},
+                                                                                            "left": {}
+                                                                                        },
+                                                                                        "rotation": 0.0
+                                                                                    }
+                                                                                },
+                                                                                "right": {},
+                                                                                "left": {}
+                                                                            },
+                                                                            "rotation": 0.0
+                                                                        }
+                                                                    },
+                                                                    "right": {},
+                                                                    "left": {}
+                                                                },
+                                                                "rotation": 0.0
+                                                            }
+                                                        },
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": 0.0
+                                                }
+                                            },
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }},
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }
                                 },
                                 "right": {},
                                 "left": {}
@@ -99,15 +386,103 @@
                             "brick": {
                                 "front": {
                                     "hinge": {
-                            "brick": {
-                                "front": {
-                                    
-                                },
-                                "right": {},
-                                "left": {}
-                            },
-                            "rotation": 0.0
-                        }
+                                        "brick": {
+                                            "front": {
+                                                "hinge": {
+                                                    "brick": {
+                                                        "front": {
+                                                            "hinge": {
+                                                                "brick": {
+                                                                    "front": {
+                                                                        "hinge": {
+                                                                            "brick": {
+                                                                                "front": {
+                                                                                    "hinge": {
+                                                                                        "brick": {
+                                                                                            "front": {
+                                                                                                "hinge": {
+                                                                                                    "brick": {
+                                                                                                        "front": {
+                                                                                                            "hinge": {
+                                                                                                                "brick": {
+                                                                                                                    "front": {
+                                                                                                                        "hinge": {
+                                                                                                                            "brick": {
+                                                                                                                                "front": {
+                                                                                                                                    "hinge": {
+                                                                                                                                        "brick": {
+                                                                                                                                            "front": {
+                                                                                                                                                "hinge": {
+                                                                                                                                                    "brick": {
+                                                                                                                                                        "front": {
+                                                                                                                                                            "hinge": {
+                                                                                                                                                                "brick": {
+                                                                                                                                                                    "front": {},
+                                                                                                                                                                    "right": {},
+                                                                                                                                                                    "left": {}
+                                                                                                                                                                },
+                                                                                                                                                                "rotation": 0.0
+                                                                                                                                                            }
+                                                                                                                                                        },
+                                                                                                                                                        "right": {},
+                                                                                                                                                        "left": {}
+                                                                                                                                                    },
+                                                                                                                                                    "rotation": 0.0
+                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            "right": {},
+                                                                                                                                            "left": {}
+                                                                                                                                        },
+                                                                                                                                        "rotation": 0.0
+                                                                                                                                    }
+                                                                                                                                },
+                                                                                                                                "right": {},
+                                                                                                                                "left": {}
+                                                                                                                            },
+                                                                                                                            "rotation": 0.0
+                                                                                                                        }
+                                                                                                                    },
+                                                                                                                    "right": {},
+                                                                                                                    "left": {}
+                                                                                                                },
+                                                                                                                "rotation": 0.0
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "right": {},
+                                                                                                        "left": {}
+                                                                                                    },
+                                                                                                    "rotation": 0.0
+                                                                                                }
+                                                                                            },
+                                                                                            "right": {},
+                                                                                            "left": {}
+                                                                                        },
+                                                                                        "rotation": 0.0
+                                                                                    }
+                                                                                },
+                                                                                "right": {},
+                                                                                "left": {}
+                                                                            },
+                                                                            "rotation": 0.0
+                                                                        }
+                                                                    },
+                                                                    "right": {},
+                                                                    "left": {}
+                                                                },
+                                                                "rotation": 0.0
+                                                            }
+                                                        },
+                                                        "right": {},
+                                                        "left": {}
+                                                    },
+                                                    "rotation": 0.0
+                                                }
+                                            },
+                                            "right": {},
+                                            "left": {}
+                                        },
+                                        "rotation": 0.0
+                                    }
                                 },
                                 "right": {},
                                 "left": {}
