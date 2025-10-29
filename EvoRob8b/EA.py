@@ -286,7 +286,7 @@ class JSONGeneEA:
                 return node
 
             for key, value in list(node.items()):
-                if key in ["front", "right", "left"]:
+                if key in ["front", "right", "left", "back"]:
                     pmutate = 0.15 + 0.05 * depth
                     pskip = 0.7 - 0.10 * depth
                     # Mutation operations
