@@ -45,29 +45,45 @@ def build_body_recursive(body, node):
         if key == "front":
             if "hinge" in value.keys():
                 rotation = value["hinge"]["rotation"]
+                if "rotation" in value["hinge"]["brick"].keys():
+                    brickrotation = value["hinge"]["brick"]["rotation"]
+                else:
+                    brickrotation = 0.0
                 body.front = ActiveHingeV1(rotation)
-                body.front.attachment = BrickV1(0.0)
+                body.front.attachment = BrickV1(brickrotation)
                 build_body_recursive(body.front.attachment, node["front"]["hinge"]["brick"])
 
         if key == "left":
             if "hinge" in value.keys():
                 rotation = value["hinge"]["rotation"]
+                if "rotation" in value["hinge"]["brick"].keys():
+                    brickrotation = value["hinge"]["brick"]["rotation"]
+                else:
+                    brickrotation = 0.0
                 body.left = ActiveHingeV1(rotation)
-                body.left.attachment = BrickV1(0.0)
+                body.left.attachment = BrickV1(brickrotation)
                 build_body_recursive(body.left.attachment, node["left"]["hinge"]["brick"])
         
         if key == "right":
             if "hinge" in value.keys():
                 rotation = value["hinge"]["rotation"]
+                if "rotation" in value["hinge"]["brick"].keys():
+                    brickrotation = value["hinge"]["brick"]["rotation"]
+                else:
+                    brickrotation = 0.0
                 body.right = ActiveHingeV1(rotation)
-                body.right.attachment = BrickV1(0.0)
+                body.right.attachment = BrickV1(brickrotation)
                 build_body_recursive(body.right.attachment, node["right"]["hinge"]["brick"])
 
         if key == "back":
             if "hinge" in value.keys():
                 rotation = value["hinge"]["rotation"]
+                if "rotation" in value["hinge"]["brick"].keys():
+                    brickrotation = value["hinge"]["brick"]["rotation"]
+                else:
+                    brickrotation = 0.0
                 body.back = ActiveHingeV1(rotation)
-                body.back.attachment = BrickV1(0.0)
+                body.back.attachment = BrickV1(brickrotation)
                 build_body_recursive(body.back.attachment, node["back"]["hinge"]["brick"])
     return body
 

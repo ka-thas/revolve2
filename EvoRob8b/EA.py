@@ -31,7 +31,6 @@ from plotter import Plotter
 @dataclass
 class Individual:
     """Represents an individual in the population."""
-
     def __init__(self, gene):
         self.gene = gene  # Build the robot body from the gene
         self.body = None
@@ -287,7 +286,7 @@ class JSONGeneEA:
                 return node
 
             for key, value in list(node.items()):
-                if key in ["front", "right", "left"]:
+                if key in ["front", "right", "left", "back"]:
                     pmutate = 0.15 + 0.05 * depth
                     pskip = 0.7 - 0.10 * depth
                     # Mutation operations
@@ -299,7 +298,11 @@ class JSONGeneEA:
                     if mutation_type == "add_hinge" and (not value or value == {}):
                         if config.DEBUG_EA:
                             print(node.keys(), "add")
-                        new_brick = {"front": {}, "right": {}, "left": {}}
+                        new_brick = {
+                        "front": {}, 
+                        "right": {},
+                        "left": {},
+                        "rotation" : random.randint(0,3) * np.pi/2}
                         rotation = 0.0
                         if random.random() < config.CHANCE_TO_ROTATE:
                             rotation = random.randint(1, 3) * np.pi / 2
@@ -334,15 +337,6 @@ class JSONGeneEA:
                             if config.DEBUG_EA:
                                 print(node.keys(), "modified")
 
-                    """
-                    elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
-                        # Swap with another side
-                        if config.DEBUG_EA: print(node.keys(), "swap")
-                        other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
-                        other_key = random.choice(other_sides)
-                        if other_key in node:
-                            node[key], node[other_key] = node[other_key], node[key]
-                    """
 
             return node
 

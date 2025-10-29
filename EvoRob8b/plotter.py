@@ -110,6 +110,7 @@ class Plotter:
         plt.title('EA progression')
         plt.legend()
         plt.grid()
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression.png")
         plt.show()
 
     def boxplot_fitness(self):
@@ -122,6 +123,7 @@ class Plotter:
         plt.ylabel('Fitness')
         plt.title('Fitness Distribution')
         plt.grid()
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_boxplot.png")
         plt.show()
     
     def plot_std(self):
@@ -134,6 +136,7 @@ class Plotter:
         plt.title('EA progression')
         plt.legend()
         plt.grid()
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/std_progression.png")
         plt.show()
 
     def plot_num_modules(self):
@@ -146,6 +149,7 @@ class Plotter:
         plt.title('EA progression')
         plt.legend()
         plt.grid()
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/num_modules_progression.png")
         plt.show()
 
     def plot_time_per_generation(self):
@@ -158,12 +162,13 @@ class Plotter:
         plt.title('Time per Generation')
         plt.legend()
         plt.grid()
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/time_per_generation.png")
         plt.show()
 
 if __name__ == "__main__":
     """ Cannot run over ssh bc of plotting """
-    plotter = Plotter()
     run_id = input("> run ID: ")
+    plotter = Plotter(runID=run_id)
     plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}/progress.csv")
     plotter.plot_best_worst()
     plotter.boxplot_fitness()
