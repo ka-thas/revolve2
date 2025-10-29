@@ -24,7 +24,7 @@ class Gene_Generator:
                         "front": {},
                         "right": {},
                         "left": {},
-                        "rotation" : random.randint(0,3) * np.pi/2
+                        "rotation" : -right_brick["front"]["hinge"]["brick"]["rotation"]
                         }
                     rotation = right_brick["front"]["hinge"]["rotation"] 
                     left_brick["front"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation}}
@@ -38,7 +38,7 @@ class Gene_Generator:
                         "front": {},
                         "right": {},
                         "left": {},
-                        "rotation" : random.randint(0,3) * np.pi/2
+                        "rotation" : -right_brick["left"]["hinge"]["brick"]["rotation"]
                     }
                     left_brick["right"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation }}
                     new_right_brick = right_brick["left"]["hinge"]["brick"]
@@ -51,7 +51,7 @@ class Gene_Generator:
                         "front": {},
                         "right": {},
                         "left": {},
-                        "rotation" : random.randint(0,3) * np.pi/2
+                        "rotation" : -right_brick["right"]["hinge"]["brick"]["rotation"]
                         }
                     left_brick["left"] = {"hinge": {"brick": new_left_brick, "rotation": -rotation }}
                     new_right_brick = right_brick["right"]["hinge"]["brick"]
@@ -81,7 +81,7 @@ class Gene_Generator:
                         "front": {},
                         "right": {},
                         "left": {},
-                        "rotation" : random.randint(0,3) * np.pi/2
+                        "rotation" : -spinebrick["right"]["hinge"]["brick"]["rotation"]
                         }
 
             rotation = spinebrick["right"]["hinge"]["rotation"] 
