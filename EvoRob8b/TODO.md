@@ -39,11 +39,11 @@ Gene validator could enforce invariant during ea runs
    - [x] Selection
  - [x] Evaluation
  - [x] Tournament selection
- - [ ] Elitism 🐻‍❄️
+ - [x] Elitism 🐻‍❄️
 
 - [ ] Ploting -- Ka <!-- started class in EA.py -->
-  - [ ] Matplotlib
-  - [ ] Fitness over generations
+  - [x] Matplotlib
+  - [x] Fitness over generations
   - [ ] Compare own morph with EA the same amount of generation?
 
 ## Writing
