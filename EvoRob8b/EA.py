@@ -337,15 +337,6 @@ class JSONGeneEA:
                             if config.DEBUG_EA:
                                 print(node.keys(), "modified")
 
-                    """
-                    elif mutation_type == "swap_sides" and key in ["front", "left", "right"]:
-                        # Swap with another side
-                        if config.DEBUG_EA: print(node.keys(), "swap")
-                        other_sides = [s for s in ["front", "left", "right", "back"] if s != key]
-                        other_key = random.choice(other_sides)
-                        if other_key in node:
-                            node[key], node[other_key] = node[other_key], node[key]
-                    """
 
             return node
 
