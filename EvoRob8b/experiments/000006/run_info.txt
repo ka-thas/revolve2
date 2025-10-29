@@ -4,6 +4,9 @@ Start Time: 2025-10-29 17:06
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
+Kommentarer
+Bruker ny mulighet for rotasjon på bricks
+
 SEED = 3050
 
 
