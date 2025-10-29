@@ -37,6 +37,7 @@ class Individual:
         self.brain = None
         self.weights = None
         self.fitness: float = -float("inf")
+        self.num_bricks: int = 0
 
 
 class JSONGeneEA:
@@ -187,9 +188,9 @@ class JSONGeneEA:
             )
 
             # Penalize for having too many modules
-            module_count = self.count_modules(individual.gene)
-            if module_count > self.max_modules:
-                fitness *= 1 + ((self.max_modules - module_count) * 0.02)
+            individual.num_bricks = self.count_modules(individual.gene)
+            if individual.num_bricks > self.max_modules:
+                fitness *= 1 + ((self.max_modules - individual.num_bricks) * 0.02)
 
             return fitness
 
@@ -228,7 +229,7 @@ class JSONGeneEA:
             / len(self.population),
             median=self.population[len(self.population) // 2].fitness,
             std=np.std([individual.fitness for individual in self.population]),
-            num_modules=self.count_modules(self.population[0].gene),
+            num_modules=self.population[0].num_bricks,
             total_elapsed_time=time.time() - self.start_time,
         )
 
@@ -239,7 +240,7 @@ class JSONGeneEA:
         # Compute values for logging/printing (use the same values we logged to plotter)
         median_fitness = self.population[len(self.population) // 2].fitness
         std_fitness = np.std([individual.fitness for individual in self.population])
-        num_modules_fitness = self.count_modules(self.population[0].gene)
+        num_modules_fitness = self.population[0].num_bricks
 
         self.logger.info(
             f"Generation {self.generation}: Best={best_fitness:.3f}, Mean={mean_fitness:.3f}, Median={median_fitness:.3f}, Std={std_fitness:.3f}, NumModules={num_modules_fitness:.3f}"
@@ -451,7 +452,8 @@ class JSONGeneEA:
             individual.fitness = self.evaluate_individual(individual)
             
             if config.VERBOSE_PRINTS:
-                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), f"Evaluated individual with fitness: {individual.fitness:.3f}")
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), f"Evaluated individual with fitness {individual.fitness:.3f} and {individual.num_bricks} bricks")
+                
             
             self.evaluations += 1
 
