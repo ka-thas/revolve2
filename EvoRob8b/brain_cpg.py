@@ -198,9 +198,9 @@ class BrainGenotype():
         return self.brain.make_instance()
 
 
-    def improve(self, body, iterations, rng, terrain):
+    def improve(self, body, iterations, rng, terrain, fitness=0):
         start_time = time.time()
-        best_fitness = 0
+        best_fitness = fitness
         best_brain = copy.deepcopy(self.brain)
         best_brain.make_instance()
         iterations_since_update = 0
@@ -267,4 +267,3 @@ class BrainGenotype():
         if config.DEBUG_BRAIN:
             print(f"\n total_time", end_time-start_time)
 
-    
