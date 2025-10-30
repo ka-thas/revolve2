@@ -220,6 +220,7 @@ class JSONGeneEA:
 
 
             module_count = self.count_modules(individual.gene)
+            individual.num_bricks = module_count
             if module_count > self.max_modules:
                 individual.flat_fitness  *= 1+((self.max_modules-module_count)*0.02)
                 individual.crater_fitness *= 1+((self.max_modules-module_count)*0.02)
@@ -275,6 +276,7 @@ class JSONGeneEA:
             individual.exists = True
 
             module_count = self.count_modules(individual.gene)
+            individual.num_bricks = module_count
             if module_count > self.max_modules:
                 individual.flat_fitness  *= 1+((self.max_modules-module_count)*0.02)
                 individual.crater_fitness *= 1+((self.max_modules-module_count)*0.02)
@@ -291,7 +293,7 @@ class JSONGeneEA:
         """Evaluate all individuals in the population."""
         self.logger.info(f"Evaluating population (generation {self.generation})")
         
-        for individual in self.population:                 
+        for individual in self.population:        
             if not (individual.exists):
                 if (self.parallel):
                     self.evaluate_individual_parallel(individual)
@@ -649,17 +651,6 @@ class JSONGeneEA:
                 break
             if config.DEBUGGING:
                 print(f"->> Evaluation:{self.evaluations}")
-
-        if self.generation % 5 != 0:
-            # Ensure final data is saved if not already done
-            try:
-                self.plotter.append_last_n_to_csv(
-                    self.log_folder + "progress.csv", n=self.generation % 5
-                )
-            except Exception:
-                self.logger.exception(
-                    "Failed to append final generation progress to CSV"
-                )
         print(
             f"EA completed after {self.generation} generations and {self.evaluations} evaluations"
         )
