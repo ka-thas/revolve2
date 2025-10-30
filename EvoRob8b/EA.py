@@ -159,6 +159,10 @@ class JSONGeneEA:
             individual = Individual(gene=gene_dict)
             self.population.append(individual)
 
+        self.evaluate_population()  # Evaluate init
+        self.log_generation_stats()  # Log init
+        self.save_gen_to_csv()
+
         self.logger.info("Population initialized successfully")
 
     def count_modules(self, gene_dict: Dict[str, Any]) -> int:
@@ -216,7 +220,6 @@ class JSONGeneEA:
             individual.crater_fitness = crater_brain.fitness
             individual.crater_weights = crater_brain.get_weights() 
             individual.crater_brain = crater_brain
-
 
 
             module_count = self.count_modules(individual.gene)
@@ -593,13 +596,22 @@ class JSONGeneEA:
             f"Best individual saved to {filename} (fitness: {best.fitness:.3f})"
         )
 
+    def save_gen_to_csv(self) -> None:
+        if config.VERBOSE_PRINTS:
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending last generation to progress.csv")
+        try:
+            self.plotter.append_last_n_to_csv(
+                self.log_folder + "progress.csv", n=1
+            )
+        except Exception:
+            self.logger.exception("Failed to append generation to progress.csv")
+
+
     def run(self) -> Individual:
         print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Running EA")
         best_fitness = -float("inf")
         self.start_time = time.time()
         self.initialize_population()
-        self.evaluate_population()  # Evaluate init
-        self.log_generation_stats()  # Log init
         
         while self.evaluations < self.function_evaluations:
             self.generation += 1
@@ -607,26 +619,15 @@ class JSONGeneEA:
                 print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Starting generation", self.generation)
 
             offspring = self.create_offspring()
-            self.survival_selection(
-                offspring
-            )  # only evaluates offspring and selects survivors from both parents and offspring
-            self.log_generation_stats()  # Log the new generation and update plotter
+            self.survival_selection(offspring)  # only evaluates offspring and selects survivors from both parents and offspring
 
             # Save new individual if improved
             if best_fitness < self.population[0].fitness:
                 best_fitness = self.population[0].fitness
                 self.save_best_individual()
 
-            # Append last 5 logged generations to a progress CSV
-            if self.generation % 5 == 0:
-                if config.VERBOSE_PRINTS:
-                    print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending last 5 generations to progress CSV")
-                try:
-                    self.plotter.append_last_n_to_csv(
-                        self.log_folder + "progress.csv", n=5
-                    )
-                except Exception:
-                    self.logger.exception("Failed to append generation progress to CSV")
+            self.log_generation_stats()  # Log the new generation to plotter
+            self.save_gen_to_csv()
 
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
@@ -634,37 +635,22 @@ class JSONGeneEA:
             if config.DEBUGGING:
                 print(f"->> Evaluation:{self.evaluations}")
 
-        if self.generation % 5 != 0:
-            # Ensure final data is saved if not already done
-            try:
-                self.plotter.append_last_n_to_csv(
-                    self.log_folder + "progress.csv", n=self.generation % 5
-                )
-            except Exception:
-                self.logger.exception(
-                    "Failed to append final generation progress to CSV"
-                )
-        print(
-            f"EA completed after {self.generation} generations and {self.evaluations} evaluations"
-        )
-        self.save_best_individual(
-            self.log_folder + "final_best_individual.json"
-        )  # Save final best individual
-
-        return self.population[0]
+        
+        print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
+        self.save_best_individual(self.log_folder + "final_best_individual.json")  # Save final best individual
+        return self.population[0] #best individual
 
 
 def main():
     """Main function to run the evolutionary algorithm."""
 
-    
     ea = JSONGeneEA()
     ea.write_run_info()
     best_individual = ea.run()
 
     print(f"\nBest individual found:")
     print(f"Fitness: {best_individual.fitness:.3f}")
-    print(f"Modules: {ea.count_modules(best_individual.gene)}")
+    print(f"Bricks: {best_individual.num_bricks}")
 
     # Print gene structure
     print("\nGene structure:")
