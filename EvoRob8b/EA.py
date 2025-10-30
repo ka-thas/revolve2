@@ -252,7 +252,7 @@ class JSONGeneEA:
             flat_brain.develop_brain(body, rng=rng)
             uneven_brain.develop_brain(body, rng=rng)
             crater_brain.develop_brain(body, rng=rng)
-            x = 0
+            x = 0 
 
             while (x < config.INNER_LOOP_ITERATIONS):
                 flat_brain.improve(body, 1, rng, terrain=terrains.flat(), fitness=individual.flat_fitness) 
@@ -323,10 +323,26 @@ class JSONGeneEA:
         self.plotter.log_generation(
             generation=self.generation,
             best=self.population[0].fitness,
+            best_flat  = self.population[0].flat_fitness,
+            best_uneven=  self.population[0].uneven_fitness,
+            best_crater = self.population[0].crater_fitness,
+
             worst=self.population[-1].fitness,
-            mean=sum(individual.fitness for individual in self.population)
-            / len(self.population),
+            worst_flat  = self.population[-1].flat_fitness,
+            worst_uneven=  self.population[-1].uneven_fitness,
+            worst_crater = self.population[-1].crater_fitness,
+
+            mean=sum(individual.fitness for individual in self.population)/ len(self.population),
+            mean_flat  =sum(individual.flat_fitness for individual in self.population)/ len(self.population),
+            mean_uneven=sum(individual.uneven_fitness for individual in self.population)/ len(self.population),
+            mean_crater=sum(individual.crater_fitness for individual in self.population)/ len(self.population),
+
             median=self.population[len(self.population) // 2].fitness,
+            median_flat  =self.population[len(self.population) // 2].fitness_flat,
+            median_uneven=self.population[len(self.population) // 2].fitness_uneven,
+            median_crater=self.population[len(self.population) // 2].fitness_crater,
+
+
             std=np.std([individual.fitness for individual in self.population]),
             num_modules=self.population[0].num_bricks,
             total_elapsed_time=time.time() - self.start_time,

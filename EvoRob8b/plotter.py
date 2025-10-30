@@ -12,21 +12,80 @@ class Plotter:
 
         self.generations = []
         self.best_fitness = []
+        self.best_fitness_flat = []
+        self.best_fitness_uneven = []
+        self.best_fitness_crater = []
+
         self.worst_fitness = []
+        self.worst_fitness_flat = []
+        self.worst_fitness_uneven = []
+        self.worst_fitness_crater = []
+
         self.mean_fitness = []
+        self.mean_fitness_flat  = []
+        self.mean_fitness_uneven = []
+        self.mean_fitness_crater = []
+
+
         self.median_fitness = []
+        self.median__fitness_flat   = []
+        self.median__fitness_uneven = []
+        self.median__fitness_crater = []
+
         self.std = []
         self.num_modules_in_best_individual = []
         self.total_elapsed_time = []
         self.time_per_generation = []
 
 
-    def log_generation(self, generation: int, best: float, worst: float, mean: float, median: float, std: float, num_modules: int, total_elapsed_time: float):
+    def log_generation(
+            self, generation: int, 
+            best: float,
+            best_flat  : float,
+            best_uneven: float,
+            best_crater: float,
+
+            worst: float, 
+            worst_flat  : float, 
+            worst_uneven: float, 
+            worst_crater: float, 
+
+            mean: float, 
+            mean_flat  : float, 
+            mean_uneven: float, 
+            mean_crater: float, 
+
+            median: float,
+            median_flat  : float,
+            median_uneven: float,
+            median_crater: float,
+ 
+            std: float, 
+            num_modules: int, 
+            total_elapsed_time: float
+            ):
         self.generations.append(generation)
         self.best_fitness.append(best)
+        self.best_fitness_flat  .append(best_flat  )
+        self.best_fitness_uneven.append(best_uneven)
+        self.best_fitness_crater.append(best_crater)
+
+
         self.worst_fitness.append(worst)
+        self.worst_fitness_flat  .append(worst_flat  )
+        self.worst_fitness_uneven.append(worst_uneven)
+        self.worst_fitness_crater.append(worst_crater)
+
         self.mean_fitness.append(mean)
+        self.mean_fitness_flat  .append(mean_flat  )
+        self.mean_fitness_uneven.append(mean_uneven)
+        self.mean_fitness_crater.append(mean_crater)
+
         self.median_fitness.append(median)
+        self.median_fitness_flat  .append(median_flat  )
+        self.median_fitness_uneven.append(median_uneven)
+        self.median_fitness_crater.append(median_crater)
+
         self.std.append(std)
         self.num_modules_in_best_individual.append(num_modules)
         self.total_elapsed_time.append(total_elapsed_time)
@@ -114,6 +173,59 @@ class Plotter:
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression.png")
         plt.show()
+
+
+    def plot_best_worst_flat(self):
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(self.generations_flat  ,  self.best_fitness_flat  , label='Best Fitness')
+        plt.plot(self.generations_flat, self.worst_fitness_flat, label='Worst Fitness')
+        plt.plot(self.generations_flat,  self.mean_fitness_flat, label='Mean Fitness')
+        
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness')
+        plt.title('EA progression, flat environment')
+        plt.legend()
+        plt.grid()
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_flat.png")
+        plt.show()
+
+
+
+    def plot_best_worst_uneven(self):
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(self.generations_uneven,  self.best_fitness_uneven  , label='Best Fitness')
+        plt.plot(self.generations_uneven, self.worst_fitness_uneven, label='Worst Fitness')
+        plt.plot(self.generations_uneven,  self.mean_fitness_uneven, label='Mean Fitness')
+        
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness')
+        plt.title('EA progression, uneven environment')
+        plt.legend()
+        plt.grid()
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_uneven.png")
+        plt.show()
+
+
+
+    def plot_best_worst_crater(self):
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(self.generations_crater  ,self.best_fitness_crater  , label='Best Fitness')
+        plt.plot(self.generations_crater, self.worst_fitness_crater, label='Worst Fitness')
+        plt.plot(self.generations_crater,  self.mean_fitness_crater, label='Mean Fitness')
+        
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness')
+        plt.title('EA progression, crater environment')
+        plt.legend()
+        plt.grid()
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_crater.png")
+        plt.show()
+
+
+
 
     def boxplot_fitness(self):
 
