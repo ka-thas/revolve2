@@ -314,7 +314,11 @@ class JSONGeneEA:
         self.population.sort(key=lambda x: x.fitness, reverse=True)
 
     def log_generation_stats(self) -> None:
-        """Log statistics of the current generation."""
+        """Log statistics of the current generation.
+        
+        Changes to this file needs appropriate changes to plotter.py
+        especially in log_generation and save_to_csv methods.
+        """
 
         self.plotter.log_generation(
             generation=self.generation,

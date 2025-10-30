@@ -72,7 +72,7 @@ class Plotter:
         with open(filename, 'a', newline='') as f:
             writer = csv.writer(f)
             if write_header:
-                writer.writerow(["generation", "best_fitness", "worst_fitness", "mean_fitness", "median_fitness", "std_fitness", "num_modules"])
+                writer.writerow(["generation", "best_fitness", "worst_fitness", "mean_fitness", "median_fitness", "std_fitness", "num_modules", "time_per_generation", "total_elapsed_time"])
 
             for i in range(start, len(self.generations)):
                 writer.writerow([
@@ -82,7 +82,9 @@ class Plotter:
                     self.mean_fitness[i],
                     self.median_fitness[i],
                     self.std[i],
-                    self.num_modules_in_best_individual[i]
+                    self.num_modules_in_best_individual[i],
+                    self.time_per_generation[i],
+                    self.total_elapsed_time[i]
                 ])
 
     def load_from_csv(self, filename: str):
