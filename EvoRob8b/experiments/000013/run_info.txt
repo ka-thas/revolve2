@@ -1,3 +1,6 @@
+# Run ID: 000013 Also used as seed
+# Start Time: 2025-10-30 22:19
+# ----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
