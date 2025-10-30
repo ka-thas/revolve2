@@ -96,7 +96,7 @@ class JSONGeneEA:
         self.generation = 0
         self.evaluations = 0
 
-        self.parallel = False # Run serial on deafult
+        self.parallel = config.PARALLEL # Run serial on deafult
 
 
 
