@@ -96,14 +96,9 @@ class JSONGeneEA:
         self.generation = 0
         self.evaluations = 0
 
-        self.parallel = False # Run serial on deafult
-
-
-
-
+        self.parallel = False # Run serial on default
 
         # Initialize random number generator
-        self.rng = make_rng(config.SEED)
         self.generator = Gene_Generator(self.rng)
         i = 0
         while True:
@@ -116,6 +111,8 @@ class JSONGeneEA:
             except FileExistsError:
                 i += 1
                 continue
+
+        self.rng = make_rng(config.SEED) if config.SEED else make_rng(i)  # Use run index as seed if none provided
 
         if config.VERBOSE_PRINTS:
             print(f"Logging to folder: {self.log_folder} with runID: {self.runID}")
@@ -134,11 +131,11 @@ class JSONGeneEA:
         filename = self.log_folder + "run_info.txt"
         with open(filename, "w") as f:
             with open("config.py", "r") as config_file:
-                f.write(f"Run ID: {self.runID}\n")
+                f.write(f"# Run ID: {self.runID} Also used as seed\n")
                 f.write(
-                    f"Start Time: {time.strftime('%Y-%m-%d %H:%M', time.localtime())}\n"
+                    f"# Start Time: {time.strftime('%Y-%m-%d %H:%M', time.localtime())}\n"
                 )
-                f.write("----- config.py -----\n")
+                f.write("# ----- config.py -----\n")
                 f.write(config_file.read())
                 f.write("\n")
 

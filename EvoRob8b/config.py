@@ -1,8 +1,7 @@
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
-SEED = 3050
-
+SEED = 0 # If 0, run ID will be used as seed.
 
 #EA
 PARENT_TOURNAMENT_SIZE = 3 
