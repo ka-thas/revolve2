@@ -259,6 +259,7 @@ class BrainGenotype():
             if (fitness < best_fitness):
                 best_brain.update_weights(old_weights)
             else:
+                self.fitness = fitness
                 best_fitness = fitness
                 iterations_since_update = 0
 
