@@ -45,6 +45,8 @@ Gene validator could enforce invariant during ea runs
   - [x] Matplotlib
   - [x] Fitness over generations
   - [ ] Compare own morph with EA the same amount of generation?
+  - [ ] Average over multiple runs
+    - SAME PARAMETERS
 
 ## Writing
 
