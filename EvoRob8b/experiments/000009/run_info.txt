@@ -1,12 +1,10 @@
 Run ID: 000009
-Start Time: 2025-10-29 20:30
+Start Time: 2025-10-29 20:35
 ----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
 SEED = 3050
-
-Endret riktig fitness functions nå i brain og ea, bruker nye brick rotations og bruker ny fikset mutation
 
 
 #EA
