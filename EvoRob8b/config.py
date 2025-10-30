@@ -6,15 +6,15 @@ SEED = 3050
 
 #EA
 PARENT_TOURNAMENT_SIZE = 3 
-POPULATION_SIZE = 30
-OFFSPRING_SIZE = 10
+POPULATION_SIZE = 3
+OFFSPRING_SIZE = 3
 FUNCTION_EVALUATIONS = 5000
 LOCAL_COMPETITION_NEIGHBOURHOOD_SIZE = 2 # From Ege, not in use
 MUTATION_RATE = 0.7
 CROSSOVER_RATE = 0.7
 CROSSOVER_CHANCE_TO_DIVE = 0.15
 PARENT_SELECT_STRATEGY = 'tournament'
-FITNESS_FUNCTION = "y_displacement"  # Options: 'x_displacement', 'xy_displacement', 'y_displacement'
+FITNESS_FUNCTION = "xy_displacement"  # Options: 'x_displacement', 'xy_displacement', 'y_displacement'
 
 
 # Gene generator / Initial population
@@ -26,7 +26,7 @@ MAX_BRICKS = 13
 
 # Brain
 BRAIN_MUTATION_RATE = 0.8
-INNER_LOOP_ITERATIONS = 40
+INNER_LOOP_ITERATIONS = 10
 EXPLORATION_RATE = 1
 MUTATION_EPSILON = 0.8
 

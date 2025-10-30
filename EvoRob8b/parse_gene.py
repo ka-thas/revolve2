@@ -23,7 +23,7 @@ from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
 from revolve2.modular_robot.body.v1 import ActiveHingeV1, BodyV1, BrickV1
 from revolve2.standards import modular_robots_v1, fitness_functions, terrains
 from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom
-from revolve2.experimentation.rng import make_rng_time_seed
+from revolve2.experimentation.rng import make_rng
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
 
     body = build_body(gene) # Renders body into revolve2
-    rng = make_rng_time_seed()
+    rng = make_rng(config.SEED)
     brain = BrainGenotype()
     weights = gene.get("brain_weights", [])
     weights = np.array(weights)

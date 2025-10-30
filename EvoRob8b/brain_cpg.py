@@ -61,7 +61,7 @@ from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
 from revolve2.modular_robot.body.v1 import ActiveHingeV1, BodyV1, BrickV1
 from revolve2.standards import modular_robots_v1, fitness_functions, terrains
 from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom
-from revolve2.experimentation.rng import make_rng_time_seed
+from revolve2.experimentation.rng import make_rng
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 
@@ -86,7 +86,7 @@ def mutate_brain(weights, rng):
     epsilon = config.MUTATION_EPSILON   
     for y in range(len(weights)):
         for x in range(len(weights[y])):
-            if (weights[y][x] != 0 and random.random() < config.BRAIN_MUTATION_RATE ):
+            if (weights[y][x] != 0 and rng.random() < config.BRAIN_MUTATION_RATE ):
                 weights[y][x] += rng.normal(loc=0, scale=config.MUTATION_EPSILON)
     # print("\n new weights")
     # print(weights)        

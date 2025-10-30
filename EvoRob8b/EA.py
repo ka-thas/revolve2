@@ -16,7 +16,7 @@ import logging
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
 from revolve2.modular_robot.brain.cpg import BrainCpgNetworkNeighborRandom
-from revolve2.experimentation.rng import make_rng_time_seed
+from revolve2.experimentation.rng import make_rng
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 from revolve2.standards import fitness_functions, terrains
@@ -55,10 +55,9 @@ class JSONGeneEA:
         self.generation = 0
         self.evaluations = 0
 
-        self.generator = Gene_Generator()
-
         # Initialize random number generator
-        self.rng = make_rng_time_seed()
+        self.rng = make_rng(config.SEED)
+        self.generator = Gene_Generator(self.rng)
         i = 0
         while True:
             self.runID = str(i)  # To not overwrite logs
@@ -80,7 +79,7 @@ class JSONGeneEA:
         )
 
         # Setup logging
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.WARNING)
         self.logger = logging.getLogger(__name__)
 
     def write_run_info(self) -> None:
@@ -148,7 +147,7 @@ class JSONGeneEA:
             individual.body = build_body(individual.gene)
             body = individual.body
 
-            rng = make_rng_time_seed()
+            rng = self.rng
             # Create brain
             brain = BrainGenotype()
 
@@ -273,7 +272,7 @@ class JSONGeneEA:
         tournament_size = tournament_size or self.tournament_size
 
         # Select random individuals for tournament
-        tournament = random.sample(
+        tournament = self.rng.choice(
             self.population, min(tournament_size, len(self.population))
         )
 
@@ -297,7 +296,7 @@ class JSONGeneEA:
                     pmutate = 0.15 + 0.05 * depth
                     pskip = 0.7 - 0.10 * depth
                     # Mutation operations
-                    mutation_type = np.random.choice(
+                    mutation_type = self.rng.choice(
                         ["add_hinge", "remove_hinge", "modify_existing"],
                         p=[pmutate, pmutate, pskip],
                     )
@@ -309,10 +308,10 @@ class JSONGeneEA:
                         "front": {}, 
                         "right": {},
                         "left": {},
-                        "rotation" : random.randint(0,3) * np.pi/2}
+                        "rotation" : self.rng.integers(0,4) * np.pi/2}
                         rotation = 0.0
-                        if random.random() < config.CHANCE_TO_ROTATE:
-                            rotation = random.randint(1, 3) * np.pi / 2
+                        if self.rng.random() < config.CHANCE_TO_ROTATE:
+                            rotation = self.rng.integers(1, 4) * np.pi / 2
                         node[key] = {
                             "hinge": {"brick": new_brick, "rotation": rotation}
                         }
@@ -349,7 +348,7 @@ class JSONGeneEA:
 
         # Mutate the core and ensure symmetry
         if "core" in mutated:
-            if random.random() < config.MUTATION_RATE:
+            if self.rng.random() < config.MUTATION_RATE:
                 mutate_recursive(mutated["core"])
             self.generator.spine_symmetry(mutated["core"])
 
@@ -373,11 +372,11 @@ class JSONGeneEA:
             output: hinge: {brick: {...}}
             """
             faces = ["front", "right", "left"]
-            face = random.choice(faces)
+            face = self.rng.choice(faces)
             if not face in node["brick"]:
                 return None
             if node["brick"][face]:  # eg. if node["front"] has content
-                if random.random() < config.CROSSOVER_CHANCE_TO_DIVE:
+                if self.rng.random() < config.CROSSOVER_CHANCE_TO_DIVE:
                     child = recursive(node["brick"][face]["hinge"])
                     if child:
                         return child
@@ -386,7 +385,7 @@ class JSONGeneEA:
             return node
 
         # get subtrees to swap
-        face = random.choice(["front", "back", "right"])
+        face = self.rng.choice(["front", "back", "right"])
         subtree1 = 0
         subtree2 = 0
 
@@ -421,7 +420,7 @@ class JSONGeneEA:
             parent2 = self.tournament_selection()
 
             # Crossover
-            if random.random() < config.CROSSOVER_RATE:
+            if self.rng.random() < config.CROSSOVER_RATE:
                 child1_gene, child2_gene = self.crossover_genes(parent1, parent2)
             else:
                 child1_gene = copy.deepcopy(parent1.gene)
@@ -557,7 +556,7 @@ class JSONGeneEA:
 def main():
     """Main function to run the evolutionary algorithm."""
 
-    # random.seed(config.SEED)
+    
     ea = JSONGeneEA()
     ea.write_run_info()
     best_individual = ea.run()

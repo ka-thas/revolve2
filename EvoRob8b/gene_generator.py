@@ -1,14 +1,14 @@
 import json
-import random
 import uuid
 import numpy as np
 import config
 
 class Gene_Generator:
     queue: list
-    def __init__(self):
+    def __init__(self, rng):
         self.brick_count = 0
         self.queue = []
+        self.rng = rng
 
 
     def mirror_right(self, left_brick, right_brick):
@@ -125,16 +125,16 @@ class Gene_Generator:
                 elif not is_core:
                     chance = config.CHANCE_TO_PLACE_BRICK_SIDES
 
-                if random.random() < chance and self.brick_count <= config.MAX_BRICKS:
+                if self.rng.random() < chance and self.brick_count <= config.MAX_BRICKS:
                     new_module = {
                         "front": {},
                         "right": {},
                         "left": {},
-                        "rotation" : random.randint(0,3) * np.pi/2
+                        "rotation" : self.rng.integers(0,4) * np.pi/2
                     }
                     rotation = 0.0
-                    if random.random() < config.CHANCE_TO_ROTATE:
-                        rotation = random.randint(1,3) * np.pi/2
+                    if self.rng.random() < config.CHANCE_TO_ROTATE:
+                        rotation = self.rng.integers(1,4) * np.pi/2
                     current_module[side] = {"hinge": {"brick": new_module, "rotation": rotation}
                                             
                     }
