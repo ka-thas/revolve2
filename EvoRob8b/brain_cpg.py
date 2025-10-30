@@ -241,18 +241,24 @@ class BrainGenotype():
             robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
 
             # Calculate the xy displacement of the robot.
-            xy_displacement = fitness_functions.xy_displacement(
+            select_fitness_function = {
+                "x_displacement": fitness_functions.x_displacement,
+                "y_displacement": fitness_functions.y_displacement,
+                "xy_displacement": fitness_functions.xy_displacement,
+            }
+
+            fitness = select_fitness_function[config.FITNESS_FUNCTION](
                 robot_state_begin, robot_state_end
             )
 
-            if config.DEBUG_BRAIN: print(xy_displacement)
+            if config.DEBUG_BRAIN: print(fitness)
 
             iterations_since_update += 1
             # If worse, revert
-            if (xy_displacement < best_fitness):
+            if (fitness < best_fitness):
                 best_brain.update_weights(old_weights)
             else:
-                best_fitness = xy_displacement
+                best_fitness = fitness
                 iterations_since_update = 0
 
             iterations -= 1
