@@ -96,7 +96,8 @@ class JSONGeneEA:
         self.generation = 0
         self.evaluations = 0
 
-        self.parallel = False # Run serial on default
+        self.parallel = config.PARALLEL # Run serial on default
+
 
         # Initialize random number generator
         self.generator = Gene_Generator(self.rng)

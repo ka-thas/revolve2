@@ -4,7 +4,7 @@ LOG_FOLDER = "./experiments/"
 SEED = 0 # If 0, run ID will be used as seed.
 
 #EA
-PARENT_TOURNAMENT_SIZE = 3 
+PARENT_TOURNAMENT_SIZE = 3
 POPULATION_SIZE = 30
 OFFSPRING_SIZE = 10
 FUNCTION_EVALUATIONS = 5000
@@ -14,7 +14,7 @@ CROSSOVER_RATE = 0.7
 CROSSOVER_CHANCE_TO_DIVE = 0.15
 PARENT_SELECT_STRATEGY = 'tournament'
 FITNESS_FUNCTION = "xy_displacement"  # Options: 'x_displacement', 'xy_displacement', 'y_displacement'
-
+PARALLEL = True
 
 # Gene generator / Initial population
 CHANCE_TO_PLACE_BRICK_FRONT = 0.8
