@@ -28,9 +28,9 @@ class Plotter:
 
 
         self.median_fitness = []
-        self.median__fitness_flat   = []
-        self.median__fitness_uneven = []
-        self.median__fitness_crater = []
+        self.median_fitness_flat   = []
+        self.median_fitness_uneven = []
+        self.median_fitness_crater = []
 
         self.std = []
         self.num_modules_in_best_individual = []
@@ -66,23 +66,23 @@ class Plotter:
             ):
         self.generations.append(generation)
         self.best_fitness.append(best)
-        self.best_fitness_flat  .append(best_flat  )
+        self.best_fitness_flat.append(best_flat)
         self.best_fitness_uneven.append(best_uneven)
         self.best_fitness_crater.append(best_crater)
 
 
         self.worst_fitness.append(worst)
-        self.worst_fitness_flat  .append(worst_flat  )
+        self.worst_fitness_flat.append(worst_flat)
         self.worst_fitness_uneven.append(worst_uneven)
         self.worst_fitness_crater.append(worst_crater)
 
         self.mean_fitness.append(mean)
-        self.mean_fitness_flat  .append(mean_flat  )
+        self.mean_fitness_flat.append(mean_flat)
         self.mean_fitness_uneven.append(mean_uneven)
         self.mean_fitness_crater.append(mean_crater)
 
         self.median_fitness.append(median)
-        self.median_fitness_flat  .append(median_flat  )
+        self.median_fitness_flat.append(median_flat)
         self.median_fitness_uneven.append(median_uneven)
         self.median_fitness_crater.append(median_crater)
 
@@ -131,15 +131,31 @@ class Plotter:
         with open(filename, 'a', newline='') as f:
             writer = csv.writer(f)
             if write_header:
-                writer.writerow(["generation", "best_fitness", "worst_fitness", "mean_fitness", "median_fitness", "std_fitness", "num_modules", "time_per_generation", "total_elapsed_time"])
+                writer.writerow(["generation", "best_fitness", "best_fitness_flat", "best_fitness_uneven", "best_fitness_crater", "worst_fitness","worst_fitness_flat","worst_fitness_uneven","worst_fitness_crater", "mean_fitness","mean_fitness_flat","mean_fitness_uneven","mean_fitness_crater", "median_fitness","median_fitness_flat","median_fitness_uneven","median_fitness_crater", "std_fitness", "num_modules", "time_per_generation", "total_elapsed_time"])
 
             for i in range(start, len(self.generations)):
                 writer.writerow([
                     self.generations[i],
                     self.best_fitness[i],
+                    self.best_fitness_flat[i],
+                    self.best_fitness_uneven[i],
+                    self.best_fitness_crater[i],
+
                     self.worst_fitness[i],
+                    self.worst_fitness_flat[i],
+                    self.worst_fitness_uneven[i],
+                    self.worst_fitness_crater[i],
+
                     self.mean_fitness[i],
+                    self.mean_fitness_flat[i],
+                    self.mean_fitness_uneven[i],
+                    self.mean_fitness_crater[i],
+
                     self.median_fitness[i],
+                    self.median_fitness_flat[i],
+                    self.median_fitness_uneven[i],
+                    self.median_fitness_crater[i],
+
                     self.std[i],
                     self.num_modules_in_best_individual[i],
                     self.time_per_generation[i],
@@ -153,11 +169,27 @@ class Plotter:
             for row in reader:
                 self.generations.append(int(row[0]))
                 self.best_fitness.append(float(row[1]))
-                self.worst_fitness.append(float(row[2]))
-                self.mean_fitness.append(float(row[3]))
-                self.median_fitness.append(float(row[4]))
-                self.std.append(float(row[5]))
-                self.num_modules_in_best_individual.append(int(row[6]))
+                self.best_fitness_flat.append(float(row[2]))
+                self.best_fitness_uneven.append(float(row[3]))
+                self.best_fitness_crater.append(float(row[4]))
+
+                self.worst_fitness.append(float(row[5]))
+                self.worst_fitness_flat.append(float(row[6]))
+                self.worst_fitness_uneven.append(float(row[7]))
+                self.worst_fitness_crater.append(float(row[8]))
+
+                self.mean_fitness.append(float(row[9]))
+                self.mean_fitness_flat.append(float(row[10]))
+                self.mean_fitness_uneven.append(float(row[11]))
+                self.mean_fitness_crater.append(float(row[12]))
+
+                self.median_fitness.append(float(row[13]))
+                self.median_fitness_flat.append(float(row[14]))
+                self.median_fitness_uneven.append(float(row[15]))
+                self.median_fitness_crater.append(float(row[16]))
+
+                self.std.append(float(row[17]))
+                self.num_modules_in_best_individual.append(int(row[18]))
 
     def plot_best_worst(self):
 
@@ -178,9 +210,9 @@ class Plotter:
     def plot_best_worst_flat(self):
 
         plt.figure(figsize=(10, 6))
-        plt.plot(self.generations_flat  ,  self.best_fitness_flat  , label='Best Fitness')
-        plt.plot(self.generations_flat, self.worst_fitness_flat, label='Worst Fitness')
-        plt.plot(self.generations_flat,  self.mean_fitness_flat, label='Mean Fitness')
+        plt.plot(self.generations  ,  self.best_fitness_flat  , label='Best Fitness')
+        plt.plot(self.generations, self.worst_fitness_flat, label='Worst Fitness')
+        plt.plot(self.generations,  self.mean_fitness_flat, label='Mean Fitness')
         
         plt.xlabel('Generation')
         plt.ylabel('Fitness')
@@ -195,9 +227,9 @@ class Plotter:
     def plot_best_worst_uneven(self):
 
         plt.figure(figsize=(10, 6))
-        plt.plot(self.generations_uneven,  self.best_fitness_uneven  , label='Best Fitness')
-        plt.plot(self.generations_uneven, self.worst_fitness_uneven, label='Worst Fitness')
-        plt.plot(self.generations_uneven,  self.mean_fitness_uneven, label='Mean Fitness')
+        plt.plot(self.generations,  self.best_fitness_uneven  , label='Best Fitness')
+        plt.plot(self.generations, self.worst_fitness_uneven, label='Worst Fitness')
+        plt.plot(self.generations,  self.mean_fitness_uneven, label='Mean Fitness')
         
         plt.xlabel('Generation')
         plt.ylabel('Fitness')
@@ -212,9 +244,9 @@ class Plotter:
     def plot_best_worst_crater(self):
 
         plt.figure(figsize=(10, 6))
-        plt.plot(self.generations_crater  ,self.best_fitness_crater  , label='Best Fitness')
-        plt.plot(self.generations_crater, self.worst_fitness_crater, label='Worst Fitness')
-        plt.plot(self.generations_crater,  self.mean_fitness_crater, label='Mean Fitness')
+        plt.plot(self.generations  ,self.best_fitness_crater  , label='Best Fitness')
+        plt.plot(self.generations, self.worst_fitness_crater, label='Worst Fitness')
+        plt.plot(self.generations,  self.mean_fitness_crater, label='Mean Fitness')
         
         plt.xlabel('Generation')
         plt.ylabel('Fitness')
@@ -285,7 +317,10 @@ if __name__ == "__main__":
     plotter = Plotter(runID=run_id)
     plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}/progress.csv")
     plotter.plot_best_worst()
-    plotter.boxplot_fitness()
-    plotter.plot_std()
-    plotter.plot_num_modules()
+    plotter.plot_best_worst_flat()
+    plotter.plot_best_worst_uneven()
+    plotter.plot_best_worst_crater()
+    #plotter.boxplot_fitness()
+    #plotter.plot_std()
+    #plotter.plot_num_modules()
     #plotter.plot_time_per_generation()

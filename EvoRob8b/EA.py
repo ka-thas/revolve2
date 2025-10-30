@@ -338,9 +338,9 @@ class JSONGeneEA:
             mean_crater=sum(individual.crater_fitness for individual in self.population)/ len(self.population),
 
             median=self.population[len(self.population) // 2].fitness,
-            median_flat  =self.population[len(self.population) // 2].fitness_flat,
-            median_uneven=self.population[len(self.population) // 2].fitness_uneven,
-            median_crater=self.population[len(self.population) // 2].fitness_crater,
+            median_flat  =self.population[len(self.population) // 2].flat_fitness,
+            median_uneven=self.population[len(self.population) // 2].uneven_fitness,
+            median_crater=self.population[len(self.population) // 2].crater_fitness,
 
 
             std=np.std([individual.fitness for individual in self.population]),
@@ -634,15 +634,15 @@ class JSONGeneEA:
                 self.save_best_individual()
 
             # Append last 5 logged generations to a progress CSV
-            if self.generation % 5 == 0:
-                if config.VERBOSE_PRINTS:
-                    print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending last 5 generations to progress CSV")
-                try:
-                    self.plotter.append_last_n_to_csv(
-                        self.log_folder + "progress.csv", n=5
-                    )
-                except Exception:
-                    self.logger.exception("Failed to append generation progress to CSV")
+
+            if config.VERBOSE_PRINTS:
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending generation to progress CSV")
+            try:
+                self.plotter.append_last_n_to_csv(
+                    self.log_folder + "progress.csv", n=1
+                )
+            except Exception:
+                self.logger.exception("Failed to append generation progress to CSV")
 
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
