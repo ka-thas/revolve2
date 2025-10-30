@@ -182,10 +182,17 @@ class JSONGeneEA:
             )
             robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
 
-            # Calculate the xy displacement (fitness) of the robot.
-            fitness = fitness_functions.xy_displacement(
+            # Calculate the xy displacement of the robot.
+            select_fitness_function = {
+                "x_displacement": fitness_functions.x_displacement,
+                "y_displacement": fitness_functions.y_displacement,
+                "xy_displacement": fitness_functions.xy_displacement,
+            }
+
+            fitness = select_fitness_function[config.FITNESS_FUNCTION](
                 robot_state_begin, robot_state_end
             )
+
 
             # Penalize for having too many modules
             individual.num_bricks = self.count_modules(individual.gene)
