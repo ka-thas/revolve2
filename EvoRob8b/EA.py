@@ -98,9 +98,7 @@ class JSONGeneEA:
 
         self.parallel = config.PARALLEL # Run serial on default
 
-
-        # Initialize random number generator
-        self.generator = Gene_Generator(self.rng)
+        # Setup logging folder and run ID
         i = 0
         while True:
             self.runID = str(i)  # To not overwrite logs
@@ -113,7 +111,10 @@ class JSONGeneEA:
                 i += 1
                 continue
 
+        # Initialize random number generator
         self.rng = make_rng(config.SEED) if config.SEED else make_rng(i)  # Use run index as seed if none provided
+        self.generator = Gene_Generator(self.rng)
+
 
         if config.VERBOSE_PRINTS:
             print(f"Logging to folder: {self.log_folder} with runID: {self.runID}")
