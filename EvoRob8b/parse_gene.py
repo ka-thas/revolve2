@@ -4,10 +4,11 @@ build_body(gene)
 
 json needs to be saved in ./genes_warderobe/gene_[i].json
 """
-
+import os
 import logging
 import pickle
 from typing import Any
+
 
 # import multineat
 import numpy as np
@@ -103,33 +104,7 @@ def print_json_gene(node, depth=0):
             print(f"{indent}- {key}")
         print_json_gene(value, depth + 1)
 
-def load_brain():
-    pass
 
-def load_body_and_brain(file):
-
-    content = file.read()
-
-    # Find the index of the last closing brace for the dictionary
-    dict_end = content.rindex('}')  # Find the last '}'
-    array_start = dict_end + 1  # Everything after that is part of the array
-
-    # Extract the dictionary part and array part
-    dict_str = content[:array_start].strip()  # Dictionary portion
-    array_str = content[array_start:].strip()  # Array portion
-
-    # Load the dictionary and array as Python objects
-    dict_data = json.loads(dict_str)
-    array_data = json.loads(array_str)
-    id_value = dict_data.pop("id", None)  # Extract and remove 'id' from the dictionary
-    gene = dict_data
-
-
-    print_json_gene(gene)
-
-    return gene, array_data, id
-
-import os
 
 def json_file_select():
     folders = ["experiments", "genes_wardrobe"]
