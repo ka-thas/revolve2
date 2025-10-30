@@ -36,8 +36,49 @@ class Individual:
         self.body = None
         self.brain = None
         self.weights = None
-        self.fitness: float = -float("inf")
         self.num_bricks: int = 0
+
+
+        self.exists = False
+
+       # self.fitness = -float('inf') # Only update through
+
+        self.flat_brain = None
+        self.flat_fitness = -float("inf")
+        self.flat_weights = []
+        
+        self.crater_brain = None
+        self.crater_fitness = -float("inf")
+        self.crater_weights = []
+
+    
+        self.uneven_brain = None
+        self.uneven_fitness = -float("inf")
+        self.uneven_weights = []
+
+        self.fitness = self.flat_fitness + self.crater_fitness + self.uneven_fitness
+
+
+
+
+    def update_fitness(self):
+        # Only define fitness as -inf if any of the individual fitnesses are still -inf
+        self.fitness =  self.flat_fitness + self.crater_fitness + self.uneven_fitness
+    
+
+    def print_individual(self):
+        print("------")
+        print(f"Total Fitness: {self.fitness}")
+        print(f"Flat Fitness: {self.flat_fitness}")
+        print(f"Flat Weights: {self.flat_weights}")
+        print(f"Crater Fitness: {self.crater_fitness}")
+        print(f"Crater Weights: {self.crater_weights}")
+        print(f"Uneven Fitness: {self.uneven_fitness}")
+        print(f"Uneven Weights: {self.uneven_weights}")
+        print(f"Total Fitness: {self.fitness}")
+        print("------")
+    
+
 
 
 class JSONGeneEA:
@@ -54,6 +95,12 @@ class JSONGeneEA:
         self.population: List[Individual] = []
         self.generation = 0
         self.evaluations = 0
+
+        self.parallel = False # Run serial on deafult
+
+
+
+
 
         # Initialize random number generator
         self.rng = make_rng(config.SEED)
@@ -139,67 +186,104 @@ class JSONGeneEA:
             return count
 
         return count_recursive(gene_dict.get("core", {}))
-
+    
     def evaluate_individual(self, individual: Individual) -> float:
+        """ Give brain, improve brain and evaluate the fitness of an individual ."""
+        try:
+
+            individual.body = build_body(individual.gene)
+            body = individual.body
+
+            rng = make_rng(config.SEED)
+            # Create brain
+            flat_brain = BrainGenotype()
+            uneven_brain = BrainGenotype()
+            crater_brain = BrainGenotype()
+
+            flat_brain.develop_brain(body, rng=rng)
+            flat_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat()) 
+            individual.flat_fitness = flat_brain.fitness
+            individual.flat_weights = flat_brain.get_weights() 
+            individual.flat_brain = flat_brain
+            
+            uneven_brain.develop_brain(body, rng=rng)
+            uneven_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.25, 0.1)) 
+            individual.uneven_fitness = uneven_brain.fitness
+            individual.uneven_weights = uneven_brain.get_weights() 
+            individual.uneven_brain = uneven_brain
+
+            crater_brain.develop_brain(body, rng=rng)
+            crater_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.1, 10)) 
+            individual.crater_fitness = crater_brain.fitness
+            individual.crater_weights = crater_brain.get_weights() 
+            individual.crater_brain = crater_brain
+
+
+
+            module_count = self.count_modules(individual.gene)
+            if module_count > self.max_modules:
+                individual.flat_fitness  *= 1+((self.max_modules-module_count)*0.02)
+                individual.crater_fitness *= 1+((self.max_modules-module_count)*0.02)
+                individual.uneven_fitness *= 1+((self.max_modules-module_count)*0.02)
+
+            individual.update_fitness()
+
+
+            individual.exists = True
+            
+
+        except Exception as e:
+            self.logger.warning(f"Error evaluating individual : {str(e)}")
+            return -1000.0  # Very low fitness for invalid individuals
+        
+
+    def evaluate_individual_parallel(self, individual: Individual) -> float:
         """Evaluate the fitness of an individual."""
         try:
 
             individual.body = build_body(individual.gene)
             body = individual.body
 
-            rng = self.rng
+            rng = make_rng(config.SEED)
             # Create brain
-            brain = BrainGenotype()
+            flat_brain = BrainGenotype()
+            uneven_brain = BrainGenotype()
+            crater_brain = BrainGenotype()
 
-            brain.develop_brain(body, rng=rng)
-            brain.improve(body, config.INNER_LOOP_ITERATIONS, rng)
+            flat_brain.develop_brain(body, rng=rng)
+            uneven_brain.develop_brain(body, rng=rng)
+            crater_brain.develop_brain(body, rng=rng)
+            x = 0
 
-            individual.brain = brain
-            individual.weights = individual.brain.get_weights()
-
-            robot = ModularRobot(body, brain)
-
-            # Create scene
-            scene = ModularRobotScene(terrain=terrains.flat())
-            scene.add_robot(robot)
-
-            # Simulate
-            simulator = LocalSimulator(headless=True)
-            scene_states = simulate_scenes(
-                simulator=simulator,
-                batch_parameters=make_standard_batch_parameters(),
-                scenes=scene,
-            )
-
-            # Get the state at the beginning and end of the simulation.
-            scene_state_begin = scene_states[0]
-            scene_state_end = scene_states[-1]
-
-            # Retrieve the states of the modular robot.
-            robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(
-                robot
-            )
-            robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
-
-            # Calculate the xy displacement of the robot.
-            select_fitness_function = {
-                "x_displacement": fitness_functions.x_displacement,
-                "y_displacement": fitness_functions.y_displacement,
-                "xy_displacement": fitness_functions.xy_displacement,
-            }
-
-            fitness = select_fitness_function[config.FITNESS_FUNCTION](
-                robot_state_begin, robot_state_end
-            )
+            while (x < config.INNER_LOOP_ITERATIONS):
+                flat_brain.improve(body, 1, rng, terrain=terrains.flat(), fitness=individual.flat_fitness) 
+                individual.flat_weights = flat_brain.get_weights() 
+                individual.flat_fitness = flat_brain.fitness
+                individual.flat_brain = flat_brain
 
 
-            # Penalize for having too many modules
-            individual.num_bricks = self.count_modules(individual.gene)
-            if individual.num_bricks > self.max_modules:
-                fitness *= 1 + ((self.max_modules - individual.num_bricks) * 0.02)
+                uneven_brain.improve(body, 1, rng, terrain=terrains.crater([20.0, 20.0], 0.25, 0.1), fitness=individual.uneven_fitness) 
+                individual.uneven_weights = uneven_brain.get_weights()
+                individual.uneven_fitness = uneven_brain.fitness 
+                individual.uneven_brain = uneven_brain
 
-            return fitness
+                crater_brain.improve(body, 1, rng, terrain=terrains.crater([20.0, 20.0], 0.1, 10), fitness=individual.crater_fitness) 
+                individual.crater_weights = crater_brain.get_weights()             
+                individual.crater_fitness = crater_brain.fitness 
+                individual.crater_brain = crater_brain
+                x += 1
 
+            individual.exists = True
+
+            module_count = self.count_modules(individual.gene)
+            if module_count > self.max_modules:
+                individual.flat_fitness  *= 1+((self.max_modules-module_count)*0.02)
+                individual.crater_fitness *= 1+((self.max_modules-module_count)*0.02)
+                individual.uneven_fitness *= 1+((self.max_modules-module_count)*0.02)
+
+            individual.update_fitness()
+                    
+            
         except Exception as e:
             self.logger.warning(f"Error evaluating individual : {str(e)}")
             return -1000.0  # Very low fitness for invalid individuals
@@ -207,20 +291,17 @@ class JSONGeneEA:
     def evaluate_population(self) -> None:
         """Evaluate all individuals in the population."""
         self.logger.info(f"Evaluating population (generation {self.generation})")
+        
+        for individual in self.population:                 
+            if not (individual.exists):
+                if (self.parallel):
+                    self.evaluate_individual_parallel(individual)
+                    self.evaluations += 3
 
-        for individual in self.population:
-            if individual.fitness == -float(
-                "inf"
-            ):  # Only evaluate if not already evaluated
-                individual.fitness = self.evaluate_individual(individual)
-
-                if config.VERBOSE_PRINTS:
-                    print(
-                        time.strftime("%H:%M:%S", time.gmtime(time.time())),
-                        f"Evaluated individual with fitness: {individual.fitness:.3f}",
-                    )
-                self.evaluations += 1
-
+                else:
+                    self.evaluate_individual(individual)
+                    self.evaluations += 1
+                    
         # Sort population by fitness (descending)
         self.population.sort(key=lambda x: x.fitness, reverse=True)
 
@@ -455,8 +536,15 @@ class JSONGeneEA:
             print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Evaluating offspring")
         # Evaluate offspring
         for individual in offspring:
-            individual.fitness = self.evaluate_individual(individual)
-            
+            if not (individual.exists):
+                if (self.parallel):
+                    self.evaluate_individual_parallel(individual)
+                    self.evaluations += 3
+
+                else:
+                    self.evaluate_individual(individual)
+                    self.evaluations += 1
+
             if config.VERBOSE_PRINTS:
                 print(time.strftime("%H:%M:%S", time.gmtime(time.time())), f"Evaluated individual with fitness {individual.fitness:.3f} and {individual.num_bricks} bricks")
                 
@@ -480,7 +568,9 @@ class JSONGeneEA:
         best.gene["runID"] = self.runID
         best.gene["fitness"] = best.fitness
         best.gene["generation"] = self.generation
-        best.gene["brain_weights"] = best.brain.weights.tolist()
+        best.gene["brain_weights_flat"] = best.flat_weights.tolist()
+        best.gene["brain_weights_uneven"] = best.uneven_weights.tolist()
+        best.gene["brain_weights_crater"] = best.crater_weights.tolist()
 
         filename = filename or f"{self.log_folder}/best_gen_{self.generation}.json"
 
