@@ -1,13 +1,16 @@
+# Run ID: 000071 Also used as seed
+# Start Time: 2025-10-31 00:38
+# ----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
-SEED = 20 # If 0, run ID will be used as seed.
+SEED = 11 # If 0, run ID will be used as seed.
 
 #EA
-PARENT_TOURNAMENT_SIZE = 3
-POPULATION_SIZE = 30
-OFFSPRING_SIZE = 10
-FUNCTION_EVALUATIONS = 5000
+PARENT_TOURNAMENT_SIZE = 1
+POPULATION_SIZE = 1
+OFFSPRING_SIZE = 1
+FUNCTION_EVALUATIONS = 1
 LOCAL_COMPETITION_NEIGHBOURHOOD_SIZE = 2 # From Ege, not in use
 MUTATION_RATE = 0.7
 CROSSOVER_RATE = 0.7
@@ -25,7 +28,7 @@ MAX_BRICKS = 13
 
 # Brain
 BRAIN_MUTATION_RATE = 0.8
-INNER_LOOP_ITERATIONS = 10 # Times number of brains
+INNER_LOOP_ITERATIONS = 1 # Times number of brains
 EXPLORATION_RATE = 1
 MUTATION_EPSILON = 0.8
 
