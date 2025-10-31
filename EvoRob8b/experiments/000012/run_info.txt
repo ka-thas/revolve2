@@ -1,3 +1,6 @@
+Run ID: 000012
+Start Time: 2025-10-30 20:03
+----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
@@ -5,7 +8,7 @@ SEED = 3050
 
 
 #EA
-PARENT_TOURNAMENT_SIZE = 3
+PARENT_TOURNAMENT_SIZE = 3 
 POPULATION_SIZE = 30
 OFFSPRING_SIZE = 10
 FUNCTION_EVALUATIONS = 5000
@@ -15,7 +18,7 @@ CROSSOVER_RATE = 0.7
 CROSSOVER_CHANCE_TO_DIVE = 0.15
 PARENT_SELECT_STRATEGY = 'tournament'
 FITNESS_FUNCTION = "xy_displacement"  # Options: 'x_displacement', 'xy_displacement', 'y_displacement'
-PARALLEL = True
+
 
 # Gene generator / Initial population
 CHANCE_TO_PLACE_BRICK_FRONT = 0.8

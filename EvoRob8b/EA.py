@@ -56,7 +56,7 @@ class Individual:
         self.uneven_fitness = -float("inf")
         self.uneven_weights = []
 
-        self.fitness = self.flat_fitness + self.crater_fitness + self.uneven_fitness
+        self.fitness = -float("inf")
 
 
 
@@ -96,7 +96,7 @@ class JSONGeneEA:
         self.generation = 0
         self.evaluations = 0
 
-        self.parallel = False # Run serial on deafult
+        self.parallel = config.PARALLEL # Run serial on deafult
 
 
 
@@ -301,6 +301,15 @@ class JSONGeneEA:
                 else:
                     self.evaluate_individual(individual)
                     self.evaluations += 1
+                if config.VERBOSE_PRINTS:
+
+                    print(
+
+                        time.strftime("%H:%M:%S", time.gmtime(time.time())),
+
+                        f"Evaluated individual with fitness: {individual.fitness:.3f}",
+
+                    )
                     
         # Sort population by fitness (descending)
         self.population.sort(key=lambda x: x.fitness, reverse=True)
@@ -491,7 +500,7 @@ class JSONGeneEA:
         """Create offspring using selection, crossover, and mutation."""
 
         if config.VERBOSE_PRINTS:
-            print(time.time(),"Creating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time())),"Creating offspring")
 
         offspring = []
 
@@ -585,11 +594,10 @@ class JSONGeneEA:
         print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Running EA")
         best_fitness = -float("inf")
         self.start_time = time.time()
-
         self.initialize_population()
         self.evaluate_population()  # Evaluate init
         self.log_generation_stats()  # Log init
-
+        
         while self.evaluations < self.function_evaluations:
             self.generation += 1
             if config.VERBOSE_PRINTS:

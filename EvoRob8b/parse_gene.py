@@ -143,41 +143,10 @@ def json_file_select():
     print(f"\nSelected file: {jsonfile}")
     return jsonfile
 
-
-
-if __name__ == "__main__":
-
-    jsonfile = json_file_select()
-
-    with open(jsonfile, "r") as f:
-        gene = json.load(f)
-
-    if config.DEBUGGING: 
-        print("\n-----| Gene Structure |-----")
-        print_json_gene(gene)
-
-
-    body = build_body(gene) # Renders body into revolve2
-    rng = make_rng(config.SEED)
-    brain = BrainGenotype()
-    weights = gene.get("brain_weights", [])
-    weights = np.array(weights)
-    brain.develop_brain(body=body, rng=rng, weights=weights)
-
-    robot = ModularRobot(body, brain)
-
-    headless_s =     input("> Headless? [y/ n]: ")
-    if (headless_s == "y"):
-        headless = True
-    else:        
-        headless = False
-
-
-
-    input("> ready [press enter]: ")
+def run(robot, terrain):
 
     # Create a scene.
-    scene = ModularRobotScene(terrain=terrains.flat())
+    scene = ModularRobotScene(terrain=terrain)
     scene.add_robot(robot)
 
     # Create a simulator.
@@ -202,6 +171,60 @@ if __name__ == "__main__":
     xy_displacement = fitness_functions.xy_displacement(
         robot_state_begin, robot_state_end
     )
+    return xy_displacement
 
-    print(f"\n->> xy_displacement: {xy_displacement}")
+
+if __name__ == "__main__":
+
+    jsonfile = json_file_select()
+
+    with open(jsonfile, "r") as f:
+        gene = json.load(f)
+
+    if config.DEBUGGING: 
+        print("\n-----| Gene Structure |-----")
+        print_json_gene(gene)
+
+
+    body = build_body(gene) # Renders body into revolve2
+    rng = make_rng(config.SEED)
+    brain_flat = BrainGenotype()
+    brain_uneven = BrainGenotype()
+    brain_crater = BrainGenotype()
+
+    weights_flat = gene.get("brain_weights_flat", [])
+    weights_flat = np.array(weights_flat)
+    brain_flat.develop_brain(body=body, rng=rng, weights=weights_flat)
+
+    weights_uneven = gene.get("brain_weights_uneven", [])
+    weights_uneven = np.array(weights_uneven)
+    brain_uneven.develop_brain(body=body, rng=rng, weights=weights_uneven)
+
+    weights_crater = gene.get("brain_weights_crater", [])
+    weights_crater = np.array(weights_crater)
+    brain_crater.develop_brain(body=body, rng=rng, weights=weights_crater)
+
+    robot_flat = ModularRobot(body, brain_flat)
+    robot_uneven = ModularRobot(body, brain_uneven)
+    robot_crater = ModularRobot(body, brain_crater)
+
+    headless_s =     input("> Headless? [y/ n]: ")
+    if (headless_s == "y"):
+        headless = True
+    else:        
+        headless = False
+
+
+
+    input("> ready [press enter]: ")
+
+
+    xy_displacement_flat = run(robot_flat, terrains.flat())
+    xy_displacement_uneven = run(robot_flat, terrain=terrains.crater([20.0, 20.0], 0.25, 0.1))
+    xy_displacement_crater = run(robot_crater,  terrain=terrains.crater([20.0, 20.0], 0.1, 10))
+
+    print(f"\n->> xy displacement flat: {xy_displacement_flat}")
+    print(f"\n->> xy displacement uneven: {xy_displacement_uneven}")
+    print(f"\n->> xy displacement crater: {xy_displacement_crater}")
+
 
