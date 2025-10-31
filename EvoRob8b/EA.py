@@ -96,15 +96,9 @@ class JSONGeneEA:
         self.generation = 0
         self.evaluations = 0
 
-        self.parallel = config.PARALLEL # Run serial on deafult
+        self.parallel = config.PARALLEL # Run serial on default
 
-
-
-
-
-        # Initialize random number generator
-        self.rng = make_rng(config.SEED)
-        self.generator = Gene_Generator(self.rng)
+        # Setup logging folder and run ID
         i = 0
         while True:
             self.runID = str(i)  # To not overwrite logs
@@ -116,6 +110,11 @@ class JSONGeneEA:
             except FileExistsError:
                 i += 1
                 continue
+
+        # Initialize random number generator
+        self.rng = make_rng(config.SEED) if config.SEED else make_rng(i)  # Use run index as seed if none provided
+        self.generator = Gene_Generator(self.rng)
+
 
         if config.VERBOSE_PRINTS:
             print(f"Logging to folder: {self.log_folder} with runID: {self.runID}")
@@ -134,11 +133,11 @@ class JSONGeneEA:
         filename = self.log_folder + "run_info.txt"
         with open(filename, "w") as f:
             with open("config.py", "r") as config_file:
-                f.write(f"Run ID: {self.runID}\n")
+                f.write(f"# Run ID: {self.runID} Also used as seed\n")
                 f.write(
-                    f"Start Time: {time.strftime('%Y-%m-%d %H:%M', time.localtime())}\n"
+                    f"# Start Time: {time.strftime('%Y-%m-%d %H:%M', time.localtime())}\n"
                 )
-                f.write("----- config.py -----\n")
+                f.write("# ----- config.py -----\n")
                 f.write(config_file.read())
                 f.write("\n")
 
@@ -221,6 +220,7 @@ class JSONGeneEA:
 
 
             module_count = self.count_modules(individual.gene)
+            individual.num_bricks = module_count
             if module_count > self.max_modules:
                 individual.flat_fitness  *= 1+((self.max_modules-module_count)*0.02)
                 individual.crater_fitness *= 1+((self.max_modules-module_count)*0.02)
@@ -253,7 +253,7 @@ class JSONGeneEA:
             flat_brain.develop_brain(body, rng=rng)
             uneven_brain.develop_brain(body, rng=rng)
             crater_brain.develop_brain(body, rng=rng)
-            x = 0
+            x = 0 
 
             while (x < config.INNER_LOOP_ITERATIONS):
                 flat_brain.improve(body, 1, rng, terrain=terrains.flat(), fitness=individual.flat_fitness) 
@@ -276,6 +276,7 @@ class JSONGeneEA:
             individual.exists = True
 
             module_count = self.count_modules(individual.gene)
+            individual.num_bricks = module_count
             if module_count > self.max_modules:
                 individual.flat_fitness  *= 1+((self.max_modules-module_count)*0.02)
                 individual.crater_fitness *= 1+((self.max_modules-module_count)*0.02)
@@ -292,7 +293,7 @@ class JSONGeneEA:
         """Evaluate all individuals in the population."""
         self.logger.info(f"Evaluating population (generation {self.generation})")
         
-        for individual in self.population:                 
+        for individual in self.population:        
             if not (individual.exists):
                 if (self.parallel):
                     self.evaluate_individual_parallel(individual)
@@ -315,15 +316,35 @@ class JSONGeneEA:
         self.population.sort(key=lambda x: x.fitness, reverse=True)
 
     def log_generation_stats(self) -> None:
-        """Log statistics of the current generation."""
+        """Log statistics of the current generation.
+        
+        Changes to this file needs appropriate changes to plotter.py
+        especially in log_generation and save_to_csv methods.
+        """
 
         self.plotter.log_generation(
             generation=self.generation,
             best=self.population[0].fitness,
+            best_flat  = self.population[0].flat_fitness,
+            best_uneven=  self.population[0].uneven_fitness,
+            best_crater = self.population[0].crater_fitness,
+
             worst=self.population[-1].fitness,
-            mean=sum(individual.fitness for individual in self.population)
-            / len(self.population),
+            worst_flat  = self.population[-1].flat_fitness,
+            worst_uneven=  self.population[-1].uneven_fitness,
+            worst_crater = self.population[-1].crater_fitness,
+
+            mean=sum(individual.fitness for individual in self.population)/ len(self.population),
+            mean_flat  =sum(individual.flat_fitness for individual in self.population)/ len(self.population),
+            mean_uneven=sum(individual.uneven_fitness for individual in self.population)/ len(self.population),
+            mean_crater=sum(individual.crater_fitness for individual in self.population)/ len(self.population),
+
             median=self.population[len(self.population) // 2].fitness,
+            median_flat  =self.population[len(self.population) // 2].flat_fitness,
+            median_uneven=self.population[len(self.population) // 2].uneven_fitness,
+            median_crater=self.population[len(self.population) // 2].crater_fitness,
+
+
             std=np.std([individual.fitness for individual in self.population]),
             num_modules=self.population[0].num_bricks,
             total_elapsed_time=time.time() - self.start_time,
@@ -615,32 +636,21 @@ class JSONGeneEA:
                 self.save_best_individual()
 
             # Append last 5 logged generations to a progress CSV
-            if self.generation % 5 == 0:
-                if config.VERBOSE_PRINTS:
-                    print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending last 5 generations to progress CSV")
-                try:
-                    self.plotter.append_last_n_to_csv(
-                        self.log_folder + "progress.csv", n=5
-                    )
-                except Exception:
-                    self.logger.exception("Failed to append generation progress to CSV")
+
+            if config.VERBOSE_PRINTS:
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending generation to progress CSV")
+            try:
+                self.plotter.append_last_n_to_csv(
+                    self.log_folder + "progress.csv", n=1
+                )
+            except Exception:
+                self.logger.exception("Failed to append generation progress to CSV")
 
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
             if config.DEBUGGING:
                 print(f"->> Evaluation:{self.evaluations}")
-
-        if self.generation % 5 != 0:
-            # Ensure final data is saved if not already done
-            try:
-                self.plotter.append_last_n_to_csv(
-                    self.log_folder + "progress.csv", n=self.generation % 5
-                )
-            except Exception:
-                self.logger.exception(
-                    "Failed to append final generation progress to CSV"
-                )
         print(
             f"EA completed after {self.generation} generations and {self.evaluations} evaluations"
         )

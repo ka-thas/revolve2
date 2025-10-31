@@ -1,8 +1,7 @@
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
-SEED = 3050
-
+SEED = 0 # If 0, run ID will be used as seed.
 
 #EA
 PARENT_TOURNAMENT_SIZE = 3
@@ -26,7 +25,7 @@ MAX_BRICKS = 13
 
 # Brain
 BRAIN_MUTATION_RATE = 0.8
-INNER_LOOP_ITERATIONS = 3
+INNER_LOOP_ITERATIONS = 1 # Times number of brains
 EXPLORATION_RATE = 1
 MUTATION_EPSILON = 0.8
 
