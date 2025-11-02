@@ -317,6 +317,9 @@ class JSONGeneEA:
                     
         # Sort population by fitness (descending)
         self.population.sort(key=lambda x: x.fitness, reverse=True)
+        self.population_flat.sort(key=lambda x: x.flat_fitness, reverse=True)
+        self.population_uneven.sort(key=lambda x: x.uneven_fitness, reverse=True)
+        self.population_crater.sort(key=lambda x: x.crater_fitness, reverse=True)
 
     def log_generation_stats(self) -> None:
         """Log statistics of the current generation.
@@ -325,27 +328,31 @@ class JSONGeneEA:
         especially in log_generation and save_to_csv methods.
         """
 
+        population_flat = sorted(self.population, key=lambda x: x.flat_fitness)
+        population_uneven = sorted(self.population, key=lambda x: x.uneven_fitness)
+        population_crater = sorted(self.population, key=lambda x: x.crater_fitness)
+
         self.plotter.log_generation(
             generation=self.generation,
             best=self.population[0].fitness,
-            best_flat  = self.population[0].flat_fitness,
-            best_uneven=  self.population[0].uneven_fitness,
-            best_crater = self.population[0].crater_fitness,
+            best_flat  = population_flat[0].flat_fitness,
+            best_uneven=  population_uneven[0].uneven_fitness,
+            best_crater = population_crater[0].crater_fitness,
 
             worst=self.population[-1].fitness,
-            worst_flat  = self.population[-1].flat_fitness,
-            worst_uneven=  self.population[-1].uneven_fitness,
-            worst_crater = self.population[-1].crater_fitness,
+            worst_flat  = population_flat[-1].flat_fitness,
+            worst_uneven=  population_uneven[-1].uneven_fitness,
+            worst_crater = population_crater[-1].crater_fitness,
 
             mean=sum(individual.fitness for individual in self.population)/ len(self.population),
-            mean_flat  =sum(individual.flat_fitness for individual in self.population)/ len(self.population),
-            mean_uneven=sum(individual.uneven_fitness for individual in self.population)/ len(self.population),
-            mean_crater=sum(individual.crater_fitness for individual in self.population)/ len(self.population),
+            mean_flat  =sum(individual.flat_fitness for individual in population_flat)/ len(population_flat),
+            mean_uneven=sum(individual.uneven_fitness for individual in population_uneven)/ len(population_uneven),
+            mean_crater=sum(individual.crater_fitness for individual in population_crater)/ len(population_crater),
 
             median=self.population[len(self.population) // 2].fitness,
-            median_flat  =self.population[len(self.population) // 2].flat_fitness,
-            median_uneven=self.population[len(self.population) // 2].uneven_fitness,
-            median_crater=self.population[len(self.population) // 2].crater_fitness,
+            median_flat  =population_flat[len(population_flat) // 2].flat_fitness,
+            median_uneven=population_uneven[len(population_uneven) // 2].uneven_fitness,
+            median_crater=population_crater[len(population_crater) // 2].crater_fitness,
 
 
             std=np.std([individual.fitness for individual in self.population]),
