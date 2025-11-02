@@ -1,7 +1,10 @@
+# Run ID: 000079 Also used as seed
+# Start Time: 2025-10-31 00:50
+# ----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
-SEED = 20 # If 0, run ID will be used as seed.
+SEED = 17 # If 0, run ID will be used as seed.
 
 #EA
 PARENT_TOURNAMENT_SIZE = 3
