@@ -319,9 +319,6 @@ class JSONGeneEA:
                     
         # Sort population by fitness (descending)
         self.population.sort(key=lambda x: x.fitness, reverse=True)
-        self.population_flat.sort(key=lambda x: x.flat_fitness, reverse=True)
-        self.population_uneven.sort(key=lambda x: x.uneven_fitness, reverse=True)
-        self.population_crater.sort(key=lambda x: x.crater_fitness, reverse=True)
 
     def log_generation_stats(self) -> None:
         """Log statistics of the current generation.
