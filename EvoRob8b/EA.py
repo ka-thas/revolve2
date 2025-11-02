@@ -98,8 +98,10 @@ class JSONGeneEA:
 
         self.parallel = config.PARALLEL # Run serial on default
 
+        runIDprefix = int(input("> run id xx---- [two digits]: "))  # Get run ID prefix from user
+
         # Setup logging folder and run ID
-        i = 0
+        i = runIDprefix * 10000  # Start from given prefix
         while True:
             self.runID = str(i)  # To not overwrite logs
             self.runID = self.runID.zfill(6)
