@@ -18,7 +18,7 @@
 
 Gene validator could enforce invariant during ea runs
 
-- [ ] [Gene validator](./gene_validator.py) 
+- [ ] Gene validator (not used)
   - [ ] brick has front, right, left faces
     - [ ] especially spine
   - [ ] hinge has brick
@@ -27,8 +27,8 @@ Gene validator could enforce invariant during ea runs
   - [ ] count bricks
 
 - [x] brain representation
-- [ ] Track rng if time
-- [ ] Save and load to file brain -- Emma
+- [x] Track rng if time
+- [x] Save and load to file brain -- Emma
 
 - [x] EA
  - [x] Crossover
@@ -41,7 +41,7 @@ Gene validator could enforce invariant during ea runs
  - [x] Tournament selection
  - [x] Elitism 🐻‍❄️
 
-- [ ] Ploting -- Ka <!-- started class in EA.py -->
+- [x] Ploting -- Ka <!-- started class in EA.py -->
   - [x] Matplotlib
   - [x] Fitness over generations
   - [ ] Compare own morph with EA the same amount of generation?
@@ -55,13 +55,14 @@ Gene validator could enforce invariant during ea runs
   - [x] Mutation 🐻‍❄️
   - [x] Selection 🪱
 - [x] Ethics statement ⛰️
-- [] Explain why we cut off Lamarckian
-- [] Explain parameters
-- [] Describe the brain, how parallelization works etc
+- [ ] Explain why we cut off Lamarckian
+- [ ] Explain parameters
+- [ ] Describe the brain, how parallelization works etc
 
 
 After the paper is finished:
-- [] Go through the paper, rewrite so the paper remians one style
+- [ ] Go through the paper, rewrite so the paper remians one style
+- [ ] Go out for ramen?? 🍜
 
 
 # Experiments
