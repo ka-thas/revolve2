@@ -30,8 +30,6 @@ import math
 import copy
 
 import numpy as np
-from sqlalchemy import orm
-import random
 import config
 
 from revolve2.modular_robot.body.v1 import BodyV1, ActiveHingeV1
@@ -43,17 +41,9 @@ from revolve2.modular_robot.brain.cpg import (
     BrainCpgInstance
 )
 
-
-
-import logging
-import pickle
-from typing import Any
-
 import config
-import multineat
 import numpy as np
 import numpy.typing as npt
-import numpy
 import time
 
 from revolve2.modular_robot import ModularRobot

@@ -199,7 +199,7 @@ class JSONGeneEA:
             individual.body = build_body(individual.gene)
             body = individual.body
 
-            rng = make_rng(config.SEED)
+            rng = self.rng
             # Create brain
             flat_brain = BrainGenotype()
             uneven_brain = BrainGenotype()
@@ -249,7 +249,7 @@ class JSONGeneEA:
             individual.body = build_body(individual.gene)
             body = individual.body
 
-            rng = make_rng(config.SEED)
+            rng = self.rng
             # Create brain
             flat_brain = BrainGenotype()
             uneven_brain = BrainGenotype()
@@ -258,14 +258,13 @@ class JSONGeneEA:
             flat_brain.develop_brain(body, rng=rng)
             uneven_brain.develop_brain(body, rng=rng)
             crater_brain.develop_brain(body, rng=rng)
-            x = 0 
+            i = 0
 
-            while (x < config.INNER_LOOP_ITERATIONS):
+            while (i < config.INNER_LOOP_ITERATIONS):
                 flat_brain.improve(body, 1, rng, terrain=terrains.flat(), fitness=individual.flat_fitness) 
                 individual.flat_weights = flat_brain.get_weights() 
                 individual.flat_fitness = flat_brain.fitness
                 individual.flat_brain = flat_brain
-
 
                 uneven_brain.improve(body, 1, rng, terrain=terrains.crater([20.0, 20.0], 0.25, 0.1), fitness=individual.uneven_fitness) 
                 individual.uneven_weights = uneven_brain.get_weights()
@@ -276,7 +275,7 @@ class JSONGeneEA:
                 individual.crater_weights = crater_brain.get_weights()             
                 individual.crater_fitness = crater_brain.fitness 
                 individual.crater_brain = crater_brain
-                x += 1
+                i += 1
 
             individual.exists = True
 
@@ -311,7 +310,7 @@ class JSONGeneEA:
 
                     print(
 
-                        time.strftime("%H:%M:%S", time.gmtime(time.time())),
+                        time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)),
 
                         f"Evaluated individual with fitness: {individual.fitness:.3f}",
 
@@ -530,7 +529,7 @@ class JSONGeneEA:
         """Create offspring using selection, crossover, and mutation."""
 
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())),"Creating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)),"Creating offspring")
 
         offspring = []
 
@@ -562,7 +561,7 @@ class JSONGeneEA:
             offspring.append(Individual(gene=child_gene))
             
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Created offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Created offspring")
 
         return offspring
 
@@ -572,7 +571,7 @@ class JSONGeneEA:
         combined = self.population + offspring
 
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Evaluating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Evaluating offspring")
         # Evaluate offspring
         for individual in offspring:
             if not (individual.exists):
@@ -585,14 +584,14 @@ class JSONGeneEA:
                     self.evaluations += 1
 
             if config.VERBOSE_PRINTS:
-                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), f"Evaluated individual with fitness {individual.fitness:.3f} and {individual.num_bricks} bricks")
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), f"Evaluated individual with fitness {individual.fitness:.3f} and {individual.num_bricks} bricks")
                 
             
             self.evaluations += 1
 
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Finished evaluating offspring")
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "population size:", len(self.population), "offspring size:", len(offspring), "combined size:", len(combined))
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Finished evaluating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "population size:", len(self.population), "offspring size:", len(offspring), "combined size:", len(combined))
 
         # Sort by fitness (descending) and keep the best
         combined.sort(key=lambda x: x.fitness, reverse=True)
@@ -622,7 +621,7 @@ class JSONGeneEA:
 
     def save_gen_to_csv(self) -> None:
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending last generation to progress.csv")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Appending last generation to progress.csv")
         try:
             self.plotter.append_last_n_to_csv(
                 self.log_folder + "progress.csv", n=1
@@ -632,7 +631,7 @@ class JSONGeneEA:
 
 
     def run(self) -> Individual:
-        print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Running EA")
+    print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Running EA")
         best_fitness = -float("inf")
         self.start_time = time.time()
         self.initialize_population()
@@ -640,7 +639,7 @@ class JSONGeneEA:
         while self.evaluations < self.function_evaluations:
             self.generation += 1
             if config.VERBOSE_PRINTS:
-                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Starting generation", self.generation)
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Starting generation", self.generation)
 
             offspring = self.create_offspring()
             self.survival_selection(offspring)  # only evaluates offspring and selects survivors from both parents and offspring
