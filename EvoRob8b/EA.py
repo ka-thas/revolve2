@@ -98,8 +98,10 @@ class JSONGeneEA:
 
         self.parallel = config.PARALLEL # Run serial on default
 
+        runIDprefix = int(input("> run id xx---- [two digits]: "))  # Get run ID prefix from user
+
         # Setup logging folder and run ID
-        i = 0
+        i = runIDprefix * 10000  # Start from given prefix
         while True:
             self.runID = str(i)  # To not overwrite logs
             self.runID = self.runID.zfill(6)
@@ -159,6 +161,10 @@ class JSONGeneEA:
             individual = Individual(gene=gene_dict)
             self.population.append(individual)
 
+        self.evaluate_population()  # Evaluate init
+        self.log_generation_stats()  # Log init
+        self.save_gen_to_csv()
+
         self.logger.info("Population initialized successfully")
 
     def count_modules(self, gene_dict: Dict[str, Any]) -> int:
@@ -193,7 +199,7 @@ class JSONGeneEA:
             individual.body = build_body(individual.gene)
             body = individual.body
 
-            rng = make_rng(config.SEED)
+            rng = self.rng
             # Create brain
             flat_brain = BrainGenotype()
             uneven_brain = BrainGenotype()
@@ -216,7 +222,6 @@ class JSONGeneEA:
             individual.crater_fitness = crater_brain.fitness
             individual.crater_weights = crater_brain.get_weights() 
             individual.crater_brain = crater_brain
-
 
 
             module_count = self.count_modules(individual.gene)
@@ -244,7 +249,7 @@ class JSONGeneEA:
             individual.body = build_body(individual.gene)
             body = individual.body
 
-            rng = make_rng(config.SEED)
+            rng = self.rng
             # Create brain
             flat_brain = BrainGenotype()
             uneven_brain = BrainGenotype()
@@ -253,14 +258,13 @@ class JSONGeneEA:
             flat_brain.develop_brain(body, rng=rng)
             uneven_brain.develop_brain(body, rng=rng)
             crater_brain.develop_brain(body, rng=rng)
-            x = 0 
+            i = 0
 
-            while (x < config.INNER_LOOP_ITERATIONS):
+            while (i < config.INNER_LOOP_ITERATIONS):
                 flat_brain.improve(body, 1, rng, terrain=terrains.flat(), fitness=individual.flat_fitness) 
                 individual.flat_weights = flat_brain.get_weights() 
                 individual.flat_fitness = flat_brain.fitness
                 individual.flat_brain = flat_brain
-
 
                 uneven_brain.improve(body, 1, rng, terrain=terrains.crater([20.0, 20.0], 0.25, 0.1), fitness=individual.uneven_fitness) 
                 individual.uneven_weights = uneven_brain.get_weights()
@@ -271,7 +275,7 @@ class JSONGeneEA:
                 individual.crater_weights = crater_brain.get_weights()             
                 individual.crater_fitness = crater_brain.fitness 
                 individual.crater_brain = crater_brain
-                x += 1
+                i += 1
 
             individual.exists = True
 
@@ -306,7 +310,7 @@ class JSONGeneEA:
 
                     print(
 
-                        time.strftime("%H:%M:%S", time.gmtime(time.time())),
+                        time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)),
 
                         f"Evaluated individual with fitness: {individual.fitness:.3f}",
 
@@ -322,27 +326,31 @@ class JSONGeneEA:
         especially in log_generation and save_to_csv methods.
         """
 
+        population_flat = sorted(self.population, key=lambda x: x.flat_fitness)
+        population_uneven = sorted(self.population, key=lambda x: x.uneven_fitness)
+        population_crater = sorted(self.population, key=lambda x: x.crater_fitness)
+
         self.plotter.log_generation(
             generation=self.generation,
             best=self.population[0].fitness,
-            best_flat  = self.population[0].flat_fitness,
-            best_uneven=  self.population[0].uneven_fitness,
-            best_crater = self.population[0].crater_fitness,
+            best_flat  = population_flat[0].flat_fitness,
+            best_uneven=  population_uneven[0].uneven_fitness,
+            best_crater = population_crater[0].crater_fitness,
 
             worst=self.population[-1].fitness,
-            worst_flat  = self.population[-1].flat_fitness,
-            worst_uneven=  self.population[-1].uneven_fitness,
-            worst_crater = self.population[-1].crater_fitness,
+            worst_flat  = population_flat[-1].flat_fitness,
+            worst_uneven=  population_uneven[-1].uneven_fitness,
+            worst_crater = population_crater[-1].crater_fitness,
 
             mean=sum(individual.fitness for individual in self.population)/ len(self.population),
-            mean_flat  =sum(individual.flat_fitness for individual in self.population)/ len(self.population),
-            mean_uneven=sum(individual.uneven_fitness for individual in self.population)/ len(self.population),
-            mean_crater=sum(individual.crater_fitness for individual in self.population)/ len(self.population),
+            mean_flat  =sum(individual.flat_fitness for individual in population_flat)/ len(population_flat),
+            mean_uneven=sum(individual.uneven_fitness for individual in population_uneven)/ len(population_uneven),
+            mean_crater=sum(individual.crater_fitness for individual in population_crater)/ len(population_crater),
 
             median=self.population[len(self.population) // 2].fitness,
-            median_flat  =self.population[len(self.population) // 2].flat_fitness,
-            median_uneven=self.population[len(self.population) // 2].uneven_fitness,
-            median_crater=self.population[len(self.population) // 2].crater_fitness,
+            median_flat  =population_flat[len(population_flat) // 2].flat_fitness,
+            median_uneven=population_uneven[len(population_uneven) // 2].uneven_fitness,
+            median_crater=population_crater[len(population_crater) // 2].crater_fitness,
 
 
             std=np.std([individual.fitness for individual in self.population]),
@@ -521,7 +529,7 @@ class JSONGeneEA:
         """Create offspring using selection, crossover, and mutation."""
 
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())),"Creating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)),"Creating offspring")
 
         offspring = []
 
@@ -553,7 +561,7 @@ class JSONGeneEA:
             offspring.append(Individual(gene=child_gene))
             
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Created offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Created offspring")
 
         return offspring
 
@@ -563,7 +571,7 @@ class JSONGeneEA:
         combined = self.population + offspring
 
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Evaluating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Evaluating offspring")
         # Evaluate offspring
         for individual in offspring:
             if not (individual.exists):
@@ -576,14 +584,14 @@ class JSONGeneEA:
                     self.evaluations += 1
 
             if config.VERBOSE_PRINTS:
-                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), f"Evaluated individual with fitness {individual.fitness:.3f} and {individual.num_bricks} bricks")
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), f"Evaluated individual with fitness {individual.fitness:.3f} and {individual.num_bricks} bricks")
                 
             
             self.evaluations += 1
 
         if config.VERBOSE_PRINTS:
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Finished evaluating offspring")
-            print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "population size:", len(self.population), "offspring size:", len(offspring), "combined size:", len(combined))
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Finished evaluating offspring")
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "population size:", len(self.population), "offspring size:", len(offspring), "combined size:", len(combined))
 
         # Sort by fitness (descending) and keep the best
         combined.sort(key=lambda x: x.fitness, reverse=True)
@@ -611,67 +619,61 @@ class JSONGeneEA:
             f"Best individual saved to {filename} (fitness: {best.fitness:.3f})"
         )
 
+    def save_gen_to_csv(self) -> None:
+        if config.VERBOSE_PRINTS:
+            print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Appending last generation to progress.csv")
+        try:
+            self.plotter.append_last_n_to_csv(
+                self.log_folder + "progress.csv", n=1
+            )
+        except Exception:
+            self.logger.exception("Failed to append generation to progress.csv")
+
+
     def run(self) -> Individual:
-        print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Running EA")
+    print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Running EA")
         best_fitness = -float("inf")
         self.start_time = time.time()
         self.initialize_population()
-        self.evaluate_population()  # Evaluate init
-        self.log_generation_stats()  # Log init
         
         while self.evaluations < self.function_evaluations:
             self.generation += 1
             if config.VERBOSE_PRINTS:
-                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Starting generation", self.generation)
+                print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Starting generation", self.generation)
 
             offspring = self.create_offspring()
-            self.survival_selection(
-                offspring
-            )  # only evaluates offspring and selects survivors from both parents and offspring
-            self.log_generation_stats()  # Log the new generation and update plotter
+            self.survival_selection(offspring)  # only evaluates offspring and selects survivors from both parents and offspring
 
             # Save new individual if improved
             if best_fitness < self.population[0].fitness:
                 best_fitness = self.population[0].fitness
                 self.save_best_individual()
 
-            # Append last 5 logged generations to a progress CSV
-
-            if config.VERBOSE_PRINTS:
-                print(time.strftime("%H:%M:%S", time.gmtime(time.time())), "Appending generation to progress CSV")
-            try:
-                self.plotter.append_last_n_to_csv(
-                    self.log_folder + "progress.csv", n=1
-                )
-            except Exception:
-                self.logger.exception("Failed to append generation progress to CSV")
+            self.log_generation_stats()  # Log the new generation to plotter
+            self.save_gen_to_csv()
 
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
             if config.DEBUGGING:
                 print(f"->> Evaluation:{self.evaluations}")
-        print(
-            f"EA completed after {self.generation} generations and {self.evaluations} evaluations"
-        )
-        self.save_best_individual(
-            self.log_folder + "final_best_individual.json"
-        )  # Save final best individual
 
-        return self.population[0]
+        
+        print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
+        self.save_best_individual(self.log_folder + "final_best_individual.json")  # Save final best individual
+        return self.population[0] #best individual
 
 
 def main():
     """Main function to run the evolutionary algorithm."""
 
-    
     ea = JSONGeneEA()
     ea.write_run_info()
     best_individual = ea.run()
 
     print(f"\nBest individual found:")
     print(f"Fitness: {best_individual.fitness:.3f}")
-    print(f"Modules: {ea.count_modules(best_individual.gene)}")
+    print(f"Bricks: {best_individual.num_bricks}")
 
     # Print gene structure
     print("\nGene structure:")

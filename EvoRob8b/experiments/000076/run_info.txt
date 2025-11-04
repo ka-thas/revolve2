@@ -1,0 +1,39 @@
+# Run ID: 000076 Also used as seed
+# Start Time: 2025-10-31 00:49
+# ----- config.py -----
+#Configurations for each experiments.
+LOG_FOLDER = "./experiments/"
+
+SEED = 14 # If 0, run ID will be used as seed.
+
+#EA
+PARENT_TOURNAMENT_SIZE = 3
+POPULATION_SIZE = 30
+OFFSPRING_SIZE = 10
+FUNCTION_EVALUATIONS = 5000
+LOCAL_COMPETITION_NEIGHBOURHOOD_SIZE = 2 # From Ege, not in use
+MUTATION_RATE = 0.7
+CROSSOVER_RATE = 0.7
+CROSSOVER_CHANCE_TO_DIVE = 0.15
+PARENT_SELECT_STRATEGY = 'tournament'
+FITNESS_FUNCTION = "xy_displacement"  # Options: 'x_displacement', 'xy_displacement', 'y_displacement'
+PARALLEL = False
+
+# Gene generator / Initial population
+CHANCE_TO_PLACE_BRICK_FRONT = 0.8
+CHANCE_TO_PLACE_BRICK_SIDES = 0.4
+CHANCE_TO_ROTATE = 0.3
+MAX_BRICKS = 13
+
+
+# Brain
+BRAIN_MUTATION_RATE = 0.8
+INNER_LOOP_ITERATIONS = 10 # Times number of brains
+EXPLORATION_RATE = 1
+MUTATION_EPSILON = 0.8
+
+# Debugging flags
+VERBOSE_PRINTS = True
+DEBUGGING = False
+DEBUG_BRAIN = False
+DEBUG_EA = False
