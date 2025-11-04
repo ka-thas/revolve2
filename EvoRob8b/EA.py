@@ -202,8 +202,6 @@ class JSONGeneEA:
             rng = self.rng
             # Create brain
             flat_brain = BrainGenotype()
-            uneven_brain = BrainGenotype()
-            crater_brain = BrainGenotype()
 
             flat_brain.develop_brain(body, rng=rng)
             flat_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat()) 
@@ -211,14 +209,17 @@ class JSONGeneEA:
             individual.flat_weights = flat_brain.get_weights() 
             individual.flat_brain = flat_brain
             
+
+            uneven_brain = copy.deepcopy(flat_brain)
             uneven_brain.develop_brain(body, rng=rng)
-            uneven_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.25, 0.1)) 
+            uneven_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.13, 0.1)) 
             individual.uneven_fitness = uneven_brain.fitness
             individual.uneven_weights = uneven_brain.get_weights() 
             individual.uneven_brain = uneven_brain
 
+            crater_brain = copy.deepcopy(uneven_brain)
             crater_brain.develop_brain(body, rng=rng)
-            crater_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.1, 10)) 
+            crater_brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.03, 10)) 
             individual.crater_fitness = crater_brain.fitness
             individual.crater_weights = crater_brain.get_weights() 
             individual.crater_brain = crater_brain
@@ -266,12 +267,12 @@ class JSONGeneEA:
                 individual.flat_fitness = flat_brain.fitness
                 individual.flat_brain = flat_brain
 
-                uneven_brain.improve(body, 1, rng, terrain=terrains.crater([20.0, 20.0], 0.25, 0.1), fitness=individual.uneven_fitness) 
+                uneven_brain.improve(body, 1, rng, terrain=terrains.crater([20.0, 20.0], 0.13, 0.1), fitness=individual.uneven_fitness) 
                 individual.uneven_weights = uneven_brain.get_weights()
                 individual.uneven_fitness = uneven_brain.fitness 
                 individual.uneven_brain = uneven_brain
 
-                crater_brain.improve(body, 1, rng, terrain=terrains.crater([20.0, 20.0], 0.1, 10), fitness=individual.crater_fitness) 
+                crater_brain.improve(body, 1, rng, terrain=terrains.crater([20.0, 20.0], 0.03, 10), fitness=individual.crater_fitness) 
                 individual.crater_weights = crater_brain.get_weights()             
                 individual.crater_fitness = crater_brain.fitness 
                 individual.crater_brain = crater_brain
@@ -631,7 +632,7 @@ class JSONGeneEA:
 
 
     def run(self) -> Individual:
-    print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Running EA")
+        print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Running EA")
         best_fitness = -float("inf")
         self.start_time = time.time()
         self.initialize_population()
@@ -655,11 +656,10 @@ class JSONGeneEA:
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
-            if config.DEBUGGING:
-                print(f"->> Evaluation:{self.evaluations}")
+        if config.DEBUGGING:
+            print(f"->> Evaluation:{self.evaluations}")
+            print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
 
-        
-        print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
         self.save_best_individual(self.log_folder + "final_best_individual.json")  # Save final best individual
         return self.population[0] #best individual
 
