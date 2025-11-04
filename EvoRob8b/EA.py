@@ -327,9 +327,9 @@ class JSONGeneEA:
         especially in log_generation and save_to_csv methods.
         """
 
-        population_flat = sorted(self.population, key=lambda x: x.flat_fitness)
-        population_uneven = sorted(self.population, key=lambda x: x.uneven_fitness)
-        population_crater = sorted(self.population, key=lambda x: x.crater_fitness)
+        population_flat = sorted(self.population, key=lambda x: x.flat_fitness, reverse=True)
+        population_uneven = sorted(self.population, key=lambda x: x.uneven_fitness, reverse=True)
+        population_crater = sorted(self.population, key=lambda x: x.crater_fitness, reverse=True)
 
         self.plotter.log_generation(
             generation=self.generation,
