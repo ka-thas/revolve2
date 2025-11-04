@@ -320,7 +320,7 @@ if __name__ == "__main__":
     plotter.plot_best_worst_flat()
     plotter.plot_best_worst_uneven()
     plotter.plot_best_worst_crater()
+    plotter.plot_num_modules()
     #plotter.boxplot_fitness()
     #plotter.plot_std()
-    #plotter.plot_num_modules()
     #plotter.plot_time_per_generation()

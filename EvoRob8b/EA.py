@@ -228,9 +228,9 @@ class JSONGeneEA:
             module_count = self.count_modules(individual.gene)
             individual.num_bricks = module_count
             if module_count > self.max_modules:
-                individual.flat_fitness  *= 1+((self.max_modules-module_count)*0.02)
-                individual.crater_fitness *= 1+((self.max_modules-module_count)*0.02)
-                individual.uneven_fitness *= 1+((self.max_modules-module_count)*0.02)
+                individual.flat_fitness  *= 1+((self.max_modules-module_count)*0.15)
+                individual.crater_fitness *= 1+((self.max_modules-module_count)*0.15)
+                individual.uneven_fitness *= 1+((self.max_modules-module_count)*0.15)
 
             individual.update_fitness()
 
