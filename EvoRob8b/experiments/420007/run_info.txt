@@ -1,3 +1,6 @@
+# Run ID: 420007 Also used as seed
+# Start Time: 2025-11-04 16:25
+# ----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
@@ -20,12 +23,12 @@ PARALLEL = False # else serial
 CHANCE_TO_PLACE_BRICK_FRONT = 0.8
 CHANCE_TO_PLACE_BRICK_SIDES = 0.4
 CHANCE_TO_ROTATE = 0.3
-MAX_BRICKS = 8
+MAX_BRICKS = 13
 
 
 # Brain
 BRAIN_MUTATION_RATE = 0.8
-INNER_LOOP_ITERATIONS = 25 # Times number of brains
+INNER_LOOP_ITERATIONS = 1 # Times number of brains
 EXPLORATION_RATE = 1
 MUTATION_EPSILON = 0.8
 

@@ -204,7 +204,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression.png")
-        plt.show()
+        if show_plots: plt.show()
 
 
     def plot_best_worst_flat(self):
@@ -220,7 +220,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_flat.png")
-        plt.show()
+        if show_plots: plt.show()
 
 
 
@@ -237,7 +237,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_uneven.png")
-        plt.show()
+        if show_plots: plt.show()
 
 
 
@@ -254,7 +254,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_crater.png")
-        plt.show()
+        if show_plots: plt.show()
 
 
 
@@ -270,7 +270,7 @@ class Plotter:
         plt.title('Fitness Distribution')
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_boxplot.png")
-        plt.show()
+        if show_plots: plt.show()
     
     def plot_std(self):
 
@@ -283,7 +283,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/std_progression.png")
-        plt.show()
+        if show_plots: plt.show()
 
     def plot_num_modules(self):
 
@@ -296,7 +296,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/num_modules_progression.png")
-        plt.show()
+        if show_plots: plt.show()
 
     def plot_time_per_generation(self):
 
@@ -309,11 +309,12 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/time_per_generation.png")
-        plt.show()
+        if show_plots: plt.show()
 
 if __name__ == "__main__":
     """ Cannot run over ssh bc of plotting """
     run_id = input("> run ID: ")
+    show_plots = input("> Show plots? [y/n]: ") == "y"
     plotter = Plotter(runID=run_id)
     plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}/progress.csv")
     plotter.plot_best_worst()

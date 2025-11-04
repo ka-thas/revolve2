@@ -186,6 +186,41 @@ class BrainGenotype():
         """
 
         return self.brain.make_instance()
+    
+    def run(self, body, terrain):
+          
+        robot = ModularRobot(body, self.brain)
+
+         # Create a scene.
+            
+        scene = ModularRobotScene(terrain=terrain)
+        scene.add_robot(robot)
+
+        # Create a simulator.
+        simulator = LocalSimulator(headless=True)
+        # Simulate the scene and obtain states sampled during the simulation.
+        scene_states = simulate_scenes(
+            simulator=simulator,
+            batch_parameters=make_standard_batch_parameters(),
+            scenes=scene,
+        )
+        
+        # Get the state at the beginning and end of the simulation.
+        scene_state_begin = scene_states[0]
+        scene_state_end = scene_states[-1]
+
+        # Retrieve the states of the modular robot.
+        robot_state_begin = scene_state_begin.get_modular_robot_simulation_state(robot)
+        robot_state_end = scene_state_end.get_modular_robot_simulation_state(robot)
+
+        # Calculate the xy displacement of the robot.
+        xy_displacement = fitness_functions.xy_displacement(
+            robot_state_begin, robot_state_end
+        )
+
+        return xy_displacement
+
+
 
 
     def improve(self, body, iterations, rng, terrain, fitness=0):
