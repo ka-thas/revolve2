@@ -112,9 +112,10 @@ class JSONGeneEA:
             except FileExistsError:
                 i += 1
                 continue
-
+        
         # Initialize random number generator
-        self.rng = make_rng(config.SEED) if config.SEED else make_rng(i)  # Use run index as seed if none provided
+        self.seed = config.SEED if config.SEED else i # Use run index as seed if none provided
+        self.rng = make_rng(self.seed)
         self.generator = Gene_Generator(self.rng)
 
 
@@ -605,6 +606,7 @@ class JSONGeneEA:
 
         best = self.population[0]
         best.gene["runID"] = self.runID
+        best.gene["seed"] = self.seed
         best.gene["fitness"] = best.fitness
         best.gene["generation"] = self.generation
         best.gene["brain_weights_flat"] = best.flat_weights.tolist()
