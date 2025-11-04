@@ -117,17 +117,18 @@ def build_body_recursive(body, node):
                 build_body_recursive(body.back.attachment, node["back"]["hinge"]["brick"])
     return body
 
-def save_individual(individual, runID, filepath):
+def save_individual(individual, seed, filepath):
     """Saves the individual to a file."""
 
-    individual.gene["runID"] = runID
-    individual.gene["fitness"] = individual.fitness
-    individual.gene["brain_weights"] = individual.weights.tolist()
+    to_save = {
+        "seed": seed,
+        "fitness": individual.fitness,
+        "gene": individual.gene,
+        "brain_weights": individual.weights.tolist()
+    }
 
     with open(filepath, "w") as f:
-        json.dump(individual.gene, f, indent=2)
-
-
+        json.dump(to_save, f, indent=2)
 
 def print_json_gene(node, depth=0):
     """Recursively parses the gene structure and prints it."""
@@ -226,9 +227,9 @@ if __name__ == "__main__":
 
     # get seed
     if "seed" in gene.keys():
-        print(f"Found seed in gene: {gene["seed"]}")
+        print(f"Found seed in gene: {gene['seed']}")
     elif "runID" in gene.keys():
-        print(f"Found runID in gene: {gene["runID"]}")
+        print(f"Found runID in gene: {gene['runID']}")
     seed = int(input("> Enter seed [int]: "))
 
     # init robot
