@@ -192,21 +192,12 @@ if __name__ == "__main__":
     brain_uneven = BrainGenotype()
     brain_crater = BrainGenotype()
 
-    weights_flat = gene.get("brain_weights_flat", [])
-    weights_flat = np.array(weights_flat)
-    brain_flat.develop_brain(body=body, rng=rng, weights=weights_flat)
+    weights = gene.get("brain_weights", [])
+    weights = np.array(weights)
+    brain_flat.develop_brain(body=body, rng=rng, weights=weights)
 
-    weights_uneven = gene.get("brain_weights_uneven", [])
-    weights_uneven = np.array(weights_uneven)
-    brain_uneven.develop_brain(body=body, rng=rng, weights=weights_uneven)
+    robot = ModularRobot(body, brain_flat)
 
-    weights_crater = gene.get("brain_weights_crater", [])
-    weights_crater = np.array(weights_crater)
-    brain_crater.develop_brain(body=body, rng=rng, weights=weights_crater)
-
-    robot_flat = ModularRobot(body, brain_flat)
-    robot_uneven = ModularRobot(body, brain_uneven)
-    robot_crater = ModularRobot(body, brain_crater)
 
     headless_s =     input("> Headless? [y/ n]: ")
     if (headless_s == "y"):
@@ -219,12 +210,12 @@ if __name__ == "__main__":
     input("> ready [press enter]: ")
 
 
-    xy_displacement_flat = run(robot_flat, terrains.flat())
-    xy_displacement_uneven = run(robot_flat, terrain=terrains.crater([20.0, 20.0], 0.1, 0.1))
-    xy_displacement_crater = run(robot_crater,  terrain=terrains.crater([20.0, 20.0], 0.03, 10))
+    xy_displacement_flat = run(robot, terrains.flat())
+    xy_displacement_uneven = run(robot, terrain=terrains.crater([20.0, 20.0], 0.13, 0.1))
+    xy_displacement_crater = run(robot,  terrain=terrains.crater([20.0, 20.0], 0.03, 10))
 
     print(f"\n->> xy displacement flat: {xy_displacement_flat}")
     print(f"\n->> xy displacement uneven: {xy_displacement_uneven}")
     print(f"\n->> xy displacement crater: {xy_displacement_crater}")
-
+    print(f"\n->> xy displacement total: {xy_displacement_crater+xy_displacement_flat+xy_displacement_uneven}")
 
