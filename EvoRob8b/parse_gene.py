@@ -185,9 +185,14 @@ if __name__ == "__main__":
         print("\n-----| Gene Structure |-----")
         print_json_gene(gene)
 
+    if "runID" in gene.keys():
+        seed = int(gene["runID"])
+        print(f"Using seed from gene: {seed}")
+    else:
+        seed = int(input("> Enter seed [int]: "))
 
+    rng = make_rng(seed)
     body = build_body(gene) # Renders body into revolve2
-    rng = make_rng(config.SEED)
     brain_flat = BrainGenotype()
     brain_uneven = BrainGenotype()
     brain_crater = BrainGenotype()
