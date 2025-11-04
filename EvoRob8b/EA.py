@@ -631,7 +631,7 @@ class JSONGeneEA:
 
 
     def run(self) -> Individual:
-    print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Running EA")
+        print(time.strftime("%H:%M:%S", time.gmtime(time.time() + 3600)), "Running EA")
         best_fitness = -float("inf")
         self.start_time = time.time()
         self.initialize_population()
@@ -655,11 +655,10 @@ class JSONGeneEA:
             # Check termination condition
             if self.evaluations >= self.function_evaluations:
                 break
-            if config.DEBUGGING:
-                print(f"->> Evaluation:{self.evaluations}")
-
-        
-        print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
+        if config.DEBUGGING:
+            print(f"->> Evaluation:{self.evaluations}")
+            print(f"EA completed after {self.generation} generations and {self.evaluations} evaluations")
+            
         self.save_best_individual(self.log_folder + "final_best_individual.json")  # Save final best individual
         return self.population[0] #best individual
 
