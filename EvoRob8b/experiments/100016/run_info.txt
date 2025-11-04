@@ -1,3 +1,6 @@
+# Run ID: 000016 Also used as seed
+# Start Time: 2025-10-31 01:18
+# ----- config.py -----
 #Configurations for each experiments.
 LOG_FOLDER = "./experiments/"
 
@@ -14,7 +17,7 @@ CROSSOVER_RATE = 0.7
 CROSSOVER_CHANCE_TO_DIVE = 0.15
 PARENT_SELECT_STRATEGY = 'tournament'
 FITNESS_FUNCTION = "xy_displacement"  # Options: 'x_displacement', 'xy_displacement', 'y_displacement'
-PARALLEL = False
+PARALLEL = True
 
 # Gene generator / Initial population
 CHANCE_TO_PLACE_BRICK_FRONT = 0.8
