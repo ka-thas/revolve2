@@ -14,17 +14,17 @@ This is just an overview of our performed experiments that will be averaged over
 
 ## Other
 
-## Small run serial
+# Small run serial
 - 670008
 - 670009
 - 670010
 
-## Small run parallel
+# Small run parallel
 - 670011
 - 670012
 - 670013
 
-## Big run serial
+# Big run serial
 - 670014
 - 670015
 - 670016
@@ -36,7 +36,7 @@ This is just an overview of our performed experiments that will be averaged over
 - 670022
 - 670023
 
-## Big run parallel
+# Big run parallel
 - 670024
 - 670025
 - 670026

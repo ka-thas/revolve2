@@ -10,9 +10,10 @@ import csv
 import config
 import sys
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import sem
 
-
-def plot_average_fitness(runIDs):
+def plot_average_fitness(runIDs, plotname):
 
     # Read header from the first file to get indices
     filename = f"{config.LOG_FOLDER}{runIDs[0]}/progress.csv"
@@ -50,15 +51,41 @@ def plot_average_fitness(runIDs):
     avg_fitness_mean = [sum(gen)/len(gen) for gen in zip(*all_data_mean)]
     avg_fitness_worst = [sum(gen)/len(gen) for gen in zip(*all_data_worst)]
 
+    # Calculate standard error for each fitness
+    std_error_best = [sem(gen) for gen in zip(*all_data_best)]
+    std_error_mean = [sem(gen) for gen in zip(*all_data_mean)]
+    std_error_worst = [sem(gen) for gen in zip(*all_data_worst)]
+
     # Plotting
-    plt.plot(avg_fitness_best)
-    plt.plot(avg_fitness_mean)
-    plt.plot(avg_fitness_worst)
+    x = np.arange(len(avg_fitness_best ))
+    y = np.arange(len(avg_fitness_mean ))
+    z = np.arange(len(avg_fitness_worst))
+
+    plt.plot(x, avg_fitness_best, 'g', label="Best Fitness")
+    plt.plot(x, avg_fitness_mean, 'b', label="Mean Fitness")
+    plt.plot(x, avg_fitness_worst, 'r', label="Worst Fitness")
+    plt.fill_between(x, 
+                     np.array(avg_fitness_best) - np.array(std_error_best), 
+                     np.array(avg_fitness_best) + np.array(std_error_best), 
+                     color='g', alpha=0.2)
+
+    plt.fill_between(x, 
+                     np.array(avg_fitness_mean) - np.array(std_error_mean), 
+                     np.array(avg_fitness_mean) + np.array(std_error_mean), 
+                     color='b', alpha=0.2)
+
+    plt.fill_between(x, 
+                     np.array(avg_fitness_worst) - np.array(std_error_worst), 
+                     np.array(avg_fitness_worst) + np.array(std_error_worst), 
+                     color='r', alpha=0.2)
+    plt.plot(y, avg_fitness_mean, 'b', label="Mean fitness")
+    plt.plot(z, avg_fitness_worst, 'r', label=" Worst fitness")
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
     plt.legend(["Best Fitness", "Mean Fitness", "Worst Fitness"])
+
     plt.title("Average Fitness over Generations")
-    plt.savefig(config.LOG_FOLDER + "plots/avg_progression.png")
+    plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".png")
     plt.close()
 
 
@@ -68,10 +95,12 @@ if __name__ == "__main__":
     for line in sys.stdin:
         runIDs.append(line.strip())
 
+    plotname = runIDs[0]
+
     # Read header from the first file
-    first_filename = f"{config.LOG_FOLDER}{runIDs[0]}/progress.csv"
+    first_filename = f"{config.LOG_FOLDER}{runIDs[1]}/progress.csv"
     with open(first_filename, "r") as f:
         reader = csv.reader(f)
         header_lookup = next(reader)  # skip header
     
-    plot_average_fitness(runIDs)
+    plot_average_fitness(runIDs[1:], plotname)
