@@ -62,18 +62,18 @@ def plot_average_fitness(runIDs, plotname):
     z = np.arange(len(avg_fitness_worst))
 
     plt.plot(x, avg_fitness_best, 'g', label="Best Fitness")
+    plt.plot(x, avg_fitness_mean, 'b', label="Mean Fitness")
+    plt.plot(x, avg_fitness_worst, 'r', label="Worst Fitness")
     plt.fill_between(x, 
                      np.array(avg_fitness_best) - np.array(std_error_best), 
                      np.array(avg_fitness_best) + np.array(std_error_best), 
                      color='g', alpha=0.2)
 
-    plt.plot(x, avg_fitness_mean, 'b', label="Mean Fitness")
     plt.fill_between(x, 
                      np.array(avg_fitness_mean) - np.array(std_error_mean), 
                      np.array(avg_fitness_mean) + np.array(std_error_mean), 
                      color='b', alpha=0.2)
 
-    plt.plot(x, avg_fitness_worst, 'r', label="Worst Fitness")
     plt.fill_between(x, 
                      np.array(avg_fitness_worst) - np.array(std_error_worst), 
                      np.array(avg_fitness_worst) + np.array(std_error_worst), 
@@ -82,6 +82,8 @@ def plot_average_fitness(runIDs, plotname):
     plt.plot(z, avg_fitness_worst, 'r', label=" Worst fitness")
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
+    plt.legend(["Best Fitness", "Mean Fitness", "Worst Fitness"])
+
     plt.title("Average Fitness over Generations")
     plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".png")
     plt.close()

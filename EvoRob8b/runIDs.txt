@@ -1,4 +1,4 @@
-Small run parallel
-670011
-670012
-670013
+Small run serial
+670008
+670009
+670010
