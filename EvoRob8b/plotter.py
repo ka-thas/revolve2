@@ -191,7 +191,7 @@ class Plotter:
                 self.std.append(float(row[17]))
                 self.num_modules_in_best_individual.append(int(row[18]))
 
-    def plot_best_worst(self):
+    def plot_best_mean_worst(self):
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations, self.best_fitness, label='Best Fitness')
@@ -207,7 +207,7 @@ class Plotter:
         if show_plots: plt.show()
 
 
-    def plot_best_worst_flat(self):
+    def plot_best_mean_worst_flat(self):
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations  ,  self.best_fitness_flat  , label='Best Fitness')
@@ -224,7 +224,7 @@ class Plotter:
 
 
 
-    def plot_best_worst_uneven(self):
+    def plot_best_mean_worst_uneven(self):
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations,  self.best_fitness_uneven  , label='Best Fitness')
@@ -241,7 +241,7 @@ class Plotter:
 
 
 
-    def plot_best_worst_crater(self):
+    def plot_best_mean_worst_crater(self):
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations  ,self.best_fitness_crater  , label='Best Fitness')
@@ -317,10 +317,10 @@ if __name__ == "__main__":
     show_plots = input("> Show plots? [y/n]: ") == "y"
     plotter = Plotter(runID=run_id)
     plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}/progress.csv")
-    plotter.plot_best_worst()
-    plotter.plot_best_worst_flat()
-    plotter.plot_best_worst_uneven()
-    plotter.plot_best_worst_crater()
+    plotter.plot_best_mean_worst()
+    plotter.plot_best_mean_worst_flat()
+    plotter.plot_best_mean_worst_uneven()
+    plotter.plot_best_mean_worst_crater()
     plotter.plot_num_modules()
     #plotter.boxplot_fitness()
     #plotter.plot_std()
