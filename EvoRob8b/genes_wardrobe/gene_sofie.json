@@ -1,17 +1,54 @@
 {
+    "made by": "Sofie",
     "core": {
         "front": {
             "hinge": {
                 "brick": {
                     "front": {},
-                    "right": {},
-                    "left": {}
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            },
+                             "rotation": 0.0
+                        }
+                    },
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            },
+                             "rotation": 0.0
+                        }
+                    }
                 },
                 "rotation": 0.0
             }
         },
-        "right": {},
+        "right": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "left": {},
+                    "right": {}
+                },
+                "rotation": 0.0
+            }
+        },
         "back": {},
-        "left": {}
+        "left": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "left": {},
+                    "right": {}
+                },
+                "rotation": 0.0
+            }
+        }
     }
 }
