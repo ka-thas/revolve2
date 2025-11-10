@@ -117,6 +117,19 @@ def build_body_recursive(body, node):
                 build_body_recursive(body.back.attachment, node["back"]["hinge"]["brick"])
     return body
 
+def save_individual(individual, seed, filepath):
+    """Saves the individual to a file."""
+
+    to_save = {
+        "seed": seed,
+        "fitness": individual.fitness,
+        "gene": individual.gene,
+        "brain_weights": individual.weights.tolist()
+    }
+
+    with open(filepath, "w") as f:
+        json.dump(to_save, f, indent=2)
+
 def print_json_gene(node, depth=0):
     """Recursively parses the gene structure and prints it."""
     indent = "  " * depth
@@ -228,11 +241,14 @@ if __name__ == "__main__":
     individual.brain = brain
     individual.num_bricks = count_bricks(gene)
 
+    train_brain = input("> Train brain? [y/ n]: ") == "y"
     weights = gene.get("brain_weights", [])
     weights = np.array(weights)
     brain.develop_brain(body=body, rng=rng, weights=weights)
+    if train_brain: brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat(), fitness=individual.fitness)
     individual.weights = brain.get_weights()
     individual.fitness = brain.fitness
+    if train_brain: save_individual(individual, seed, jsonfile)
 
     robot = ModularRobot(body=body, brain=brain)
 
