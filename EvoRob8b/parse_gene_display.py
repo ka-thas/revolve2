@@ -36,9 +36,6 @@ class Individual:
         self.num_bricks: int = 0
 
         self.fitness = -float("inf")
-        self.fitness_flat = -float("inf")
-        self.fitness_uneven = -float("inf")
-        self.fitness_crater = -float("inf")
 
 def count_bricks(gene_dict: Dict[str, Any]) -> int:
         def count_recursive(node):
@@ -126,7 +123,7 @@ def save_individual(individual, seed, filepath):
     to_save = {
         "seed": seed,
         "fitness": individual.fitness,
-        "core": individual.gene["core"],
+        "gene": individual.gene,
         "brain_weights": individual.weights.tolist()
     }
 
@@ -187,7 +184,7 @@ def json_file_select():
 
 def run(robot, terrain):
 
-    # Create a scene.
+    # Create a scene. 
     scene = ModularRobotScene(terrain=terrain)
     scene.add_robot(robot)
 
@@ -244,23 +241,16 @@ if __name__ == "__main__":
     individual.brain = brain
     individual.num_bricks = count_bricks(gene)
 
-    fitnesses = []
-    for i in range(10):
-        weights = np.array([])
-        brain.develop_brain(body=body, rng=rng, weights=weights)
-        brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat(), fitness=individual.fitness)
-        individual.weights = brain.get_weights()
-        individual.fitness = brain.fitness
-        fitnesses.append(individual.fitness)
-
-    save_individual(individual, seed, jsonfile)
+    weights = np.array([])
+    brain.develop_brain(body=body, rng=rng, weights=weights)
+    individual.weights = brain.get_weights()
+    individual.fitness = brain.fitness
 
     robot = ModularRobot(body=body, brain=brain)
 
-    headless = True
+    headless = False
     input("> ready [press enter]: ")
 
-    xy_displacement = run(robot, terrains.flat())
+    xy_displacement_flat = run(robot, terrains.flat())
 
-    print(f"\n->> xy displacement flat: {xy_displacement}")
-
+    print(f"\n->> xy displacement flat: {xy_displacement_flat}")
