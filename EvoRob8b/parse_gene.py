@@ -255,7 +255,14 @@ if __name__ == "__main__":
     headless = input("> Headless? [y/ n]: ") == "y"
     input("> ready [press enter]: ")
 
-    xy_displacement = run(robot, terrains.flat())
+    xy_displacement_flat = run(robot, terrains.flat())
+    xy_displacement_uneven = run(robot,terrains.crater([20.0, 20.0], 0.13, 0.1))
+    xy_displacement_crater = run(robot, terrains.crater([20.0, 20.0], 0.03, 10))
 
-    print(f"\n->> xy displacement flat: {xy_displacement}")
+
+    print(f"\n->> xy displacement flat: {xy_displacement_flat}")
+    print(f"\n->> xy displacement uneven: {xy_displacement_uneven}")
+    print(f"\n->> xy displacement crater: {xy_displacement_crater}")
+    print(f"\n->> xy displacement total: {xy_displacement_crater + xy_displacement_flat + xy_displacement_uneven}")
+
 
