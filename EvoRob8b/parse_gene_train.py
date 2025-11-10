@@ -36,6 +36,9 @@ class Individual:
         self.num_bricks: int = 0
 
         self.fitness = -float("inf")
+        self.fitness_flat = -float("inf")
+        self.fitness_uneven = -float("inf")
+        self.fitness_crater = -float("inf")
 
 def count_bricks(gene_dict: Dict[str, Any]) -> int:
         def count_recursive(node):
