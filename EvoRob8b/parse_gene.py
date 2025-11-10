@@ -17,6 +17,8 @@ import json
 import config
 from brain_cpg import BrainGenotype
 
+from revolve2.simulation.simulator import RecordSettings
+
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
 from revolve2.modular_robot.body.v1 import ActiveHingeV1, BodyV1, BrickV1
@@ -182,7 +184,7 @@ def json_file_select():
     print(f"\nSelected file: {jsonfile}")
     return jsonfile
 
-def run(robot, terrain):
+def run(robot, terrain, movname):
 
     # Create a scene.
     scene = ModularRobotScene(terrain=terrain)
@@ -191,12 +193,17 @@ def run(robot, terrain):
     # Create a simulator.
     simulator = LocalSimulator(headless=headless)
 
+    recset = RecordSettings(movname)
+    # recset.video_directory = "/.."
+
     # Simulate the scene and obtain states sampled during the simulation.
     scene_states = simulate_scenes(
         simulator=simulator,
         batch_parameters=make_standard_batch_parameters(),
         scenes=scene,
+        record_settings=recset
     )
+
 
     # Get the state at the beginning and end of the simulation.
     scene_state_begin = scene_states[0]
@@ -255,9 +262,9 @@ if __name__ == "__main__":
     headless = input("> Headless? [y/ n]: ") == "y"
     input("> ready [press enter]: ")
 
-    xy_displacement_flat = run(robot, terrains.flat())
-    xy_displacement_uneven = run(robot,terrains.crater([20.0, 20.0], 0.13, 0.1))
-    xy_displacement_crater = run(robot, terrains.crater([20.0, 20.0], 0.03, 10))
+    xy_displacement_flat = run(robot, terrains.flat(), "flat")
+    xy_displacement_uneven = run(robot,terrains.crater([20.0, 20.0], 0.13, 0.1), "uneven")
+    xy_displacement_crater = run(robot, terrains.crater([20.0, 20.0], 0.03, 10), "crater")
 
 
     print(f"\n->> xy displacement flat: {xy_displacement_flat}")
