@@ -203,7 +203,7 @@ class Plotter:
         plt.title('EA progression')
         plt.legend()
         plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression.png")
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression.svg")
         if show_plots: plt.show()
 
 
@@ -219,7 +219,7 @@ class Plotter:
         plt.title('EA progression, flat environment')
         plt.legend()
         plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_flat.png")
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_flat.svg")
         if show_plots: plt.show()
 
 
@@ -236,7 +236,7 @@ class Plotter:
         plt.title('EA progression, uneven environment')
         plt.legend()
         plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_uneven.png")
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_uneven.svg")
         if show_plots: plt.show()
 
 
@@ -253,7 +253,7 @@ class Plotter:
         plt.title('EA progression, crater environment')
         plt.legend()
         plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_crater.png")
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_crater.svg")
         if show_plots: plt.show()
 
 
@@ -269,7 +269,7 @@ class Plotter:
         plt.ylabel('Fitness')
         plt.title('Fitness Distribution')
         plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_boxplot.png")
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_boxplot.svg")
         if show_plots: plt.show()
     
     def plot_std(self):
@@ -282,7 +282,7 @@ class Plotter:
         plt.title('EA progression')
         plt.legend()
         plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/std_progression.png")
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/std_progression.svg")
         if show_plots: plt.show()
 
     def plot_num_modules(self):
@@ -295,7 +295,7 @@ class Plotter:
         plt.title('EA progression')
         plt.legend()
         plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/num_modules_progression.png")
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/num_modules_progression.svg")
         if show_plots: plt.show()
 
     def plot_time_per_generation(self):
@@ -308,7 +308,7 @@ class Plotter:
         plt.title('Time per Generation')
         plt.legend()
         plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/time_per_generation.png")
+        plt.savefig(config.LOG_FOLDER + f"{self.runID}/time_per_generation.svg")
         if show_plots: plt.show()
 
 if __name__ == "__main__":
