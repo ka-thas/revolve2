@@ -7,12 +7,22 @@
                     "front": {},
                     "right": {
                         "hinge": {
-                            "brick": {}
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            },
+                             "rotation": 0.0
                         }
                     },
                     "left": {
                         "hinge": {
-                            "brick": {}
+                            "brick": {
+                                "front": {},
+                                "left": {},
+                                "right": {}
+                            },
+                             "rotation": 0.0
                         }
                     }
                 },
@@ -21,14 +31,22 @@
         },
         "right": {
             "hinge": {
-                "brick": {},
+                "brick": {
+                    "front": {},
+                    "left": {},
+                    "right": {}
+                },
                 "rotation": 0.0
             }
         },
         "back": {},
         "left": {
             "hinge": {
-                "brick": {},
+                "brick": {
+                    "front": {},
+                    "left": {},
+                    "right": {}
+                },
                 "rotation": 0.0
             }
         }
