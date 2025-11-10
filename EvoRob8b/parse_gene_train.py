@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     # get gene
     folder = "genes_wardrobe"
-    filename = "ka.json"
+    filename = "vebjorn.json"
     
     jsonfile = os.path.join(folder, filename)
     print(f"\nSelected file: {jsonfile}")
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     individual.fitness_crater = fitness_crater
 
     # Log this run's fitnesses
-    print("fitness_flat, fitness_uneven, fitness_crater, fitness_total")
-    print([fitness_flat, fitness_uneven, fitness_crater, fitness_total])
+    print("fitness_total, fitness_flat, fitness_uneven, fitness_crater")
+    print(fitness_total, fitness_flat, fitness_uneven, fitness_crater, sep=", ")
     
     # save_individual(individual, seed, jsonfile)

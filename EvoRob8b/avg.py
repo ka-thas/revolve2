@@ -1,6 +1,6 @@
 import numpy as np
 
-FILENAME = "./experiments/human_made.csv"
+FILENAME = "./experiments/human_made/ka.csv"
 
 with open(FILENAME, "r") as f:
     lines = f.readlines()
