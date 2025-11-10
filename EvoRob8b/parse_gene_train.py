@@ -123,7 +123,7 @@ def save_individual(individual, seed, filepath):
     to_save = {
         "seed": seed,
         "fitness": individual.fitness,
-        "gene": individual.gene,
+        "core": individual.gene["core"],
         "brain_weights": individual.weights.tolist()
     }
 
