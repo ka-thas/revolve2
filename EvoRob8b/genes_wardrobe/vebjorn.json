@@ -6,9 +6,9 @@
                     "front": {},
                     "right": {},
                     "left": {},
-                    "rotation": 90.0
+                    "rotation": 1.57079633
                 },
-                "rotation": 90.0
+                "rotation": 1.57079633
             }
         },
         "right": {
@@ -25,21 +25,21 @@
                                             "left": {},
                                             "rotation": 0.0
                                         },
-                                        "rotation": 90.0
+                                        "rotation": 1.57079633
                                     }
                                 },
                                 "right": {},
                                 "left": {},
                                 "rotation": 0.0
                             },
-                            "rotation": -90.0
+                            "rotation": -1.57079633
                         }
                     },
                     "right": {},
                     "left": {},
                     "rotation": 0.0
                 },
-                "rotation": 90.0
+                "rotation": 1.57079633
             }
         },
         "back": {
@@ -48,9 +48,9 @@
                     "front": {},
                     "right": {},
                     "left": {},
-                    "rotation": 90.0
+                    "rotation": 1.57079633
                 },
-                "rotation": 90.0
+                "rotation": 1.57079633
             }
         },
         "left": {
@@ -67,21 +67,21 @@
                                             "left": {},
                                             "rotation": 0.0
                                         },
-                                        "rotation": 90.0
+                                        "rotation": 1.57079633
                                     }
                                 },
                                 "right": {},
                                 "left": {},
                                 "rotation": 0.0
                             },
-                            "rotation": -90.0
+                            "rotation": -1.57079633
                         }
                     },
                     "right": {},
                     "left": {},
                     "rotation": 0.0
                 },
-                "rotation": 90.0
+                "rotation": 1.57079633
             }
         }
     }

@@ -1,7 +1,7 @@
 """ 
 Takes averaged fitness data over multiple runs and plots it
 
-usage: python plotter_avg.py < runIDs.txt
+usage: python plotter2.py < runIDs.txt
 
 runIDs.txt contains a list of runIDs to average over, one per line
 """
@@ -51,10 +51,14 @@ def plot_average_fitness(runIDs, plotname):
             data_best = []
             data_mean = []
             data_worst = []
+            gen = 0
             for row in reader:
                 data_best.append(float(row[best_fitness_idx]))
                 data_mean.append(float(row[mean_fitness_idx]))
                 data_worst.append(float(row[worst_fitness_idx]))
+                gen += 1
+                if gen >= 26:
+                    break
 
             all_data_best.append(data_best)
             all_data_mean.append(data_mean)
@@ -98,8 +102,7 @@ def plot_average_fitness(runIDs, plotname):
     plt.ylabel("Average Fitness")
     plt.legend(["Best Fitness", "Mean Fitness", "Worst Fitness"])
 
-    plt.title("Average Fitness over Generations")
-    plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".png")
+    plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".svg")
     plt.close()
 
 
