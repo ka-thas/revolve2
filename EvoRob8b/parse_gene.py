@@ -7,7 +7,7 @@ json needs to be saved in ./genes_warderobe/gene_[i].json
 import os
 import logging
 import pickle
-from typing import Any
+from typing import Any, Dict
 
 
 # import multineat
@@ -16,8 +16,6 @@ import numpy.typing as npt
 import json
 import config
 from brain_cpg import BrainGenotype
-
-
 
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
@@ -28,6 +26,39 @@ from revolve2.experimentation.rng import make_rng
 from revolve2.simulators.mujoco_simulator import LocalSimulator
 from revolve2.standards.simulation_parameters import make_standard_batch_parameters
 
+class Individual:
+    """Represents an individual in the population."""
+    def __init__(self, gene):
+        self.gene = gene  # Build the robot body from the gene
+        self.body = None
+        self.brain = None
+        self.weights = None
+        self.num_bricks: int = 0
+
+        self.fitness = -float("inf")
+
+def count_bricks(gene_dict: Dict[str, Any]) -> int:
+        def count_recursive(node):
+            if not isinstance(node, dict) or not node:
+                return 0
+
+            count = 0
+            for key, value in node.items():
+                if key in ["front", "left", "right", "back"] and "hinge" in str(value):
+                    # count += 1  # Count the hinge
+                    if (
+                        isinstance(value, dict)
+                        and "hinge" in value
+                        and "brick" in value["hinge"]
+                    ):
+                        count += 1  # Count the brick
+                        count += count_recursive(value["hinge"]["brick"])
+                elif isinstance(value, dict):
+                    count += count_recursive(value)
+
+            return count
+
+        return count_recursive(gene_dict.get("core", {}))
 
 def build_body(gene):
     body = BodyV1()
@@ -39,8 +70,6 @@ def build_body(gene):
 def build_body_recursive(body, node):
     if not isinstance(node, dict) or not node:  # leaf node
         return
-
-    # TODO Detect collisions
     
     for key, value in node.items():
         if key == "front":
@@ -88,8 +117,18 @@ def build_body_recursive(body, node):
                 build_body_recursive(body.back.attachment, node["back"]["hinge"]["brick"])
     return body
 
+def save_individual(individual, seed, filepath):
+    """Saves the individual to a file."""
 
+    to_save = {
+        "seed": seed,
+        "fitness": individual.fitness,
+        "gene": individual.gene,
+        "brain_weights": individual.weights.tolist()
+    }
 
+    with open(filepath, "w") as f:
+        json.dump(to_save, f, indent=2)
 
 def print_json_gene(node, depth=0):
     """Recursively parses the gene structure and prints it."""
@@ -176,6 +215,7 @@ def run(robot, terrain):
 
 if __name__ == "__main__":
 
+    # get gene
     jsonfile = json_file_select()
 
     with open(jsonfile, "r") as f:
@@ -185,46 +225,37 @@ if __name__ == "__main__":
         print("\n-----| Gene Structure |-----")
         print_json_gene(gene)
 
+    # get seed
+    if "seed" in gene.keys():
+        print(f"Found seed in gene: {gene['seed']}")
+    elif "runID" in gene.keys():
+        print(f"Found runID in gene: {gene['runID']}")
+    seed = int(input("> Enter seed [int]: "))
 
+    # init robot
+    rng = make_rng(seed)
     body = build_body(gene) # Renders body into revolve2
-    rng = make_rng(config.SEED)
-    brain_flat = BrainGenotype()
-    brain_uneven = BrainGenotype()
-    brain_crater = BrainGenotype()
+    brain = BrainGenotype()
+    individual = Individual(gene)
+    individual.body = body
+    individual.brain = brain
+    individual.num_bricks = count_bricks(gene)
 
-    weights_flat = gene.get("brain_weights_flat", [])
-    weights_flat = np.array(weights_flat)
-    brain_flat.develop_brain(body=body, rng=rng, weights=weights_flat)
+    train_brain = input("> Train brain? [y/ n]: ") == "y"
+    weights = gene.get("brain_weights", [])
+    weights = np.array(weights)
+    brain.develop_brain(body=body, rng=rng, weights=weights)
+    if train_brain: brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat(), fitness=individual.fitness)
+    individual.weights = brain.get_weights()
+    individual.fitness = brain.fitness
+    if train_brain: save_individual(individual, seed, jsonfile)
 
-    weights_uneven = gene.get("brain_weights_uneven", [])
-    weights_uneven = np.array(weights_uneven)
-    brain_uneven.develop_brain(body=body, rng=rng, weights=weights_uneven)
+    robot = ModularRobot(body=body, brain=brain)
 
-    weights_crater = gene.get("brain_weights_crater", [])
-    weights_crater = np.array(weights_crater)
-    brain_crater.develop_brain(body=body, rng=rng, weights=weights_crater)
-
-    robot_flat = ModularRobot(body, brain_flat)
-    robot_uneven = ModularRobot(body, brain_uneven)
-    robot_crater = ModularRobot(body, brain_crater)
-
-    headless_s =     input("> Headless? [y/ n]: ")
-    if (headless_s == "y"):
-        headless = True
-    else:        
-        headless = False
-
-
-
+    headless = input("> Headless? [y/ n]: ") == "y"
     input("> ready [press enter]: ")
 
+    xy_displacement = run(robot, terrains.flat())
 
-    xy_displacement_flat = run(robot_flat, terrains.flat())
-    xy_displacement_uneven = run(robot_flat, terrain=terrains.crater([20.0, 20.0], 0.1, 0.1))
-    xy_displacement_crater = run(robot_crater,  terrain=terrains.crater([20.0, 20.0], 0.03, 10))
-
-    print(f"\n->> xy displacement flat: {xy_displacement_flat}")
-    print(f"\n->> xy displacement uneven: {xy_displacement_uneven}")
-    print(f"\n->> xy displacement crater: {xy_displacement_crater}")
-
+    print(f"\n->> xy displacement flat: {xy_displacement}")
 

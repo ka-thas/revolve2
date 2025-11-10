@@ -14,18 +14,18 @@ CROSSOVER_RATE = 0.7
 CROSSOVER_CHANCE_TO_DIVE = 0.15
 PARENT_SELECT_STRATEGY = 'tournament'
 FITNESS_FUNCTION = "xy_displacement"  # Options: 'x_displacement', 'xy_displacement', 'y_displacement'
-PARALLEL = False # else serial
+PARALLEL = True  # else serial
 
 # Gene generator / Initial population
 CHANCE_TO_PLACE_BRICK_FRONT = 0.8
 CHANCE_TO_PLACE_BRICK_SIDES = 0.4
 CHANCE_TO_ROTATE = 0.3
-MAX_BRICKS = 13
+MAX_BRICKS = 8
 
 
 # Brain
 BRAIN_MUTATION_RATE = 0.8
-INNER_LOOP_ITERATIONS = 25 # Times number of brains
+INNER_LOOP_ITERATIONS = 40 # Times number of brains
 EXPLORATION_RATE = 1
 MUTATION_EPSILON = 0.8
 

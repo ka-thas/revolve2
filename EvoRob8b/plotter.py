@@ -191,7 +191,7 @@ class Plotter:
                 self.std.append(float(row[17]))
                 self.num_modules_in_best_individual.append(int(row[18]))
 
-    def plot_best_worst(self):
+    def plot_best_mean_worst(self):
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations, self.best_fitness, label='Best Fitness')
@@ -204,10 +204,10 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression.png")
-        plt.show()
+        if show_plots: plt.show()
 
 
-    def plot_best_worst_flat(self):
+    def plot_best_mean_worst_flat(self):
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations  ,  self.best_fitness_flat  , label='Best Fitness')
@@ -220,11 +220,11 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_flat.png")
-        plt.show()
+        if show_plots: plt.show()
 
 
 
-    def plot_best_worst_uneven(self):
+    def plot_best_mean_worst_uneven(self):
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations,  self.best_fitness_uneven  , label='Best Fitness')
@@ -237,11 +237,11 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_uneven.png")
-        plt.show()
+        if show_plots: plt.show()
 
 
 
-    def plot_best_worst_crater(self):
+    def plot_best_mean_worst_crater(self):
 
         plt.figure(figsize=(10, 6))
         plt.plot(self.generations  ,self.best_fitness_crater  , label='Best Fitness')
@@ -254,7 +254,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_progression_crater.png")
-        plt.show()
+        if show_plots: plt.show()
 
 
 
@@ -270,7 +270,7 @@ class Plotter:
         plt.title('Fitness Distribution')
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_boxplot.png")
-        plt.show()
+        if show_plots: plt.show()
     
     def plot_std(self):
 
@@ -283,7 +283,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/std_progression.png")
-        plt.show()
+        if show_plots: plt.show()
 
     def plot_num_modules(self):
 
@@ -296,7 +296,7 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/num_modules_progression.png")
-        plt.show()
+        if show_plots: plt.show()
 
     def plot_time_per_generation(self):
 
@@ -309,18 +309,19 @@ class Plotter:
         plt.legend()
         plt.grid()
         plt.savefig(config.LOG_FOLDER + f"{self.runID}/time_per_generation.png")
-        plt.show()
+        if show_plots: plt.show()
 
 if __name__ == "__main__":
     """ Cannot run over ssh bc of plotting """
     run_id = input("> run ID: ")
+    show_plots = input("> Show plots? [y/n]: ") == "y"
     plotter = Plotter(runID=run_id)
     plotter.load_from_csv(config.LOG_FOLDER + f"{run_id}/progress.csv")
-    plotter.plot_best_worst()
-    plotter.plot_best_worst_flat()
-    plotter.plot_best_worst_uneven()
-    plotter.plot_best_worst_crater()
+    plotter.plot_best_mean_worst()
+    plotter.plot_best_mean_worst_flat()
+    plotter.plot_best_mean_worst_uneven()
+    plotter.plot_best_mean_worst_crater()
+    plotter.plot_num_modules()
     #plotter.boxplot_fitness()
     #plotter.plot_std()
-    #plotter.plot_num_modules()
     #plotter.plot_time_per_generation()
