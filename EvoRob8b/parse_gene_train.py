@@ -17,8 +17,6 @@ import json
 import config
 from brain_cpg import BrainGenotype
 
-from revolve2.simulation.simulator import RecordSettings
-
 from revolve2.modular_robot import ModularRobot
 from revolve2.modular_robot_simulation import ModularRobotScene, simulate_scenes
 from revolve2.modular_robot.body.v1 import ActiveHingeV1, BodyV1, BrickV1
@@ -119,6 +117,19 @@ def build_body_recursive(body, node):
                 build_body_recursive(body.back.attachment, node["back"]["hinge"]["brick"])
     return body
 
+def save_individual(individual, seed, filepath):
+    """Saves the individual to a file."""
+
+    to_save = {
+        "seed": seed,
+        "fitness": individual.fitness,
+        "core": individual.gene["core"],
+        "brain_weights": individual.weights.tolist()
+    }
+
+    with open(filepath, "w") as f:
+        json.dump(to_save, f, indent=2)
+
 def print_json_gene(node, depth=0):
     """Recursively parses the gene structure and prints it."""
     indent = "  " * depth
@@ -171,7 +182,7 @@ def json_file_select():
     print(f"\nSelected file: {jsonfile}")
     return jsonfile
 
-def run(robot, terrain, movname):
+def run(robot, terrain):
 
     # Create a scene.
     scene = ModularRobotScene(terrain=terrain)
@@ -180,17 +191,12 @@ def run(robot, terrain, movname):
     # Create a simulator.
     simulator = LocalSimulator(headless=headless)
 
-    recset = RecordSettings(movname)
-    # recset.video_directory = "/.."
-
     # Simulate the scene and obtain states sampled during the simulation.
     scene_states = simulate_scenes(
         simulator=simulator,
         batch_parameters=make_standard_batch_parameters(),
         scenes=scene,
-        record_settings=recset
     )
-
 
     # Get the state at the beginning and end of the simulation.
     scene_state_begin = scene_states[0]
@@ -235,27 +241,21 @@ if __name__ == "__main__":
     individual.brain = brain
     individual.num_bricks = count_bricks(gene)
 
+    train_brain = input("> Train brain? [y/ n]: ") == "y"
     weights = gene.get("brain_weights", [])
     weights = np.array(weights)
     brain.develop_brain(body=body, rng=rng, weights=weights)
+    if train_brain: brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat(), fitness=individual.fitness)
     individual.weights = brain.get_weights()
     individual.fitness = brain.fitness
+    if train_brain: save_individual(individual, seed, jsonfile)
 
     robot = ModularRobot(body=body, brain=brain)
 
     headless = input("> Headless? [y/ n]: ") == "y"
     input("> ready [press enter]: ")
 
-    xy_displacement_flat = run(robot, terrains.flat(), "flat")
-    xy_displacement_uneven = run(robot,terrains.crater([20.0, 20.0], 0.13, 0.1), "uneven")
-    xy_displacement_crater = run(robot, terrains.crater([20.0, 20.0], 0.03, 10), "crater")
+    xy_displacement = run(robot, terrains.flat())
 
-
-    print(f"\n->> xy displacement flat: {xy_displacement_flat}")
-    print(f"\n->> xy displacement uneven: {xy_displacement_uneven}")
-    print(f"\n->> xy displacement crater: {xy_displacement_crater}")
-    print(f"\n->> xy displacement total: {xy_displacement_crater + xy_displacement_flat + xy_displacement_uneven}")
-
-
-
+    print(f"\n->> xy displacement flat: {xy_displacement}")
 
