@@ -236,27 +236,21 @@ if __name__ == "__main__":
     rng = make_rng(seed)
     body = build_body(gene) # Renders body into revolve2
     brain = BrainGenotype()
+    individual = Individual(gene)
+    individual.body = body
+    individual.brain = brain
+    individual.num_bricks = count_bricks(gene)
 
-    weights = gene.get("brain_weights", [])
-    weights = np.array(weights)
+    weights = np.array([])
     brain.develop_brain(body=body, rng=rng, weights=weights)
+    individual.weights = brain.get_weights()
+    individual.fitness = brain.fitness
 
     robot = ModularRobot(body=body, brain=brain)
 
-    headless = input("> Headless? [y/ n]: ") == "y"
+    headless = False
     input("> ready [press enter]: ")
 
     xy_displacement_flat = run(robot, terrains.flat())
-    
-    xy_displacement_uneven = run(robot,terrains.crater([20.0, 20.0], 0.13, 0.1))
-    xy_displacement_crater = run(robot, terrains.crater([20.0, 20.0], 0.03, 10))
-
 
     print(f"\n->> xy displacement flat: {xy_displacement_flat}")
-    print(f"\n->> xy displacement uneven: {xy_displacement_uneven}")
-    print(f"\n->> xy displacement crater: {xy_displacement_crater}")
-    print(f"\n->> xy displacement total: {xy_displacement_crater + xy_displacement_flat + xy_displacement_uneven}")
-
-
-
-
