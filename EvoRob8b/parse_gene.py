@@ -236,19 +236,10 @@ if __name__ == "__main__":
     rng = make_rng(seed)
     body = build_body(gene) # Renders body into revolve2
     brain = BrainGenotype()
-    individual = Individual(gene)
-    individual.body = body
-    individual.brain = brain
-    individual.num_bricks = count_bricks(gene)
 
-    train_brain = input("> Train brain? [y/ n]: ") == "y"
     weights = gene.get("brain_weights", [])
     weights = np.array(weights)
     brain.develop_brain(body=body, rng=rng, weights=weights)
-    if train_brain: brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat(), fitness=individual.fitness)
-    individual.weights = brain.get_weights()
-    individual.fitness = brain.fitness
-    if train_brain: save_individual(individual, seed, jsonfile)
 
     robot = ModularRobot(body=body, brain=brain)
 
