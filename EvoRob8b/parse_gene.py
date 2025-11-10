@@ -256,6 +256,7 @@ if __name__ == "__main__":
     input("> ready [press enter]: ")
 
     xy_displacement_flat = run(robot, terrains.flat())
+    
     xy_displacement_uneven = run(robot,terrains.crater([20.0, 20.0], 0.13, 0.1))
     xy_displacement_crater = run(robot, terrains.crater([20.0, 20.0], 0.03, 10))
 
