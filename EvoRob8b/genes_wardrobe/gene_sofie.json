@@ -1,17 +1,36 @@
 {
+    "made by": "Sofie",
     "core": {
         "front": {
             "hinge": {
                 "brick": {
                     "front": {},
-                    "right": {},
-                    "left": {}
+                    "right": {
+                        "hinge": {
+                            "brick": {}
+                        }
+                    },
+                    "left": {
+                        "hinge": {
+                            "brick": {}
+                        }
+                    }
                 },
                 "rotation": 0.0
             }
         },
-        "right": {},
+        "right": {
+            "hinge": {
+                "brick": {},
+                "rotation": 0.0
+            }
+        },
         "back": {},
-        "left": {}
+        "left": {
+            "hinge": {
+                "brick": {},
+                "rotation": 0.0
+            }
+        }
     }
 }
