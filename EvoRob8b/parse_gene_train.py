@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     # get gene
     folder = "genes_wardrobe"
-    filename = "vebjorn.json"
+    filename = "sofie.json"
     
     jsonfile = os.path.join(folder, filename)
     print(f"\nSelected file: {jsonfile}")
