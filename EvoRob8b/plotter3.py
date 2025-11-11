@@ -4,6 +4,8 @@ Takes averaged fitness data over multiple runs and plots it
 usage: python plotter2.py < runIDs.txt
 
 runIDs.txt contains a list of runIDs to average over, one per line
+Half of them need to be sequential runs, the other half parallel runs
+The first line is the name of the plot to be saved as
 """
 
 import csv
