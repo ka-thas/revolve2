@@ -57,8 +57,8 @@ def plot_average_fitness(runIDs, plotname):
                 data_mean.append(float(row[mean_fitness_idx]))
                 data_worst.append(float(row[worst_fitness_idx]))
                 gen += 1
-                if gen >= 26:
-                    break
+                # if gen >= 32:
+                #     break
 
             all_data_best.append(data_best)
             all_data_mean.append(data_mean)
