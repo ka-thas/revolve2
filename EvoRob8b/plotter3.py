@@ -91,6 +91,7 @@ def plot_average_fitness(runIDs, plotname):
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
     plt.legend()
+    plt.axis([0, 32, 0, None])
 
     plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".svg")
     plt.close()

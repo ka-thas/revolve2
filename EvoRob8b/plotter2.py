@@ -57,8 +57,6 @@ def plot_average_fitness(runIDs, plotname):
                 data_mean.append(float(row[mean_fitness_idx]))
                 data_worst.append(float(row[worst_fitness_idx]))
                 gen += 1
-                # if gen >= 32:
-                #     break
 
             all_data_best.append(data_best)
             all_data_mean.append(data_mean)
@@ -98,6 +96,8 @@ def plot_average_fitness(runIDs, plotname):
                      color='r', alpha=0.2)
     plt.plot(y, avg_fitness_mean, 'b', label="Mean fitness")
     plt.plot(z, avg_fitness_worst, 'r', label=" Worst fitness")
+    plt.ylim(0, 10)
+    plt.xlim(0, 32)
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
     plt.legend(["Best Fitness", "Mean Fitness", "Worst Fitness"])
