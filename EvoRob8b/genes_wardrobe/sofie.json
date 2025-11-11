@@ -1,0 +1,102 @@
+{
+    "seed": 1,
+    "fitness": 1.4765354745730235,
+    "core": {
+                    "front":{
+                        "hinge": {
+                "brick": {
+                    "front": {},
+                    "right": {
+                        "hinge": {
+                            "rotation": 1.57,
+
+                            "brick": {
+                                "rotation": 0.0,
+
+                                "front": {},
+                                "left": {},
+                                "right": {
+                                    "hinge": {
+                                        "rotation": 0.0,
+                                        "brick": {
+                                            "rotation": 0.0,
+                                            "front": {},
+                                            "right": {},
+                                            "left": {}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "left": {
+                        "hinge": {
+                            "rotation": -1.57,
+
+                            "brick": {
+                                "rotation": 0.0,
+
+                                "front": {},
+                                "left": {
+                                    "hinge": {
+                                        "rotation": 0.0,
+                                        "brick": {
+                                            "rotation": 0.0,
+                                            "front": {},
+                                            "right": {},
+                                            "left": {}
+                                        }
+                                    }
+                                },
+                                "right": {}
+                            }
+                        }
+                    }
+                },
+                "rotation": 0.0
+            }
+        },
+        "right": {
+            "hinge": {
+                "brick": {
+                    "front": {},
+                    "left": {},
+                    "right": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "left": {},
+                                "rotation": 0.0
+                            },
+                            "rotation": 0.0
+                        }
+                    }
+                },
+                "rotation": 1.57
+            }
+        },
+        "back": {},
+        "left": {
+            "hinge": {
+                "rotation": -1.57,
+                "brick": {
+                    "front": {},
+                    "left": {
+                        "hinge": {
+                            "brick": {
+                                "front": {},
+                                "right": {},
+                                "left": {},
+                                "rotation": 0.0
+                            },
+                            "rotation": 0.0
+                        }
+                    },
+                    "right": {},
+                    "rotation": 0.0
+                }
+            }
+        }
+    }
+}

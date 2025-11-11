@@ -7,7 +7,6 @@ json needs to be saved in ./genes_warderobe/gene_[i].json
 import os
 import logging
 import pickle
-import random
 from typing import Any, Dict
 
 
@@ -37,9 +36,6 @@ class Individual:
         self.num_bricks: int = 0
 
         self.fitness = -float("inf")
-        self.fitness_flat = -float("inf")
-        self.fitness_uneven = -float("inf")
-        self.fitness_crater = -float("inf")
 
 def count_bricks(gene_dict: Dict[str, Any]) -> int:
         def count_recursive(node):
@@ -123,18 +119,11 @@ def build_body_recursive(body, node):
 
 def save_individual(individual, seed, filepath):
     """Saves the individual to a file."""
-    fitness_flat = individual.fitness_flat
-    fitness_uneven = individual.fitness_uneven
-    fitness_crater = individual.fitness_crater
-    fitness_total = individual.fitness
 
     to_save = {
         "seed": seed,
-        "fitness_flat": fitness_flat,
-        "fitness_uneven": fitness_uneven,
-        "fitness_crater": fitness_crater,
-        "fitness_total": fitness_total,
-        "core": individual.gene["core"],
+        "fitness": individual.fitness,
+        "gene": individual.gene,
         "brain_weights": individual.weights.tolist()
     }
 
@@ -154,9 +143,48 @@ def print_json_gene(node, depth=0):
             print(f"{indent}- {key}")
         print_json_gene(value, depth + 1)
 
+
+
+def json_file_select():
+    folders = ["experiments", "genes_wardrobe"]
+
+    print("\n-----| Available folders |-----")
+    for i, f in enumerate(folders):
+        print(f"{i}: {f}")
+
+    # Select folder
+    foldernr = input("> Select folder [number, default=0]: ").strip()
+    folder = folders[int(foldernr)] if foldernr.isdigit() and int(foldernr) < len(folders) else "experiments"
+
+    if folder == "experiments":
+        folder = os.path.join(folder, input("> Enter experiment id [xxxxxx]: ").strip())
+
+    # List JSON files in the folder
+    files = [f for f in os.listdir(folder) if f.endswith(".json")]
+    if not files:
+        print(f"\n(no JSON files found in '{folder}')")
+        return None
+
+    print(f"\n-----| JSON files in '{folder}' |-----")
+    for i, f in enumerate(files):
+        print(f"{i}: {f}")
+
+    # Select file by name or index
+    selection = input("> Select file [number or name, default=0]: ").strip()
+    if selection.isdigit() and int(selection) < len(files):
+        filename = files[int(selection)]
+    elif selection and selection in files:
+        filename = selection
+    else:
+        filename = files[0]
+
+    jsonfile = os.path.join(folder, filename)
+    print(f"\nSelected file: {jsonfile}")
+    return jsonfile
+
 def run(robot, terrain):
 
-    # Create a scene.
+    # Create a scene. 
     scene = ModularRobotScene(terrain=terrain)
     scene.add_robot(robot)
 
@@ -188,11 +216,7 @@ def run(robot, terrain):
 if __name__ == "__main__":
 
     # get gene
-    folder = "genes_wardrobe"
-    filename = "sofie.json"
-    
-    jsonfile = os.path.join(folder, filename)
-    print(f"\nSelected file: {jsonfile}")
+    jsonfile = json_file_select()
 
     with open(jsonfile, "r") as f:
         gene = json.load(f)
@@ -202,7 +226,11 @@ if __name__ == "__main__":
         print_json_gene(gene)
 
     # get seed
-    seed = random.randint(0, 100000)
+    if "seed" in gene.keys():
+        print(f"Found seed in gene: {gene['seed']}")
+    elif "runID" in gene.keys():
+        print(f"Found runID in gene: {gene['runID']}")
+    seed = int(input("> Enter seed [int]: "))
 
     # init robot
     rng = make_rng(seed)
@@ -215,35 +243,14 @@ if __name__ == "__main__":
 
     weights = np.array([])
     brain.develop_brain(body=body, rng=rng, weights=weights)
+    individual.weights = brain.get_weights()
+    individual.fitness = brain.fitness
 
-    # Sequential training on terrains
-    print("Sequential training on terrains")
-    
-    # Flat
-    brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.flat(), fitness=individual.fitness_flat)
-    fitness_flat = brain.fitness
-    print(f"Flat fitness: {fitness_flat}")
+    robot = ModularRobot(body=body, brain=brain)
 
-    # Uneven
-    brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.13, 0.1), fitness=individual.fitness_uneven)
-    fitness_uneven = brain.fitness
-    print(f"Uneven fitness: {fitness_uneven}")
-    
-    # Crater
-    brain.improve(body, config.INNER_LOOP_ITERATIONS, rng, terrain=terrains.crater([20.0, 20.0], 0.03, 10), fitness=individual.fitness_crater)
-    fitness_crater = brain.fitness
-    print(f"Crater fitness: {fitness_crater}")
+    headless = False
+    input("> ready [press enter]: ")
 
+    xy_displacement_flat = run(robot, terrains.flat())
 
-    # Update variables
-    fitness_total = fitness_flat + fitness_uneven + fitness_crater
-    individual.fitness = fitness_total
-    individual.fitness_flat = fitness_flat
-    individual.fitness_uneven = fitness_uneven
-    individual.fitness_crater = fitness_crater
-
-    # Log this run's fitnesses
-    print("fitness_total, fitness_flat, fitness_uneven, fitness_crater")
-    print(fitness_total, fitness_flat, fitness_uneven, fitness_crater, sep=", ")
-    
-    # save_individual(individual, seed, jsonfile)
+    print(f"\n->> xy displacement flat: {xy_displacement_flat}")
