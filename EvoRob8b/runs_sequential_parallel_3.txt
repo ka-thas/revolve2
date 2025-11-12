@@ -1,4 +1,4 @@
-sequential_and_parallel_runs
+seq_par_terrains
 670014
 670015
 670016

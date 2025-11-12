@@ -15,20 +15,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import sem
 
-
-def boxplot_fitness(runID, best_fitness):
-
-        data = [best_fitness]
-
-        plt.figure(figsize=(10, 6))
-        plt.boxplot(data, labels=['Best Fitness', 'Worst Fitness', 'Mean Fitness'])
-
-        plt.ylabel('Fitness')
-        plt.title('Fitness Distribution')
-        plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{runID}/fitness_boxplot.png")
-        plt.show()
-
 def plot_average_fitness(runIDs, plotname):
 
     # Read header from the first file to get indices
@@ -75,7 +61,7 @@ def plot_average_fitness(runIDs, plotname):
                 all_data_worst.append(data_worst)
 
         avg_fitness_best = [sum(gen)/len(gen) for gen in zip(*all_data_best)] # Transpose and average
-
+        print(labels[i], avg_fitness_best)
         std_error_best = [sem(gen) for gen in zip(*all_data_best)] # Calculate standard error for each fitness
 
         # Plotting
