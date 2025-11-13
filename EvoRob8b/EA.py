@@ -114,8 +114,6 @@ class JSONGeneEA:
             filename=self.log_folder + "progress.csv", runID=self.runID
         )
 
-        self.plotter_brain = PlotterBrain(filename=self.log_folder + "progress.csv", runID=self.runID)
-
         # Setup logging
         logging.basicConfig(level=logging.WARNING)
         self.logger = logging.getLogger(__name__)
