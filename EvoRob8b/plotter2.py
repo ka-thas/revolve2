@@ -13,20 +13,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import sem
 
-
-def boxplot_fitness(runID):
-
-        data = [self.best_fitness]
-
-        plt.figure(figsize=(10, 6))
-        plt.boxplot(data, labels=['Best Fitness', 'Worst Fitness', 'Mean Fitness'])
-
-        plt.ylabel('Fitness')
-        plt.title('Fitness Distribution')
-        plt.grid()
-        plt.savefig(config.LOG_FOLDER + f"{self.runID}/fitness_boxplot.png")
-        plt.show()
-
 def plot_average_fitness(runIDs, plotname):
 
     # Read header from the first file to get indices
@@ -96,8 +82,8 @@ def plot_average_fitness(runIDs, plotname):
                      color='r', alpha=0.2)
     plt.plot(y, avg_fitness_mean, 'b', label="Mean fitness")
     plt.plot(z, avg_fitness_worst, 'r', label=" Worst fitness")
-    plt.ylim(0, 10)
-    plt.xlim(0, 32)
+    # plt.ylim(0, 10)
+    # plt.xlim(0, 41)
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
 

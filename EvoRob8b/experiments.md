@@ -2,7 +2,7 @@
 
 This is just an overview of our performed experiments that will be averaged over and added to the paper.
 
-## Serial
+## Sequential
 
 - 420000
 - 420001
@@ -14,7 +14,7 @@ This is just an overview of our performed experiments that will be averaged over
 
 ## Other
 
-# Small run serial
+# Small run sequential
 - 670008
 - 670009
 - 670010
@@ -24,7 +24,7 @@ This is just an overview of our performed experiments that will be averaged over
 - 670012
 - 670013
 
-# Big run serial
+# Big run Sequential
 - 670014
 - 670015
 - 670016
