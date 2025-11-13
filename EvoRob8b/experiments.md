@@ -34,7 +34,7 @@ This is just an overview of our performed experiments that will be averaged over
 - 670020
 - 670021
 - 670022
-- 670023
+- 670023 # Jumping robots, 
 
 # Big run parallel
 - 670024
@@ -42,7 +42,7 @@ This is just an overview of our performed experiments that will be averaged over
 - 670026
 - 670027
 - 670028
-- 670029
+- 670029 # Almost standing robot
 - 670030
 - 670031
 - 670032
