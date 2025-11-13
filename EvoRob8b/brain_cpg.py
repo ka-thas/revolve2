@@ -288,6 +288,8 @@ class BrainGenotype():
                 best_fitness = fitness
                 iterations_since_update = 0
 
+            print(fitness)
+
             iterations -= 1
             
         self.brain = best_brain
