@@ -53,7 +53,7 @@ def plot_average_fitness(runIDs, plotname):
                     data_mean.append(float(row[mean_fitness_idx]))
                     data_worst.append(float(row[worst_fitness_idx]))
                     gen += 1
-                    if gen >= 32:
+                    if gen >= 41:
                         break
 
                 all_data_best.append(data_best)
@@ -77,7 +77,7 @@ def plot_average_fitness(runIDs, plotname):
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
     plt.legend()
-    plt.axis([0, 32, 0, None])
+    plt.axis([0, 41, 0, None])
 
     plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".svg")
     plt.close()

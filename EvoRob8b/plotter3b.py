@@ -56,7 +56,7 @@ def plot_average_fitness(runIDs):
                     data_best_crater.append(float(row[best_fitness_crater_idx]))
                     gen += 1
                     if gen >= generations:
-                        break  # Limit to 32 generations
+                        break  # Limit to 41 generations
 
                 all_data_best_flat.append(data_best_flat)
                 all_data_best_uneven.append(data_best_uneven)
@@ -76,7 +76,7 @@ def plot_average_fitness(runIDs):
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
     plt.legend()
-    plt.axis([0, 32, 0, 6])
+    plt.axis([0, 41, 0, 6])
 
     plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".svg")
     plt.close()
@@ -89,6 +89,6 @@ if __name__ == "__main__":
         runIDs.append(line.strip())
 
     plotname = runIDs[0]
-    generations = 32
+    generations = 41
     
     plot_average_fitness(runIDs[1:])

@@ -82,8 +82,8 @@ def plot_average_fitness(runIDs, plotname):
                      color='r', alpha=0.2)
     plt.plot(y, avg_fitness_mean, 'b', label="Mean fitness")
     plt.plot(z, avg_fitness_worst, 'r', label=" Worst fitness")
-    plt.ylim(0, 10)
-    plt.xlim(0, 32)
+    # plt.ylim(0, 10)
+    # plt.xlim(0, 41)
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
 
