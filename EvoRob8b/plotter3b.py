@@ -1,5 +1,7 @@
 """ 
 Takes averaged fitness data over multiple runs and plots it
+Takes both sequential and parallel runs
+One line per terrain type
 
 usage: python plotter2.py < runIDs.txt
 
@@ -68,9 +70,9 @@ def plot_average_fitness(runIDs):
         # Plotting
         x = np.arange(generations)
 
-        plt.plot(x, avg_fitness_best_flat, '#f05039' if i == 0 else '#1f449c', label=labels[i] + ' Flat')
-        plt.plot(x, avg_fitness_best_uneven, '#e57a77' if i == 0 else '#3d6fa5', label=labels[i] + ' Uneven')
-        plt.plot(x, avg_fitness_best_crater, '#eebab4' if i == 0 else '#7ca1cc', label=labels[i] + ' Crater')
+        plt.plot(x, avg_fitness_best_flat, "#e83b20", label=labels[i] + ' Flat', ls='-' if i == 0 else '--')
+        plt.plot(x, avg_fitness_best_uneven, "#27eb4b", label=labels[i] + ' Uneven', ls='-' if i == 0 else '--')
+        plt.plot(x, avg_fitness_best_crater, "#586fdf", label=labels[i] + ' Crater', ls='-' if i == 0 else '--')
 
 
     plt.xlabel("Generation")
