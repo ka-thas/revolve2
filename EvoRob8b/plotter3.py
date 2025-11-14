@@ -54,7 +54,7 @@ def plot_average_fitness(runIDs, plotname):
                     data_mean.append(float(row[mean_fitness_idx]))
                     data_worst.append(float(row[worst_fitness_idx]))
                     gen += 1
-                    if gen >= 41:
+                    if gen >= generations:
                         break
 
                 all_data_best.append(data_best)
@@ -93,7 +93,7 @@ def plot_average_fitness(runIDs, plotname):
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
     plt.legend()
-    plt.axis([0, 41, 0, None])
+    plt.axis([0, generations, 0, None])
 
     plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".svg")
     plt.close()
@@ -107,10 +107,17 @@ if __name__ == "__main__":
 
     plotname = runIDs[0]
 
-    # Read header from the first file
-    first_filename = f"{config.LOG_FOLDER}{runIDs[1]}/progress.csv"
-    with open(first_filename, "r") as f:
-        reader = csv.reader(f)
-        header_lookup = next(reader)  # skip header
+
+    least_generations = float('inf')
+    # First, determine the least number of generations across all runs
+    for runID in runIDs[1:]:
+        filename = f"{config.LOG_FOLDER}{runID}/progress.csv"
+        with open(filename, "r") as f:
+            reader = csv.reader(f)
+            next(reader)  # skip header
+            gen = sum(1 for row in reader)
+            if gen < least_generations:
+                least_generations = gen
+    generations = least_generations
     
     plot_average_fitness(runIDs[1:], plotname)
