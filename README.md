@@ -37,3 +37,6 @@ Contact & contribution:
 - [parse_gene](./parse_gene.py)
 - [EA](./EA.py)
   - comprehensive evolutionary algorithm for JSON gene representation
+
+
+![sequential uneven](/EvoRob8b/images/seq_uneven.gif) ![sequential crater](/EvoRob8b/images/seq_crater.gif) ![sequential flat](/EvoRob8b/images/seq_flat.gif)
