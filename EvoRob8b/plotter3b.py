@@ -76,7 +76,7 @@ def plot_average_fitness(runIDs):
     plt.xlabel("Generation")
     plt.ylabel("Average Fitness")
     plt.legend()
-    plt.axis([0, 41, 0, 6])
+    plt.axis([0, 60, 0, 16])
 
     plt.savefig(config.LOG_FOLDER + "plots/" + plotname + ".svg")
     plt.close()
@@ -89,6 +89,6 @@ if __name__ == "__main__":
         runIDs.append(line.strip())
 
     plotname = runIDs[0]
-    generations = 41
+    generations = 60
     
     plot_average_fitness(runIDs[1:])
